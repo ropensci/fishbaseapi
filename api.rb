@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'sinatra'
-require 'httparty'
 require 'json'
 require 'mysql2'
 
@@ -33,20 +32,26 @@ get "/heartbeat" do
 		"status" => "ok",
 		"paths" => [
 			"/heartbeat",
-			"/species/:id?params..."
+			"/species/:id?<params>",
+			"/genera/:id?<params>"
 		]
 	})
 end
 
-get '/species/:id?/?' do
-	# id = params[:splat].first
+get '/species/?:id?/?' do
 	id = params[:id]
- 	genus = params[:genus]
- 	species = params[:species]
+ 	limit = params[:limit] || 10
+ 	fields = params[:fields] || '*'
+ 	params.delete("limit")
+ 	params.delete("fields")
+
+ 	fields = check_fields(client, 'species', fields)
+ 	args = get_args(params)
+
 	if id.nil?
-		query = sprintf("SELECT * FROM species WHERE genus = '%s'", genus)
+		query = sprintf("SELECT %s FROM species %s limit %d", fields, args, limit)
 	else
-		query = sprintf("SELECT * FROM species WHERE SpecCode = '%d'", id.to_s)
+		query = sprintf("SELECT %s FROM species WHERE SpecCode = '%d'", fields, id.to_s)
 	end
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
@@ -55,40 +60,66 @@ get '/species/:id?/?' do
 	return JSON.pretty_generate(data)
 end
 
-# get '/stuff/search/?' do
-# 	genus = params[:genus]
-# 	species = params[:species]
-
-# 	query = sprintf("SELECT * FROM species WHERE genus='%s'", genus)
-
-# 	res = client.query(query, :as => :json)
-# 	out = res.collect{ |row| row }
-# 	err = get_error(out)
-# 	data = { "status" => "ok", "count" => out.length, "error" => err, "data" => out }
-# 	return JSON.pretty_generate(data)
-# end
-
-# get '/search' do
-# 	url2 = url + '/_search'
-# 	options = {
-# 		query: {
-# 			q: params[:q],
-# 			size: params[:size]
-# 		}
-# 	}
-# 	res = HTTParty.get(url2, options)
-# 	body = JSON.parse(res.body)
-# 	body['hits']['hits'] = body['hits']['hits'].collect {
-# 		|p| {"score" => p['_score'], "source" => p['_source'] }
-# 	}
-# 	out = { "status" => "ok", "data" => body['hits'] }
-# 	return JSON.pretty_generate(out)
-# end
+get '/genera/?:id?/?' do
+	id = params[:id]
+ 	genus = params[:genus]
+ 	gender = params[:gender]
+ 	limit = params.fetch :limit, 10
+	if id.nil?
+		query = sprintf("SELECT * FROM genera WHERE GenName = '%s' limit %d", genus, limit)
+	else
+		query = sprintf("SELECT * FROM genera WHERE GenCode = '%d'", id.to_s)
+	end
+	res = client.query(query, :as => :json)
+	out = res.collect{ |row| row }
+	err = get_error(out)
+	data = { "status" => "ok", "count" => out.length, "error" => err, "data" => out }
+	return JSON.pretty_generate(data)
+end
 
 def get_error(x)
 	if x.length == 0
-		"not found"
+		return "not found"
 	else
-		nil
+		return nil
+	end
+end
+
+def get_args(x)
+	res = x.collect{ |row| "%s = '%s'" % row }
+	if res.length == 0
+		return ''
+	else
+		return "WHERE " + res.join(' AND ')
+	end
+end
+
+def check_fields(client, table, fields)
+	query = sprintf("SELECT * FROM %s limit 1", table)
+	res = client.query(query, :as => :json)
+	flexist = res.fields
+	fields = fields.split(',')
+	if fields.length == 1
+		fields = fields[0]
+	end
+	if fields.length == 0
+		fields = '*'
+	end
+	if fields == '*'
+		return fields
+	else
+		if fields.class == Array
+			fields = fields.collect{ |d|
+				if flexist.include? d
+					d
+				else
+					nil
+				end
+			}
+			fields = fields.compact.join(',')
+			return fields
+		else
+			return fields
+		end
 	end
 end

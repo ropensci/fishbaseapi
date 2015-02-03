@@ -3,6 +3,8 @@ Fishbase API
 
 Draft Fishbase API - using Ruby's Sinatra framework
 
+`jq` is used below to make examples brief - get it at [http://stedolan.github.io/jq/](http://stedolan.github.io/jq/).
+
 ## Clone this repo
 
 ```sh
@@ -20,25 +22,15 @@ ruby api.rb
 
 ## Heartbeat
 
-```sh
-curl http://localhost::4567/heartbeat
-```
-
-```sh
-{
-  status: "ok"
-}
-```
-
-The root redirects to `/heartbeat` (`/heartbeat` gives the same thing)
+The root `localhost:4567` redirects to `/heartbeat` 
 
 ```sh
 curl -L http://localhost:4567
+# or equivalently curl http://localhost:4567/heartbeat
 ```
 
 ```sh
 {
-    status: "ok",
     paths: [
         "/heartbeat",
         "/species/:id?params..."
@@ -81,15 +73,14 @@ curl http://localhost:4567/species/2
     ...<cutoff>
         }
     ],
-    "error": null,
-    "status": "ok"
+    "error": null
 }
 ```
 
 ## Get a species searching by genus
 
 ```sh
-http http://localhost:4567/species/?genus=Aborichthys | jq '.data[] | {author: .Author, genus: .Genus, species: .Species}'
+http 'http://localhost:4567/species/?genus=Aborichthys' | jq '.data[] | {author: .Author, genus: .Genus, species: .Species}'
 ```
 
 ```sh
@@ -117,5 +108,75 @@ http http://localhost:4567/species/?genus=Aborichthys | jq '.data[] | {author: .
   "species": "tikaderi",
   "genus": "Aborichthys",
   "author": "Barman, 1985"
+}
+```
+
+
+## limit number of results
+
+```sh
+http 'http://localhost:4567/species/?genus=Aborichthys&limit=5' | jq '.data[] | {vulnerability: .Vulnerability, genus: .Genus, length: .Length}'
+```
+
+```sh
+{
+  "length": 5.4,
+  "genus": "Aborichthys",
+  "vulnerability": 13.79
+}
+{
+  "length": 3.8,
+  "genus": "Aborichthys",
+  "vulnerability": 10
+}
+{
+  "length": 8.1,
+  "genus": "Aborichthys",
+  "vulnerability": 21.72
+}
+{
+  "length": null,
+  "genus": "Aborichthys",
+  "vulnerability": 19.03
+}
+{
+  "length": 10.5,
+  "genus": "Aborichthys",
+  "vulnerability": 26.05
+}
+```
+
+## get certain fields back
+
+```sh
+http 'http://localhost:4567/species/?genus=Aborichthys&fields=Genus,Length'
+```
+
+```sh
+{
+    "count": 5,
+    "data": [
+        {
+            "Genus": "Aborichthys",
+            "Length": 5.4
+        },
+        {
+            "Genus": "Aborichthys",
+            "Length": 3.8
+        },
+        {
+            "Genus": "Aborichthys",
+            "Length": 8.1
+        },
+        {
+            "Genus": "Aborichthys",
+            "Length": null
+        },
+        {
+            "Genus": "Aborichthys",
+            "Length": 10.5
+        }
+    ],
+    "error": null
 }
 ```

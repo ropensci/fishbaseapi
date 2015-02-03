@@ -29,7 +29,6 @@ end
 
 get "/heartbeat" do
 	return JSON.pretty_generate({
-		"status" => "ok",
 		"paths" => [
 			"/heartbeat",
 			"/species/:id?<params>",
@@ -56,7 +55,7 @@ get '/species/?:id?/?' do
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)
-	data = { "status" => "ok", "count" => out.length, "error" => err, "data" => out }
+	data = { "count" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
@@ -73,7 +72,7 @@ get '/genera/?:id?/?' do
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)
-	data = { "status" => "ok", "count" => out.length, "error" => err, "data" => out }
+	data = { "count" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 

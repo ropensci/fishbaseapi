@@ -86,10 +86,11 @@ end
 get '/getfaoarea/?' do
 	genus = params[:genus]
 	species = params[:species]
+	limit = params[:limit] || 10
 	query = sprintf("SELECT s.SpecCode, s.Genus, s.Species, k.AreaCode, k.FAO, k.Note, t.status
 							FROM species s JOIN faoareas t on s.SpecCode = t.SpecCode
 							INNER JOIN faoarref k on t.AreaCode = k.AreaCode
-							WHERE Genus = '%s' AND Species = '%s'", genus, species)
+							WHERE Genus = '%s' AND Species = '%s' limit %d", genus, species, limit)
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)

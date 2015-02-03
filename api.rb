@@ -34,7 +34,8 @@ get "/heartbeat" do
 			"/species/:id?<params>",
 			"/genera/:id?<params>",
 			"/getfaoarea?<params>",
-			"/faoareas/:id?<params>"
+			"/faoareas/:id?<params>",
+			"/getfooditems?<params>"
 		]
 	})
 end
@@ -83,7 +84,7 @@ get '/genera/?:id?/?' do
 	return JSON.pretty_generate(data)
 end
 
-get '/getfaoarea/?' do
+get '/getfaoareas/?' do
 	genus = params[:genus]
 	species = params[:species]
 	limit = params[:limit] || 10
@@ -121,6 +122,21 @@ get '/faoareas/?:id?/?' do
 	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
+
+get '/fooditems/?' do
+	genus = params[:genus]
+	species = params[:species]
+	limit = params[:limit] || 10
+	query = sprintf("SELECT s.SpecCode, s.Genus, s.Species, t.FoodI, t.FoodII, t.FoodIII, t.PredatorStage
+						FROM species s JOIN fooditems t on s.SpecCode = t.SpecCode
+						WHERE Genus = '%s' AND Species = '%s' limit %d", genus, species, limit)
+	res = client.query(query, :as => :json)
+	out = res.collect{ |row| row }
+	err = get_error(out)
+	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
+	return JSON.pretty_generate(data)
+end
+
 
 # helpers
 def get_error(x)

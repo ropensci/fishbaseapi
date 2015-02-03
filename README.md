@@ -182,79 +182,65 @@ http 'http://localhost:4567/species/?genus=Aborichthys&limit=5' | jq '.data[] | 
 ## get certain fields back
 
 ```sh
-http 'http://localhost:4567/species/?genus=Aborichthys&fields=Genus,Length'
+http 'http://localhost:4567/species/?genus=Aborichthys&fields=Genus,Length' | jq '.data[]'
 ```
 
 ```sh
 {
-    "count": 5,
-    "data": [
-        {
-            "Genus": "Aborichthys",
-            "Length": 5.4
-        },
-        {
-            "Genus": "Aborichthys",
-            "Length": 3.8
-        },
-        {
-            "Genus": "Aborichthys",
-            "Length": 8.1
-        },
-        {
-            "Genus": "Aborichthys",
-            "Length": null
-        },
-        {
-            "Genus": "Aborichthys",
-            "Length": 10.5
-        }
-    ],
-    "error": null,
-    "returned": 5
+    "Genus": "Aborichthys",
+    "Length": 5.4
+},
+{
+    "Genus": "Aborichthys",
+    "Length": 3.8
+},
+{
+    "Genus": "Aborichthys",
+    "Length": 8.1
+},
+{
+    "Genus": "Aborichthys",
+    "Length": null
+},
+{
+    "Genus": "Aborichthys",
+    "Length": 10.5
 }
 ```
 
 ## getfaoarea
 
 ```sh
-http 'http://localhost:4567/getfaoarea/?genus=Oreochromis&species=mossambicus&limit=3'
+http 'http://localhost:4567/getfaoarea/?genus=Oreochromis&species=mossambicus&limit=3' | jq '.data[]'
 ```
 
 ```sh
 {
-    "count": 3,
-    "data": [
-        {
-            "AreaCode": 1,
-            "FAO": "Africa-Inland Waters",
-            "Genus": "Oreochromis",
-            "Note": "Complete",
-            "SpecCode": 3,
-            "Species": "mossambicus",
-            "status": "endemic"
-        },
-        {
-            "AreaCode": 2,
-            "FAO": "America, North - Inland waters",
-            "Genus": "Oreochromis",
-            "Note": "includes Central America",
-            "SpecCode": 3,
-            "Species": "mossambicus",
-            "status": "introduced"
-        },
-        {
-            "AreaCode": 2,
-            "FAO": "America, North - Inland waters",
-            "Genus": "Oreochromis",
-            "Note": "includes Central America",
-            "SpecCode": 3,
-            "Species": "mossambicus",
-            "status": "introduced"
-        }
-    ],
-    "error": null,
-    "returned": 3
+    "AreaCode": 1,
+    "FAO": "Africa-Inland Waters",
+    "Genus": "Oreochromis",
+    "Note": "Complete",
+    "SpecCode": 3,
+    "Species": "mossambicus",
+    "status": "endemic"
+},
+{
+    "AreaCode": 2,
+    "FAO": "America, North - Inland waters",
+    "Genus": "Oreochromis",
+    "Note": "includes Central America",
+    "SpecCode": 3,
+    "Species": "mossambicus",
+    "status": "introduced"
+},
+{
+    "AreaCode": 2,
+    "FAO": "America, North - Inland waters",
+    "Genus": "Oreochromis",
+    "Note": "includes Central America",
+    "SpecCode": 3,
+    "Species": "mossambicus",
+    "status": "introduced"
 }
 ```
 
@@ -262,43 +248,73 @@ http 'http://localhost:4567/getfaoarea/?genus=Oreochromis&species=mossambicus&li
 ## getfaoarea
 
 ```sh
-http 'http://localhost:4567/faoareas/2?limit=2'
+http 'http://localhost:4567/faoareas/2?limit=2' | jq '.data[]'
 ```
 
 ```sh
 {
-    "count": 1834,
-    "data": [
-        {
-            "AreaCode": 2,
-            "DateChecked": null,
-            "DateEntered": "1990-10-19 00:00:00 -0700",
-            "DateModified": "1994-04-18 00:00:00 -0700",
-            "Entered": 2,
-            "Expert": null,
-            "Modified": 2,
-            "SpecCode": 2,
-            "Status": "introduced",
-            "StockCode": 1,
-            "TS": null,
-            "autoctr": 484
-        },
-        {
-            "AreaCode": 2,
-            "DateChecked": null,
-            "DateEntered": "1993-08-04 00:00:00 -0700",
-            "DateModified": "1994-08-02 00:00:00 -0700",
-            "Entered": 2,
-            "Expert": null,
-            "Modified": null,
-            "SpecCode": 3,
-            "Status": "introduced",
-            "StockCode": 3,
-            "TS": null,
-            "autoctr": 490
-        }
-    ],
-    "error": null,
-    "returned": 2
+    "AreaCode": 2,
+    "DateChecked": null,
+    "DateEntered": "1990-10-19 00:00:00 -0700",
+    "DateModified": "1994-04-18 00:00:00 -0700",
+    "Entered": 2,
+    "Expert": null,
+    "Modified": 2,
+    "SpecCode": 2,
+    "Status": "introduced",
+    "StockCode": 1,
+    "TS": null,
+    "autoctr": 484
+},
+{
+    "AreaCode": 2,
+    "DateChecked": null,
+    "DateEntered": "1993-08-04 00:00:00 -0700",
+    "DateModified": "1994-08-02 00:00:00 -0700",
+    "Entered": 2,
+    "Expert": null,
+    "Modified": null,
+    "SpecCode": 3,
+    "Status": "introduced",
+    "StockCode": 3,
+    "TS": null,
+    "autoctr": 490
+}
+```
+
+
+## Get food items
+
+```sh
+http 'http://localhost:4567/fooditems/?genus=Oreochromis&species=niloticus&limit=3' | jq '.data[]'
+```
+
+```sh
+{
+    "FoodI": "detritus",
+    "FoodII": "detritus",
+    "FoodIII": "debris",
+    "Genus": "Oreochromis",
+    "PredatorStage": "juv./adults",
+    "SpecCode": 2,
+    "Species": "niloticus"
+},
+{
+    "FoodI": "detritus",
+    "FoodII": "detritus",
+    "FoodIII": "debris",
+    "Genus": "Oreochromis",
+    "PredatorStage": "juv./adults",
+    "SpecCode": 2,
+    "Species": "niloticus"
+},
+{
+    "FoodI": "others",
+    "FoodII": "others",
+    "FoodIII": "n.a./others",
+    "Genus": "Oreochromis",
+    "PredatorStage": "juv./adults",
+    "SpecCode": 2,
+    "Species": "niloticus"
 }
 ```

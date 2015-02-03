@@ -7,6 +7,12 @@ Draft Fishbase API - using Ruby's Sinatra framework
 
 This is being developed on a local machine - will be on a public server soon (hopefully). Data is not included in this repo, so you can't actually follow the below instructions, unless you have the DB :)
 
+## The endpoints so far
+
+* `/heartbeat`
+* `/species`
+* `/genera`
+
 ## Clone this repo
 
 ```sh

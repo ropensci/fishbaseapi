@@ -61,13 +61,18 @@ end
 
 get '/genera/?:id?/?' do
 	id = params[:id]
- 	genus = params[:genus]
- 	gender = params[:gender]
- 	limit = params.fetch :limit, 10
+ 	limit = params[:limit] || 10
+ 	fields = params[:fields] || '*'
+ 	params.delete("limit")
+ 	params.delete("fields")
+
+ 	fields = check_fields(client, 'genera', fields)
+ 	args = get_args(params)
+
 	if id.nil?
-		query = sprintf("SELECT * FROM genera WHERE GenName = '%s' limit %d", genus, limit)
+		query = sprintf("SELECT %s FROM genera %s limit %d", fields, args, limit)
 	else
-		query = sprintf("SELECT * FROM genera WHERE GenCode = '%d'", id.to_s)
+		query = sprintf("SELECT %s FROM genera WHERE GenCode = '%d'", id.to_s)
 	end
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
@@ -122,3 +127,9 @@ def check_fields(client, table, fields)
 		end
 	end
 end
+
+# def request(client, query)
+# 	res = client.query(query, :as => :json)
+# 	out = res.collect{ |row| row }
+# 	return out
+# end

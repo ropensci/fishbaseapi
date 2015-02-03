@@ -31,9 +31,10 @@ curl -L http://localhost:4567
 
 ```sh
 {
-    paths: [
+    "paths": [
         "/heartbeat",
-        "/species/:id?params..."
+        "/species/:id?<params>",
+        "/genera/:id?<params>"
     ]
 }
 ```

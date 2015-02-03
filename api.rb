@@ -81,6 +81,20 @@ get '/genera/?:id?/?' do
 	return JSON.pretty_generate(data)
 end
 
+get '/getfaoarea/?' do
+	genus = params[:genus]
+	species = params[:species]
+	query = sprintf("SELECT s.SpecCode, s.Genus, s.Species, k.AreaCode, k.FAO, k.Note, t.status
+							FROM species s JOIN faoareas t on s.SpecCode = t.SpecCode
+							INNER JOIN faoarref k on t.AreaCode = k.AreaCode
+							WHERE Genus = '%s' AND Species = '%s'", genus, species)
+	res = client.query(query, :as => :json)
+	out = res.collect{ |row| row }
+	err = get_error(out)
+	data = { "count" => out.length, "error" => err, "data" => out }
+	return JSON.pretty_generate(data)
+end
+
 def get_error(x)
 	if x.length == 0
 		return "not found"

@@ -12,6 +12,7 @@ This is being developed on a local machine - will be on a public server soon (ho
 * `/heartbeat`
 * `/species`
 * `/genera`
+* `/getfaoarea`
 
 ## Clone this repo
 
@@ -184,6 +185,120 @@ http 'http://localhost:4567/species/?genus=Aborichthys&fields=Genus,Length'
         {
             "Genus": "Aborichthys",
             "Length": 10.5
+        }
+    ],
+    "error": null
+}
+```
+
+## getfaoarea
+
+```sh
+http 'http://localhost:4567/getfaoarea/?genus=Oreochromis&species=mossambicus'
+```
+
+```sh
+{
+    "count": 11,
+    "data": [
+        {
+            "AreaCode": 1,
+            "FAO": "Africa-Inland Waters",
+            "Genus": "Oreochromis",
+            "Note": "Complete",
+            "SpecCode": 3,
+            "Species": "mossambicus",
+            "status": "endemic"
+        },
+        {
+            "AreaCode": 2,
+            "FAO": "America, North - Inland waters",
+            "Genus": "Oreochromis",
+            "Note": "includes Central America",
+            "SpecCode": 3,
+            "Species": "mossambicus",
+            "status": "introduced"
+        },
+        {
+            "AreaCode": 2,
+            "FAO": "America, North - Inland waters",
+            "Genus": "Oreochromis",
+            "Note": "includes Central America",
+            "SpecCode": 3,
+            "Species": "mossambicus",
+            "status": "introduced"
+        },
+        {
+            "AreaCode": 2,
+            "FAO": "America, North - Inland waters",
+            "Genus": "Oreochromis",
+            "Note": "includes Central America",
+            "SpecCode": 3,
+            "Species": "mossambicus",
+            "status": "introduced"
+        },
+        {
+            "AreaCode": 3,
+            "FAO": "America, South - Inland waters",
+            "Genus": "Oreochromis",
+            "Note": null,
+            "SpecCode": 3,
+            "Species": "mossambicus",
+            "status": "introduced"
+        },
+        {
+            "AreaCode": 4,
+            "FAO": "Asia - Inland waters",
+            "Genus": "Oreochromis",
+            "Note": null,
+            "SpecCode": 3,
+            "Species": "mossambicus",
+            "status": "introduced"
+        },
+        {
+            "AreaCode": 4,
+            "FAO": "Asia - Inland waters",
+            "Genus": "Oreochromis",
+            "Note": null,
+            "SpecCode": 3,
+            "Species": "mossambicus",
+            "status": "introduced"
+        },
+        {
+            "AreaCode": 4,
+            "FAO": "Asia - Inland waters",
+            "Genus": "Oreochromis",
+            "Note": null,
+            "SpecCode": 3,
+            "Species": "mossambicus",
+            "status": "introduced"
+        },
+        {
+            "AreaCode": 5,
+            "FAO": "Europe - Inland waters",
+            "Genus": "Oreochromis",
+            "Note": "excludes former USSR",
+            "SpecCode": 3,
+            "Species": "mossambicus",
+            "status": "introduced"
+        },
+        {
+            "AreaCode": 6,
+            "FAO": "Oceania - Inland waters",
+            "Genus": "Oreochromis",
+            "Note": null,
+            "SpecCode": 3,
+            "Species": "mossambicus",
+            "status": "introduced"
+        },
+        {
+            "AreaCode": 71,
+            "FAO": "Pacific, Western Central",
+            "Genus": "Oreochromis",
+            "Note": null,
+            "SpecCode": 3,
+            "Species": "mossambicus",
+            "status": "native"
         }
     ],
     "error": null

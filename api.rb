@@ -52,12 +52,12 @@ get '/species/?:id?/?' do
 	if id.nil?
 		query = sprintf("SELECT %s FROM species %s limit %d", fields, args, limit)
 	else
-		query = sprintf("SELECT %s FROM species WHERE SpecCode = '%d'", fields, id.to_s)
+		query = sprintf("SELECT %s FROM species WHERE SpecCode = '%d' limit %d", fields, id.to_s, limit)
 	end
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)
-	data = { "count" => out.length, "error" => err, "data" => out }
+	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
@@ -74,12 +74,12 @@ get '/genera/?:id?/?' do
 	if id.nil?
 		query = sprintf("SELECT %s FROM genera %s limit %d", fields, args, limit)
 	else
-		query = sprintf("SELECT %s FROM genera WHERE GenCode = '%d'", fields, id.to_s)
+		query = sprintf("SELECT %s FROM genera WHERE GenCode = '%d' limit %d", fields, id.to_s, limit)
 	end
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)
-	data = { "count" => out.length, "error" => err, "data" => out }
+	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
@@ -93,7 +93,7 @@ get '/getfaoarea/?' do
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)
-	data = { "count" => out.length, "error" => err, "data" => out }
+	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
@@ -109,13 +109,15 @@ get '/faoareas/?:id?/?' do
 
 	if id.nil?
 		query = sprintf("SELECT %s FROM faoareas %s limit %d", fields, args, limit)
+		count = get_count(client, 'faoareas', args)
 	else
-		query = sprintf("SELECT %s FROM faoareas WHERE AreaCode = '%d'", fields, id.to_s)
+		query = sprintf("SELECT %s FROM faoareas WHERE AreaCode = '%d' limit %d", fields, id.to_s, limit)
+		count = get_count(client, 'faoareas', sprintf("WHERE AreaCode = '%d'", id.to_s))
 	end
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)
-	data = { "count" => out.length, "error" => err, "data" => out }
+	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
@@ -165,6 +167,12 @@ def check_fields(client, table, fields)
 			return fields
 		end
 	end
+end
+
+def get_count(client, table, string)
+	query = sprintf("SELECT count(*) as ct FROM %s %s", table, string)
+	res = client.query(query, :as => :json)
+	res.collect{ |row| row }[0]["ct"]
 end
 
 # def request(client, query)

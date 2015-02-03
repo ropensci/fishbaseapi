@@ -14,18 +14,33 @@ This is being developed on a local machine - will be on a public server soon (ho
 * `/genera`
 * `/getfaoarea`
 
-## Clone this repo
+## Setup database
+
+Uncompress the database dump, e.g.: `2013-12-13_10-53-23_fbapp.7z`. Then start mysql and load into mysql
+
+```sh
+mysql.server start
+mysql -u root fbapp < 2013-12-13_10-53-23_fbapp.sql
+```
+
+The load step takes a while...
+
+## Clone
 
 ```sh
 git clone git@github.com:ropensci/fishbaseapi.git
 cd fishbaseapi
+```
+
+## Setup
+
+```sh
 bundle install
 ```
 
 ## Start Sinatra
 
 ```sh
-cd fishbaseapi
 ruby api.rb
 ```
 

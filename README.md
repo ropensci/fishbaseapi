@@ -5,6 +5,8 @@ Draft Fishbase API - using Ruby's Sinatra framework
 
 `jq` is used below to make examples brief - get it at [http://stedolan.github.io/jq/](http://stedolan.github.io/jq/).
 
+This is being developed on a local machine - will be on a public server soon (hopefully). Data is not included in this repo, so you can't actually follow the below instructions, unless you have the DB :)
+
 ## Clone this repo
 
 ```sh

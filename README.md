@@ -3,6 +3,8 @@ Fishbase API
 
 Draft Fishbase API - using Ruby's Sinatra framework
 
+`http` is a command line tool from the Python library [httpie](https://github.com/jakubroztocil/httpie) used below - `curl` will do that same thing.
+
 `jq` is used below to make examples brief - get it at [http://stedolan.github.io/jq/](http://stedolan.github.io/jq/).
 
 This is being developed on a local machine - will be on a public server soon (hopefully). Data is not included in this repo, so you can't actually follow the below instructions, unless you have the DB :)
@@ -286,35 +288,26 @@ http 'http://localhost:4567/faoareas/2?limit=2' | jq '.data[]'
 ## Get food items
 
 ```sh
-http 'http://localhost:4567/fooditems/?genus=Oreochromis&species=niloticus&limit=3' | jq '.data[]'
+http 'http://localhost:4567/fooditems/?limit=3' | jq '.data[] | {species: .SpecCode, food1: .FoodI, food2: .FoodII, food3: .FoodIII}'
 ```
 
 ```sh
 {
-    "FoodI": "detritus",
-    "FoodII": "detritus",
-    "FoodIII": "debris",
-    "Genus": "Oreochromis",
-    "PredatorStage": "juv./adults",
-    "SpecCode": 2,
-    "Species": "niloticus"
-},
+  "food3": "debris",
+  "food2": "detritus",
+  "food1": "detritus",
+  "species": 2
+}
 {
-    "FoodI": "detritus",
-    "FoodII": "detritus",
-    "FoodIII": "debris",
-    "Genus": "Oreochromis",
-    "PredatorStage": "juv./adults",
-    "SpecCode": 2,
-    "Species": "niloticus"
-},
+  "food3": "debris",
+  "food2": "detritus",
+  "food1": "detritus",
+  "species": 2
+}
 {
-    "FoodI": "others",
-    "FoodII": "others",
-    "FoodIII": "n.a./others",
-    "Genus": "Oreochromis",
-    "PredatorStage": "juv./adults",
-    "SpecCode": 2,
-    "Species": "niloticus"
+  "food3": "n.a./others",
+  "food2": "others",
+  "food1": "others",
+  "species": 2
 }
 ```

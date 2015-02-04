@@ -10,11 +10,11 @@ host = ENV['MYSQL_PORT_3306_TCP_ADDR']
 if host.to_s == ''
   client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "fbapp")
 else
-  # Connect to a MySQL server via a linked docker container 
-  client = Mysql2::Client.new(:host => ENV['MYSQL_PORT_3306_TCP_ADDR'], 
-                             :port => ENV['MYSQL_PORT_3306_TCP_PORT'], 
+  # Connect to a MySQL server via a linked docker container
+  client = Mysql2::Client.new(:host => ENV['MYSQL_PORT_3306_TCP_ADDR'],
+                             :port => ENV['MYSQL_PORT_3306_TCP_PORT'],
                              :password => ENV['MYSQL_ENV_MYSQL_ROOT_PASSWORD'],
-                             :username => "root", 
+                             :username => "root",
                              :database => "fbapp")
 end
 
@@ -46,9 +46,8 @@ get "/heartbeat" do
 			"/heartbeat",
 			"/species/:id?<params>",
 			"/genera/:id?<params>",
-			"/getfaoarea?<params>",
 			"/faoareas/:id?<params>",
-			"/getfooditems?<params>"
+			"/fooditems?<params>"
 		]
 	})
 end
@@ -97,21 +96,6 @@ get '/genera/?:id?/?' do
 	return JSON.pretty_generate(data)
 end
 
-get '/getfaoareas/?' do
-	genus = params[:genus]
-	species = params[:species]
-	limit = params[:limit] || 10
-	query = sprintf("SELECT s.SpecCode, s.Genus, s.Species, k.AreaCode, k.FAO, k.Note, t.status
-							FROM species s JOIN faoareas t on s.SpecCode = t.SpecCode
-							INNER JOIN faoarref k on t.AreaCode = k.AreaCode
-							WHERE Genus = '%s' AND Species = '%s' limit %d", genus, species, limit)
-	res = client.query(query, :as => :json)
-	out = res.collect{ |row| row }
-	err = get_error(out)
-	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
-	return JSON.pretty_generate(data)
-end
-
 get '/faoareas/?:id?/?' do
 	id = params[:id]
  	limit = params[:limit] || 10
@@ -137,19 +121,24 @@ get '/faoareas/?:id?/?' do
 end
 
 get '/fooditems/?' do
-	genus = params[:genus]
-	species = params[:species]
 	limit = params[:limit] || 10
-	query = sprintf("SELECT s.SpecCode, s.Genus, s.Species, t.FoodI, t.FoodII, t.FoodIII, t.PredatorStage
-						FROM species s JOIN fooditems t on s.SpecCode = t.SpecCode
-						WHERE Genus = '%s' AND Species = '%s' limit %d", genus, species, limit)
+	fields = params[:fields] || '*'
+
+	params.delete("limit")
+ 	params.delete("fields")
+
+ 	fields = check_fields(client, 'fooditems', fields)
+ 	args = get_args(params)
+
+ 	query = sprintf("SELECT %s FROM fooditems %s limit %d", fields, args, limit)
+	count = get_count(client, 'faoareas', args)
+
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)
 	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
-
 
 # helpers
 def get_error(x)

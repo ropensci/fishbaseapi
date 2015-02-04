@@ -18,10 +18,10 @@ else
                              :database => "fbapp")
 end
 
-before do
-  puts '[Params]'
-  p params
-end
+# before do
+#   puts '[Params]'
+#   p params
+# end
 
 not_found do
 	halt 402, {'Content-Type' => 'application/json'}, {'error' => 'Page not found'}
@@ -66,13 +66,15 @@ get '/species/?:id?/?' do
 
 	if id.nil?
 		query = sprintf("SELECT %s FROM species %s limit %d", fields, args, limit)
+		count = get_count(client, 'species', args)
 	else
 		query = sprintf("SELECT %s FROM species WHERE SpecCode = '%d' limit %d", fields, id.to_s, limit)
+		count = get_count(client, 'species', sprintf("WHERE SpecCode = '%d'", id.to_s))
 	end
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)
-	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
+	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
@@ -88,13 +90,15 @@ get '/genera/?:id?/?' do
 
 	if id.nil?
 		query = sprintf("SELECT %s FROM genera %s limit %d", fields, args, limit)
+		count = get_count(client, 'genera', args)
 	else
 		query = sprintf("SELECT %s FROM genera WHERE GenCode = '%d' limit %d", fields, id.to_s, limit)
+		count = get_count(client, 'genera', sprintf("WHERE GenCode = '%d'", id.to_s))
 	end
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)
-	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
+	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
@@ -162,7 +166,7 @@ get '/fooditems/?' do
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)
-	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
+	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
@@ -182,7 +186,7 @@ get '/oxygens/?' do
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)
-	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
+	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 

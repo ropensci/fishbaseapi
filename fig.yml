@@ -1,0 +1,17 @@
+mysql:
+  image: mysql
+  volumes: 
+    - /home/cboettig/data/fishbase:/var/lib/mysql
+  environment: 
+    MYSQL_ROOT_PASSWORD: root
+fishbase:
+  build: .
+  links:
+   - mysql
+  ports:
+   - "4567:4567"
+
+# Notes: MySQL container isn't network facing, so password security isn't
+#   relevant (e.g. that's why there's a plain text password here). It
+#   must however match the password used when the database was imported
+#   into the container.

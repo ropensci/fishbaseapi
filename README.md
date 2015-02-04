@@ -18,8 +18,8 @@ will be here when there's a public url, for testing locally it's `http://localho
 * `/heartbeat`
 * `/species`
 * `/genera`
-* `/getfaoarea`
 * `/faoareas`
+* `/fooditems`
 
 ## Setup database
 
@@ -66,8 +66,8 @@ curl -L http://localhost:4567
         "/heartbeat",
         "/species/:id?<params>",
         "/genera/:id?<params>",
-        "/getfaoarea?<params>",
-        "/faoareas/:id?<params>"
+        "/faoareas/:id?<params>",
+        "/fooditems?<params>",
     ]
 }
 ```

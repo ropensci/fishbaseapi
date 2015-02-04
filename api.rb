@@ -45,7 +45,10 @@ get "/heartbeat" do
 		"paths" => [
 			"/heartbeat",
 			"/species/:id?<params>",
-			"/genera/:id?<params>"
+			"/genera/:id?<params>",
+			"/getfaoarea?<params>",
+			"/faoareas/:id?<params>",
+			"/getfooditems?<params>"
 		]
 	})
 end
@@ -63,12 +66,12 @@ get '/species/?:id?/?' do
 	if id.nil?
 		query = sprintf("SELECT %s FROM species %s limit %d", fields, args, limit)
 	else
-		query = sprintf("SELECT %s FROM species WHERE SpecCode = '%d'", fields, id.to_s)
+		query = sprintf("SELECT %s FROM species WHERE SpecCode = '%d' limit %d", fields, id.to_s, limit)
 	end
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)
-	data = { "count" => out.length, "error" => err, "data" => out }
+	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
@@ -85,15 +88,70 @@ get '/genera/?:id?/?' do
 	if id.nil?
 		query = sprintf("SELECT %s FROM genera %s limit %d", fields, args, limit)
 	else
-		query = sprintf("SELECT %s FROM genera WHERE GenCode = '%d'", id.to_s)
+		query = sprintf("SELECT %s FROM genera WHERE GenCode = '%d' limit %d", fields, id.to_s, limit)
 	end
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)
-	data = { "count" => out.length, "error" => err, "data" => out }
+	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
+get '/getfaoareas/?' do
+	genus = params[:genus]
+	species = params[:species]
+	limit = params[:limit] || 10
+	query = sprintf("SELECT s.SpecCode, s.Genus, s.Species, k.AreaCode, k.FAO, k.Note, t.status
+							FROM species s JOIN faoareas t on s.SpecCode = t.SpecCode
+							INNER JOIN faoarref k on t.AreaCode = k.AreaCode
+							WHERE Genus = '%s' AND Species = '%s' limit %d", genus, species, limit)
+	res = client.query(query, :as => :json)
+	out = res.collect{ |row| row }
+	err = get_error(out)
+	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
+	return JSON.pretty_generate(data)
+end
+
+get '/faoareas/?:id?/?' do
+	id = params[:id]
+ 	limit = params[:limit] || 10
+ 	fields = params[:fields] || '*'
+ 	params.delete("limit")
+ 	params.delete("fields")
+
+ 	fields = check_fields(client, 'faoareas', fields)
+ 	args = get_args(params)
+
+	if id.nil?
+		query = sprintf("SELECT %s FROM faoareas %s limit %d", fields, args, limit)
+		count = get_count(client, 'faoareas', args)
+	else
+		query = sprintf("SELECT %s FROM faoareas WHERE AreaCode = '%d' limit %d", fields, id.to_s, limit)
+		count = get_count(client, 'faoareas', sprintf("WHERE AreaCode = '%d'", id.to_s))
+	end
+	res = client.query(query, :as => :json)
+	out = res.collect{ |row| row }
+	err = get_error(out)
+	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
+	return JSON.pretty_generate(data)
+end
+
+get '/fooditems/?' do
+	genus = params[:genus]
+	species = params[:species]
+	limit = params[:limit] || 10
+	query = sprintf("SELECT s.SpecCode, s.Genus, s.Species, t.FoodI, t.FoodII, t.FoodIII, t.PredatorStage
+						FROM species s JOIN fooditems t on s.SpecCode = t.SpecCode
+						WHERE Genus = '%s' AND Species = '%s' limit %d", genus, species, limit)
+	res = client.query(query, :as => :json)
+	out = res.collect{ |row| row }
+	err = get_error(out)
+	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
+	return JSON.pretty_generate(data)
+end
+
+
+# helpers
 def get_error(x)
 	if x.length == 0
 		return "not found"
@@ -139,6 +197,12 @@ def check_fields(client, table, fields)
 			return fields
 		end
 	end
+end
+
+def get_count(client, table, string)
+	query = sprintf("SELECT count(*) as ct FROM %s %s", table, string)
+	res = client.query(query, :as => :json)
+	res.collect{ |row| row }[0]["ct"]
 end
 
 # def request(client, query)

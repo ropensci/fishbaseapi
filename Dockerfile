@@ -13,4 +13,4 @@ RUN apt-get update \
 
 EXPOSE 4567
 
-CMD ["/usr/local/bin/foreman","start","-d","/root/sinatra"]
+CMD ["ruby", "/root/sinatra/api.rb"]

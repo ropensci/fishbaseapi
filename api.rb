@@ -3,7 +3,20 @@ require 'sinatra'
 require 'json'
 require 'mysql2'
 
-client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "fbapp")
+
+
+host = ENV['MYSQL_PORT_3306_TCP_ADDR']
+
+if host.to_s == ''
+  client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "fbapp")
+else
+  # Connect to a MySQL server via a linked docker container 
+  client = Mysql2::Client.new(:host => ENV['MYSQL_PORT_3306_TCP_ADDR'], 
+                             :port => ENV['MYSQL_PORT_3306_TCP_PORT'], 
+                             :password => ENV['MYSQL_ENV_MYSQL_ROOT_PASSWORD'],
+                             :username => "root", 
+                             :database => "fbapp")
+end
 
 before do
   puts '[Params]'

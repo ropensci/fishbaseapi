@@ -21,6 +21,7 @@ will be here when there's a public url, for testing locally it's `http://localho
 * `/faoareas`
 * `/faoarrefs`
 * `/fooditems`
+* `/oxygens`
 
 ## Setup database
 
@@ -70,6 +71,7 @@ curl -L http://localhost:4567
         "/faoareas/:id?<params>",
         "/faoarrefs/:id?<params>",
         "/fooditems?<params>",
+        "/oxygens?<params>"
     ]
 }
 ```
@@ -241,6 +243,35 @@ http 'http://localhost:4567/fooditems/?limit=3' | jq '.data[] | {species: .SpecC
   "species": 2
 }
 ```
+
+
+## Get metabolism data from oxygen table
+
+```sh
+http 'http://localhost:4567/oxygens?limit=3&speccode=2' | jq '.data[] | {species: .SpecCode, weight: .Weight, salinity: .Salinity, oxygen_consumption: .OxygenCons}'
+```
+
+```sh
+{
+  "oxygen_consumption": 245.89999,
+  "salinity": 0,
+  "weight": 2.1,
+  "species": 2
+}
+{
+  "oxygen_consumption": 185.89999,
+  "salinity": 0,
+  "weight": 9.2,
+  "species": 2
+}
+{
+  "oxygen_consumption": 142.39999,
+  "salinity": 0,
+  "weight": 9.5,
+  "species": 2
+}
+```
+
 
 ## Modify requests
 

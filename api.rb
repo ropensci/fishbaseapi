@@ -48,7 +48,8 @@ get "/heartbeat" do
 			"/genera/:id?<params>",
 			"/faoareas/:id?<params>",
 			"/faoarrefs/:id?<params>",
-			"/fooditems?<params>"
+			"/fooditems?<params>",
+			"/oxygens?<params>"
 		]
 	})
 end
@@ -156,7 +157,27 @@ get '/fooditems/?' do
  	args = get_args(params)
 
  	query = sprintf("SELECT %s FROM fooditems %s limit %d", fields, args, limit)
-	count = get_count(client, 'faoareas', args)
+	count = get_count(client, 'fooditems', args)
+
+	res = client.query(query, :as => :json)
+	out = res.collect{ |row| row }
+	err = get_error(out)
+	data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
+	return JSON.pretty_generate(data)
+end
+
+get '/oxygens/?' do
+	limit = params[:limit] || 10
+	fields = params[:fields] || '*'
+
+	params.delete("limit")
+ 	params.delete("fields")
+
+ 	fields = check_fields(client, 'oxygen', fields)
+ 	args = get_args(params)
+
+ 	query = sprintf("SELECT %s FROM oxygen %s limit %d", fields, args, limit)
+	count = get_count(client, 'oxygen', args)
 
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }

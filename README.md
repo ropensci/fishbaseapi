@@ -147,107 +147,7 @@ http 'http://localhost:4567/species/?genus=Aborichthys' | jq '.data[] | {author:
 ```
 
 
-## limit number of results
-
-```sh
-http 'http://localhost:4567/species/?genus=Aborichthys&limit=5' | jq '.data[] | {vulnerability: .Vulnerability, genus: .Genus, length: .Length}'
-```
-
-```sh
-{
-  "length": 5.4,
-  "genus": "Aborichthys",
-  "vulnerability": 13.79
-}
-{
-  "length": 3.8,
-  "genus": "Aborichthys",
-  "vulnerability": 10
-}
-{
-  "length": 8.1,
-  "genus": "Aborichthys",
-  "vulnerability": 21.72
-}
-{
-  "length": null,
-  "genus": "Aborichthys",
-  "vulnerability": 19.03
-}
-{
-  "length": 10.5,
-  "genus": "Aborichthys",
-  "vulnerability": 26.05
-}
-```
-
-## get certain fields back
-
-```sh
-http 'http://localhost:4567/species/?genus=Aborichthys&fields=Genus,Length' | jq '.data[]'
-```
-
-```sh
-{
-    "Genus": "Aborichthys",
-    "Length": 5.4
-},
-{
-    "Genus": "Aborichthys",
-    "Length": 3.8
-},
-{
-    "Genus": "Aborichthys",
-    "Length": 8.1
-},
-{
-    "Genus": "Aborichthys",
-    "Length": null
-},
-{
-    "Genus": "Aborichthys",
-    "Length": 10.5
-}
-```
-
-## getfaoarea
-
-```sh
-http 'http://localhost:4567/getfaoarea/?genus=Oreochromis&species=mossambicus&limit=3' | jq '.data[]'
-```
-
-```sh
-{
-    "AreaCode": 1,
-    "FAO": "Africa-Inland Waters",
-    "Genus": "Oreochromis",
-    "Note": "Complete",
-    "SpecCode": 3,
-    "Species": "mossambicus",
-    "status": "endemic"
-},
-{
-    "AreaCode": 2,
-    "FAO": "America, North - Inland waters",
-    "Genus": "Oreochromis",
-    "Note": "includes Central America",
-    "SpecCode": 3,
-    "Species": "mossambicus",
-    "status": "introduced"
-},
-{
-    "AreaCode": 2,
-    "FAO": "America, North - Inland waters",
-    "Genus": "Oreochromis",
-    "Note": "includes Central America",
-    "SpecCode": 3,
-    "Species": "mossambicus",
-    "status": "introduced"
-}
-```
-
-
-## getfaoarea
+## faoareas
 
 ```sh
 http 'http://localhost:4567/faoareas/2?limit=2' | jq '.data[]'
@@ -285,6 +185,34 @@ http 'http://localhost:4567/faoareas/2?limit=2' | jq '.data[]'
 ```
 
 
+## faoarrefs
+
+```sh
+http 'http://localhost:4567/faoarrefs?limit=3&fields=SpeciesCount,AreaCode,Shelf,Coastline' | jq '.data[]'
+```
+
+```sh
+{
+  "Coastline": 37908,
+  "Shelf": 1326,
+  "AreaCode": 1,
+  "SpeciesCount": 3519
+}
+{
+  "Coastline": 183950,
+  "Shelf": 5632,
+  "AreaCode": 2,
+  "SpeciesCount": 1827
+}
+{
+  "Coastline": 30663,
+  "Shelf": 1985,
+  "AreaCode": 3,
+  "SpeciesCount": 5189
+}
+```
+
+
 ## Get food items
 
 ```sh
@@ -309,5 +237,70 @@ http 'http://localhost:4567/fooditems/?limit=3' | jq '.data[] | {species: .SpecC
   "food2": "others",
   "food1": "others",
   "species": 2
+}
+```
+
+## Modify requests
+
+### limit number of results
+
+```sh
+http 'http://localhost:4567/species/?genus=Aborichthys&limit=5' | jq '.data[] | {vulnerability: .Vulnerability, genus: .Genus, length: .Length}'
+```
+
+```sh
+{
+  "length": 5.4,
+  "genus": "Aborichthys",
+  "vulnerability": 13.79
+}
+{
+  "length": 3.8,
+  "genus": "Aborichthys",
+  "vulnerability": 10
+}
+{
+  "length": 8.1,
+  "genus": "Aborichthys",
+  "vulnerability": 21.72
+}
+{
+  "length": null,
+  "genus": "Aborichthys",
+  "vulnerability": 19.03
+}
+{
+  "length": 10.5,
+  "genus": "Aborichthys",
+  "vulnerability": 26.05
+}
+```
+
+### get certain fields back
+
+```sh
+http 'http://localhost:4567/species/?genus=Aborichthys&fields=Genus,Length' | jq '.data[]'
+```
+
+```sh
+{
+    "Genus": "Aborichthys",
+    "Length": 5.4
+},
+{
+    "Genus": "Aborichthys",
+    "Length": 3.8
+},
+{
+    "Genus": "Aborichthys",
+    "Length": 8.1
+},
+{
+    "Genus": "Aborichthys",
+    "Length": null
+},
+{
+    "Genus": "Aborichthys",
+    "Length": 10.5
 }
 ```

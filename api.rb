@@ -47,6 +47,7 @@ get "/heartbeat" do
 			"/species/:id?<params>",
 			"/genera/:id?<params>",
 			"/faoareas/:id?<params>",
+			"/faoarrefs/:id?<params>",
 			"/fooditems?<params>"
 		]
 	})
@@ -112,6 +113,30 @@ get '/faoareas/?:id?/?' do
 	else
 		query = sprintf("SELECT %s FROM faoareas WHERE AreaCode = '%d' limit %d", fields, id.to_s, limit)
 		count = get_count(client, 'faoareas', sprintf("WHERE AreaCode = '%d'", id.to_s))
+	end
+	res = client.query(query, :as => :json)
+	out = res.collect{ |row| row }
+	err = get_error(out)
+	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
+	return JSON.pretty_generate(data)
+end
+
+get '/faoarrefs/?:id?/?' do
+	id = params[:id]
+ 	limit = params[:limit] || 10
+ 	fields = params[:fields] || '*'
+ 	params.delete("limit")
+ 	params.delete("fields")
+
+ 	fields = check_fields(client, 'faoarref', fields)
+ 	args = get_args(params)
+
+	if id.nil?
+		query = sprintf("SELECT %s FROM faoarref %s limit %d", fields, args, limit)
+		count = get_count(client, 'faoarref', args)
+	else
+		query = sprintf("SELECT %s FROM faoarref WHERE AreaCode = '%d' limit %d", fields, id.to_s, limit)
+		count = get_count(client, 'faoarref', sprintf("WHERE AreaCode = '%d'", id.to_s))
 	end
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }

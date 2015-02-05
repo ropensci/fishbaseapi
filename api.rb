@@ -50,7 +50,8 @@ get "/heartbeat" do
 			"/faoarrefs/:id?<params>",
 			"/fooditems?<params>",
 			"/oxygens?<params>",
-			"/taxa?<params>"
+			"/taxa?<params>",
+			"/synonyms?<params>"
 		]
 	})
 end
@@ -215,6 +216,26 @@ get '/taxa/?' do
 	# WHERE s.Genus = '%s' AND s.Species = '%s' limit %d", params[:genus], params[:species], limit)
 	count = get_count(client, 'species', get_args(params, prefix=false))
 	# end
+
+	res = client.query(query, :as => :json)
+	out = res.collect{ |row| row }
+	err = get_error(out)
+	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
+	return JSON.pretty_generate(data)
+end
+
+get '/synonyms/?' do
+	limit = params[:limit] || 10
+	fields = params[:fields] || '*'
+
+	params.delete("limit")
+ 	params.delete("fields")
+
+ 	fields = check_fields(client, 'synonyms', fields)
+ 	args = get_args(params)
+
+ 	query = sprintf("SELECT %s FROM synonyms %s limit %d", fields, args, limit)
+	count = get_count(client, 'synonyms', args)
 
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }

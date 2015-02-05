@@ -23,6 +23,7 @@ will be here when there's a public url, for testing locally it's `http://localho
 * `/fooditems`
 * `/oxygens`
 * `/taxa`
+* `/synonyms`
 
 ## Setup database
 
@@ -73,7 +74,8 @@ curl -L http://localhost:4567
         "/faoarrefs/:id?<params>",
         "/fooditems?<params>",
         "/oxygens?<params>",
-        "/taxa?<params>"
+        "/taxa?<params>",
+        "/synonyms?<params>"
     ]
 }
 ```
@@ -276,6 +278,8 @@ http 'http://localhost:4567/oxygens?limit=3&speccode=2' | jq '.data[] | {species
 
 ## Taxonomic data endpoint
 
+This endpoint performs a join between the `speices`, `families`, and `genera` tables.
+
 ```sh
 http 'localhost:4567/taxa/?species=elongatus&limit=3'
 ```
@@ -332,6 +336,31 @@ http 'localhost:4567/taxa/?species=elongatus&limit=3'
     ],
     "error": null,
     "returned": 3
+}
+```
+
+## Synonyms endpoint
+
+This endpoint only queries the `synonyms` table.
+
+```sh
+http 'http://localhost:4567/synonyms?speccode=9&limit=2' | jq '.data[] | {syncode: .SynCode, speccode: .SpecCode, syngenus: .SynGenus, synspecies: .SynSpecies, status: .Status}'
+```
+
+```sh
+{
+  "status": "synonym",
+  "synspecies": "stellairs",
+  "syngenus": "Abalistes",
+  "speccode": 9,
+  "syncode": 149720
+}
+{
+  "status": "accepted name",
+  "synspecies": "stellaris",
+  "syngenus": "Abalistes",
+  "speccode": 9,
+  "syncode": 53544
 }
 ```
 

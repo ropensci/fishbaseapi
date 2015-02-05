@@ -49,7 +49,8 @@ get "/heartbeat" do
 			"/faoareas/:id?<params>",
 			"/faoarrefs/:id?<params>",
 			"/fooditems?<params>",
-			"/oxygens?<params>"
+			"/oxygens?<params>",
+			"/taxa?<params>"
 		]
 	})
 end
@@ -190,6 +191,39 @@ get '/oxygens/?' do
 	return JSON.pretty_generate(data)
 end
 
+get '/taxa/?' do
+	# id = params[:id]
+	limit = params[:limit] || 10
+	# fields = params[:fields] || '*'
+ 	params.delete("limit")
+ 	# params.delete("fields")
+
+ 	# fields = check_fields(client, 'species', fields)
+ 	params.keep_if { |key, value| key.to_s.match(/[Gg]enus|[Ss]pecies/) }
+ 	args = get_args(params, prefix=true)
+
+ # 	if id.nil?
+	# 	query = sprintf("SELECT %s FROM species %s limit %d", fields, args, limit)
+	# 	count = get_count(client, 'species', args)
+	# else
+	query = sprintf("
+		SELECT s.SpecCode,s.Genus,s.Species,s.SpeciesRefNo,s.Author,s.SubFamily,s.FamCode,s.GenCode,s.SubGenCode,s.Remark,f.Family,f.Order,f.Class
+			FROM species s
+			INNER JOIN families f on s.FamCode = f.FamCode
+			INNER JOIN genera g on s.GenCode = g.GenCode
+			%s limit %d", args, limit)
+	# WHERE s.Genus = '%s' AND s.Species = '%s' limit %d", params[:genus], params[:species], limit)
+	count = get_count(client, 'species', get_args(params, prefix=false))
+	# end
+
+	res = client.query(query, :as => :json)
+	out = res.collect{ |row| row }
+	err = get_error(out)
+	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
+	return JSON.pretty_generate(data)
+end
+
+
 # helpers
 def get_error(x)
 	if x.length == 0
@@ -199,8 +233,12 @@ def get_error(x)
 	end
 end
 
-def get_args(x)
-	res = x.collect{ |row| "%s = '%s'" % row }
+def get_args(x, prefix=false)
+	if prefix
+		res = x.collect{ |row| "s.%s = '%s'" % row }
+	else
+		res = x.collect{ |row| "%s = '%s'" % row }
+	end
 	if res.length == 0
 		return ''
 	else

@@ -22,6 +22,7 @@ will be here when there's a public url, for testing locally it's `http://localho
 * `/faoarrefs`
 * `/fooditems`
 * `/oxygens`
+* `/taxa`
 
 ## Setup database
 
@@ -71,7 +72,8 @@ curl -L http://localhost:4567
         "/faoareas/:id?<params>",
         "/faoarrefs/:id?<params>",
         "/fooditems?<params>",
-        "/oxygens?<params>"
+        "/oxygens?<params>",
+        "/taxa?<params>"
     ]
 }
 ```
@@ -269,6 +271,67 @@ http 'http://localhost:4567/oxygens?limit=3&speccode=2' | jq '.data[] | {species
   "salinity": 0,
   "weight": 9.5,
   "species": 2
+}
+```
+
+## Taxonomic data endpoint
+
+```sh
+http 'localhost:4567/taxa/?species=elongatus&limit=3'
+```
+
+```sh
+{
+    "count": 83,
+    "data": [
+        {
+            "Author": "Hora, 1921",
+            "Class": "Actinopterygii",
+            "FamCode": 692,
+            "Family": "Nemacheilidae",
+            "GenCode": 784,
+            "Genus": "Aborichthys",
+            "Order": "Cypriniformes",
+            "Remark": null,
+            "SpecCode": 24516,
+            "Species": "elongatus",
+            "SpeciesRefNo": 4832,
+            "SubFamily": null,
+            "SubGenCode": null
+        },
+        {
+            "Author": "(Regan, 1908)",
+            "Class": "Actinopterygii",
+            "FamCode": 122,
+            "Family": "Cyprinidae",
+            "GenCode": 1697,
+            "Genus": "Acheilognathus",
+            "Order": "Cypriniformes",
+            "Remark": "Needs a taxonomic reference.",
+            "SpecCode": 9525,
+            "Species": "elongatus",
+            "SpeciesRefNo": 6376,
+            "SubFamily": "Acheilognathinae",
+            "SubGenCode": null
+        },
+        {
+            "Author": "(Whitley, 1952)",
+            "Class": "Actinopterygii",
+            "FamCode": 268,
+            "Family": "Aploactinidae",
+            "GenCode": 9786,
+            "Genus": "Adventor",
+            "Order": "Scorpaeniformes",
+            "Remark": null,
+            "SpecCode": 27470,
+            "Species": "elongatus",
+            "SpeciesRefNo": 6192,
+            "SubFamily": null,
+            "SubGenCode": null
+        }
+    ],
+    "error": null,
+    "returned": 3
 }
 ```
 

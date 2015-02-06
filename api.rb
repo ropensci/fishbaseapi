@@ -48,6 +48,7 @@ get "/heartbeat" do
 	return JSON.pretty_generate({
 		"paths" => [
 			"/heartbeat",
+			"/mysqlping",
 			"/species/:id?<params>",
 			"/genera/:id?<params>",
 			"/faoareas/:id?<params>",
@@ -57,6 +58,12 @@ get "/heartbeat" do
 			"/taxa?<params>",
 			"/synonyms?<params>"
 		]
+	})
+end
+
+get '/mysqlping' do
+	return JSON.pretty_generate({
+		"mysql_server_up" => client.ping
 	})
 end
 

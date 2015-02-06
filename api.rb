@@ -8,14 +8,18 @@ require 'mysql2'
 host = ENV['MYSQL_PORT_3306_TCP_ADDR']
 
 if host.to_s == ''
-  client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "fbapp")
+  client = Mysql2::Client.new(:host => "localhost",
+  														:username => "root",
+  														:database => "fbapp",
+  														:reconnect => true)
 else
   # Connect to a MySQL server via a linked docker container
   client = Mysql2::Client.new(:host => ENV['MYSQL_PORT_3306_TCP_ADDR'],
                              :port => ENV['MYSQL_PORT_3306_TCP_PORT'],
                              :password => ENV['MYSQL_ENV_MYSQL_ROOT_PASSWORD'],
                              :username => "root",
-                             :database => "fbapp")
+                             :database => "fbapp",
+                             :reconnect => true)
 end
 
 # before do

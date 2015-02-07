@@ -2,11 +2,11 @@ require 'rubygems'
 require 'sinatra'
 require 'json'
 require 'mysql2'
-
-
+require "redis"
 
 host = ENV['MYSQL_PORT_3306_TCP_ADDR']
 
+# Set up MySQL DB
 if host.to_s == ''
   client = Mysql2::Client.new(:host => "localhost",
   														:username => "root",
@@ -22,10 +22,13 @@ else
                              :reconnect => true)
 end
 
-# before do
-#   puts '[Params]'
-#   p params
-# end
+# Set up Redis for caching
+redis = Redis.new
+
+before do
+  puts '[Params]'
+  p params
+end
 
 not_found do
 	halt 402, {'Content-Type' => 'application/json'}, {'error' => 'Page not found'}
@@ -268,27 +271,60 @@ end
 
 
 get '/populations/?' do
- 	limit = params[:limit] || 10
- 	fields = params[:fields] || '*'
- 	params.delete("limit")
- 	params.delete("fields")
- 	params.keep_if { |key, value| key.to_s.match(/[Ss]pecCode/) }
+	key = rediskey(params)
+	if redis_exists(redis, key)
+		result = JSON.parse(redis_get(redis, key))
+		out = result['data']
+		err = result['error']
+		count = result['count']
+	else
+		limit = params[:limit] || 10
+	 	fields = params[:fields] || '*'
+	 	params.delete("limit")
+	 	params.delete("fields")
+	 	params.keep_if { |key, value| key.to_s.match(/[Ss]pecCode/) }
 
- 	fields = check_fields(client, 'PopGrowth', fields)
- 	args = get_args(params)
+	 	fields = check_fields(client, 'PopGrowth', fields)
+	 	args = get_args(params)
 
- 	query = sprintf("SELECT %s FROM PopGrowth %s limit %d", fields, args, limit)
-	count = get_count(client, 'PopGrowth', args)
+	 	query = sprintf("SELECT %s FROM PopGrowth %s limit %d", fields, args, limit)
+		count = get_count(client, 'PopGrowth', args)
 
-	res = client.query(query, :as => :json)
-	out = res.collect{ |row| row }
-	err = get_error(out)
+		res = client.query(query, :as => :json)
+		out = res.collect{ |row| row }
+		err = get_error(out)
+		store = {"count" => count, "error" => err, "data" => out}
+		redis_set(redis, key, JSON.generate(store))
+	end
+
+	# data = { "count" => "count", "returned" => "out.length", "error" => "err", "data" => out }
 	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
+get '/test/?' do
+	key = rediskey(params)
+	return JSON.pretty_generate({"stuff" => key})
+end
+
 
 # helpers
+def redis_set(rd, key, value)
+	return rd.set(key, value)
+end
+
+def redis_get(rd, key)
+	return rd.get(key)
+end
+
+def redis_exists(rd, key)
+	return rd.exists(key)
+end
+
+def rediskey(x)
+	x.collect{ |key, value| [key,value].join(':') }.join
+end
+
 def get_error(x)
 	if x.length == 0
 		return "not found"

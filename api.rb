@@ -44,7 +44,7 @@ get '/' do
 	redirect '/heartbeat'
 end
 
-get "/heartbeat" do
+get "/heartbeat/?" do
 	return JSON.pretty_generate({
 		"paths" => [
 			"/heartbeat",
@@ -57,12 +57,13 @@ get "/heartbeat" do
 			"/oxygens?<params>",
 			"/taxa?<params>",
 			"/synonyms?<params>",
-			"/comnames?<params>"
+			"/comnames?<params>",
+			"/populations?<params>"
 		]
 	})
 end
 
-get '/mysqlping' do
+get '/mysqlping/?' do
 	return JSON.pretty_generate({
 		"mysql_server_up" => client.ping
 	})
@@ -205,29 +206,18 @@ get '/oxygens/?' do
 end
 
 get '/taxa/?' do
-	# id = params[:id]
 	limit = params[:limit] || 10
-	# fields = params[:fields] || '*'
  	params.delete("limit")
- 	# params.delete("fields")
-
- 	# fields = check_fields(client, 'species', fields)
  	params.keep_if { |key, value| key.to_s.match(/[Gg]enus|[Ss]pecies/) }
  	args = get_args(params, prefix=true)
 
- # 	if id.nil?
-	# 	query = sprintf("SELECT %s FROM species %s limit %d", fields, args, limit)
-	# 	count = get_count(client, 'species', args)
-	# else
 	query = sprintf("
 		SELECT s.SpecCode,s.Genus,s.Species,s.SpeciesRefNo,s.Author,s.SubFamily,s.FamCode,s.GenCode,s.SubGenCode,s.Remark,f.Family,f.Order,f.Class
 			FROM species s
 			INNER JOIN families f on s.FamCode = f.FamCode
 			INNER JOIN genera g on s.GenCode = g.GenCode
 			%s limit %d", args, limit)
-	# WHERE s.Genus = '%s' AND s.Species = '%s' limit %d", params[:genus], params[:species], limit)
 	count = get_count(client, 'species', get_args(params, prefix=false))
-	# end
 
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
@@ -268,6 +258,27 @@ get '/comnames/?' do
 
  	query = sprintf("SELECT %s FROM comnames %s limit %d", fields, args, limit)
 	count = get_count(client, 'comnames', args)
+
+	res = client.query(query, :as => :json)
+	out = res.collect{ |row| row }
+	err = get_error(out)
+	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
+	return JSON.pretty_generate(data)
+end
+
+
+get '/populations/?' do
+ 	limit = params[:limit] || 10
+ 	fields = params[:fields] || '*'
+ 	params.delete("limit")
+ 	params.delete("fields")
+ 	params.keep_if { |key, value| key.to_s.match(/[Ss]pecCode/) }
+
+ 	fields = check_fields(client, 'PopGrowth', fields)
+ 	args = get_args(params)
+
+ 	query = sprintf("SELECT %s FROM PopGrowth %s limit %d", fields, args, limit)
+	count = get_count(client, 'PopGrowth', args)
 
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }

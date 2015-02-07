@@ -24,6 +24,8 @@ will be here when there's a public url, for testing locally it's `http://localho
 * `/oxygens`
 * `/taxa`
 * `/synonyms`
+* `/comnames`
+* `/populations`
 
 ## Setup database
 
@@ -75,7 +77,9 @@ curl -L http://localhost:4567
         "/fooditems?<params>",
         "/oxygens?<params>",
         "/taxa?<params>",
-        "/synonyms?<params>"
+        "/synonyms?<params>",
+        "/comnames?<params>",
+        "/populations?<params>"
     ]
 }
 ```

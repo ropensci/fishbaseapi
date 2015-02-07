@@ -1,13 +1,16 @@
+redis:
+  image: redis:latest
 mysql:
-  image: mysql
+  image: mysql:latest
   volumes: 
     - /home/cboettig/data/fishbase:/var/lib/mysql
   environment: 
     MYSQL_ROOT_PASSWORD: root
-fishbase:
+sinatra:
   build: .
   links:
-   - mysql
+    - mysql
+    - redis
   ports:
    - "4567:4567"
 

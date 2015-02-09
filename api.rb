@@ -299,14 +299,8 @@ get '/populations/?' do
 		redis_set(redis, key, JSON.generate(store))
 	end
 
-	# data = { "count" => "count", "returned" => "out.length", "error" => "err", "data" => out }
 	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
-end
-
-get '/test/?' do
-	key = rediskey(params)
-	return JSON.pretty_generate({"stuff" => key})
 end
 
 

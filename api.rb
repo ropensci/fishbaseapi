@@ -26,10 +26,10 @@ end
 redis = Redis.new(:host => ENV['REDIS_PORT_6379_TCP_ADDR'],
                   :port => ENV['REDIS_PORT_6379_TCP_PORT'])
 
-before do
-  puts '[Params]'
-  p params
-end
+# before do
+#   puts '[Params]'
+#   p params
+# end
 
 not_found do
 	halt 402, {'Content-Type' => 'application/json'}, {'error' => 'Page not found'}
@@ -42,6 +42,7 @@ end
 
 before do
   headers "Content-Type" => "application/json; charset=utf8"
+  cache_control :public, :must_revalidate, :max_age => 60
 end
 
 get '/' do

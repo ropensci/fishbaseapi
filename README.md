@@ -16,6 +16,7 @@ will be here when there's a public url, for testing locally it's `http://localho
 ## The endpoints so far
 
 * `/heartbeat`
+* `/mysqlping`
 * `/species`
 * `/genera`
 * `/faoareas`
@@ -70,6 +71,7 @@ curl -L http://localhost:4567
 {
     "paths": [
         "/heartbeat",
+        "/mysqlping",
         "/species/:id?<params>",
         "/genera/:id?<params>",
         "/faoareas/:id?<params>",

@@ -2,11 +2,11 @@ require 'rubygems'
 require 'sinatra'
 require 'json'
 require 'mysql2'
-
-
+require "redis"
 
 host = ENV['MYSQL_PORT_3306_TCP_ADDR']
 
+# Set up MySQL DB
 if host.to_s == ''
   client = Mysql2::Client.new(:host => "localhost",
   														:username => "root",
@@ -21,6 +21,10 @@ else
                              :database => "fbapp",
                              :reconnect => true)
 end
+
+# Set up Redis for caching
+redis = Redis.new(:host => ENV['REDIS_PORT_6379_TCP_ADDR'],
+                  :port => ENV['REDIS_PORT_6379_TCP_PORT'])
 
 # before do
 #   puts '[Params]'
@@ -38,6 +42,7 @@ end
 
 before do
   headers "Content-Type" => "application/json; charset=utf8"
+  cache_control :public, :must_revalidate, :max_age => 60
 end
 
 get '/' do
@@ -70,225 +75,349 @@ get '/mysqlping/?' do
 end
 
 get '/species/?:id?/?' do
-	id = params[:id]
- 	limit = params[:limit] || 10
- 	fields = params[:fields] || '*'
- 	params.delete("limit")
- 	params.delete("fields")
-
- 	fields = check_fields(client, 'species', fields)
- 	args = get_args(params)
-
-	if id.nil?
-		query = sprintf("SELECT %s FROM species %s limit %d", fields, args, limit)
-		count = get_count(client, 'species', args)
+	key = rediskey('species', params)
+	if redis_exists(redis, key)
+		result = JSON.parse(redis_get(redis, key))
+		out = result['data']
+		err = result['error']
+		count = result['count']
 	else
-		query = sprintf("SELECT %s FROM species WHERE SpecCode = '%d' limit %d", fields, id.to_s, limit)
-		count = get_count(client, 'species', sprintf("WHERE SpecCode = '%d'", id.to_s))
+		id = params[:id]
+	 	limit = params[:limit] || 10
+	 	fields = params[:fields] || '*'
+	 	params.delete("limit")
+	 	params.delete("fields")
+
+	 	fields = check_fields(client, 'species', fields)
+	 	args = get_args(params)
+
+		if id.nil?
+			query = sprintf("SELECT %s FROM species %s limit %d", fields, args, limit)
+			count = get_count(client, 'species', args)
+		else
+			query = sprintf("SELECT %s FROM species WHERE SpecCode = '%d' limit %d", fields, id.to_s, limit)
+			count = get_count(client, 'species', sprintf("WHERE SpecCode = '%d'", id.to_s))
+		end
+		res = client.query(query, :as => :json)
+		out = res.collect{ |row| row }
+		err = get_error(out)
+		store = {"count" => count, "error" => err, "data" => out}
+		redis_set(redis, key, JSON.generate(store))
 	end
-	res = client.query(query, :as => :json)
-	out = res.collect{ |row| row }
-	err = get_error(out)
+
 	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
 get '/genera/?:id?/?' do
-	id = params[:id]
- 	limit = params[:limit] || 10
- 	fields = params[:fields] || '*'
- 	params.delete("limit")
- 	params.delete("fields")
-
- 	fields = check_fields(client, 'genera', fields)
- 	args = get_args(params)
-
-	if id.nil?
-		query = sprintf("SELECT %s FROM genera %s limit %d", fields, args, limit)
-		count = get_count(client, 'genera', args)
+	key = rediskey('genera', params)
+	if redis_exists(redis, key)
+		result = JSON.parse(redis_get(redis, key))
+		out = result['data']
+		err = result['error']
+		count = result['count']
 	else
-		query = sprintf("SELECT %s FROM genera WHERE GenCode = '%d' limit %d", fields, id.to_s, limit)
-		count = get_count(client, 'genera', sprintf("WHERE GenCode = '%d'", id.to_s))
+		id = params[:id]
+	 	limit = params[:limit] || 10
+	 	fields = params[:fields] || '*'
+	 	params.delete("limit")
+	 	params.delete("fields")
+
+	 	fields = check_fields(client, 'genera', fields)
+	 	args = get_args(params)
+
+		if id.nil?
+			query = sprintf("SELECT %s FROM genera %s limit %d", fields, args, limit)
+			count = get_count(client, 'genera', args)
+		else
+			query = sprintf("SELECT %s FROM genera WHERE GenCode = '%d' limit %d", fields, id.to_s, limit)
+			count = get_count(client, 'genera', sprintf("WHERE GenCode = '%d'", id.to_s))
+		end
+		res = client.query(query, :as => :json)
+		out = res.collect{ |row| row }
+		err = get_error(out)
+		store = {"count" => count, "error" => err, "data" => out}
+		redis_set(redis, key, JSON.generate(store))
 	end
-	res = client.query(query, :as => :json)
-	out = res.collect{ |row| row }
-	err = get_error(out)
+
 	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
 get '/faoareas/?:id?/?' do
-	id = params[:id]
- 	limit = params[:limit] || 10
- 	fields = params[:fields] || '*'
- 	params.delete("limit")
- 	params.delete("fields")
-
- 	fields = check_fields(client, 'faoareas', fields)
- 	args = get_args(params)
-
-	if id.nil?
-		query = sprintf("SELECT %s FROM faoareas %s limit %d", fields, args, limit)
-		count = get_count(client, 'faoareas', args)
+	key = rediskey('faoareas', params)
+	if redis_exists(redis, key)
+		result = JSON.parse(redis_get(redis, key))
+		out = result['data']
+		err = result['error']
+		count = result['count']
 	else
-		query = sprintf("SELECT %s FROM faoareas WHERE AreaCode = '%d' limit %d", fields, id.to_s, limit)
-		count = get_count(client, 'faoareas', sprintf("WHERE AreaCode = '%d'", id.to_s))
+		id = params[:id]
+	 	limit = params[:limit] || 10
+	 	fields = params[:fields] || '*'
+	 	params.delete("limit")
+	 	params.delete("fields")
+
+	 	fields = check_fields(client, 'faoareas', fields)
+	 	args = get_args(params)
+
+		if id.nil?
+			query = sprintf("SELECT %s FROM faoareas %s limit %d", fields, args, limit)
+			count = get_count(client, 'faoareas', args)
+		else
+			query = sprintf("SELECT %s FROM faoareas WHERE AreaCode = '%d' limit %d", fields, id.to_s, limit)
+			count = get_count(client, 'faoareas', sprintf("WHERE AreaCode = '%d'", id.to_s))
+		end
+		res = client.query(query, :as => :json)
+		out = res.collect{ |row| row }
+		err = get_error(out)
+		store = {"count" => count, "error" => err, "data" => out}
+		redis_set(redis, key, JSON.generate(store))
 	end
-	res = client.query(query, :as => :json)
-	out = res.collect{ |row| row }
-	err = get_error(out)
+
 	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
 get '/faoarrefs/?:id?/?' do
-	id = params[:id]
- 	limit = params[:limit] || 10
- 	fields = params[:fields] || '*'
- 	params.delete("limit")
- 	params.delete("fields")
-
- 	fields = check_fields(client, 'faoarref', fields)
- 	args = get_args(params)
-
-	if id.nil?
-		query = sprintf("SELECT %s FROM faoarref %s limit %d", fields, args, limit)
-		count = get_count(client, 'faoarref', args)
+	key = rediskey('faoarrefs', params)
+	if redis_exists(redis, key)
+		result = JSON.parse(redis_get(redis, key))
+		out = result['data']
+		err = result['error']
+		count = result['count']
 	else
-		query = sprintf("SELECT %s FROM faoarref WHERE AreaCode = '%d' limit %d", fields, id.to_s, limit)
-		count = get_count(client, 'faoarref', sprintf("WHERE AreaCode = '%d'", id.to_s))
+		id = params[:id]
+	 	limit = params[:limit] || 10
+	 	fields = params[:fields] || '*'
+	 	params.delete("limit")
+	 	params.delete("fields")
+
+	 	fields = check_fields(client, 'faoarref', fields)
+	 	args = get_args(params)
+
+		if id.nil?
+			query = sprintf("SELECT %s FROM faoarref %s limit %d", fields, args, limit)
+			count = get_count(client, 'faoarref', args)
+		else
+			query = sprintf("SELECT %s FROM faoarref WHERE AreaCode = '%d' limit %d", fields, id.to_s, limit)
+			count = get_count(client, 'faoarref', sprintf("WHERE AreaCode = '%d'", id.to_s))
+		end
+		res = client.query(query, :as => :json)
+		out = res.collect{ |row| row }
+		err = get_error(out)
+		store = {"count" => count, "error" => err, "data" => out}
+		redis_set(redis, key, JSON.generate(store))
 	end
-	res = client.query(query, :as => :json)
-	out = res.collect{ |row| row }
-	err = get_error(out)
+
 	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
 get '/fooditems/?' do
-	limit = params[:limit] || 10
-	fields = params[:fields] || '*'
+	key = rediskey('fooditems', params)
+	if redis_exists(redis, key)
+		result = JSON.parse(redis_get(redis, key))
+		out = result['data']
+		err = result['error']
+		count = result['count']
+	else
+		limit = params[:limit] || 10
+		fields = params[:fields] || '*'
 
-	params.delete("limit")
- 	params.delete("fields")
+		params.delete("limit")
+	 	params.delete("fields")
 
- 	fields = check_fields(client, 'fooditems', fields)
- 	args = get_args(params)
+	 	fields = check_fields(client, 'fooditems', fields)
+	 	args = get_args(params)
 
- 	query = sprintf("SELECT %s FROM fooditems %s limit %d", fields, args, limit)
-	count = get_count(client, 'fooditems', args)
+	 	query = sprintf("SELECT %s FROM fooditems %s limit %d", fields, args, limit)
+		count = get_count(client, 'fooditems', args)
 
-	res = client.query(query, :as => :json)
-	out = res.collect{ |row| row }
-	err = get_error(out)
+		res = client.query(query, :as => :json)
+		out = res.collect{ |row| row }
+		err = get_error(out)
+		store = {"count" => count, "error" => err, "data" => out}
+		redis_set(redis, key, JSON.generate(store))
+	end
+
 	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
 get '/oxygens/?' do
-	limit = params[:limit] || 10
-	fields = params[:fields] || '*'
+	key = rediskey('taxa', params)
+	if redis_exists(redis, key)
+		result = JSON.parse(redis_get(redis, key))
+		out = result['data']
+		err = result['error']
+		count = result['count']
+	else
+		limit = params[:limit] || 10
+		fields = params[:fields] || '*'
 
-	params.delete("limit")
- 	params.delete("fields")
+		params.delete("limit")
+	 	params.delete("fields")
 
- 	fields = check_fields(client, 'oxygen', fields)
- 	args = get_args(params)
+	 	fields = check_fields(client, 'oxygen', fields)
+	 	args = get_args(params)
 
- 	query = sprintf("SELECT %s FROM oxygen %s limit %d", fields, args, limit)
-	count = get_count(client, 'oxygen', args)
+	 	query = sprintf("SELECT %s FROM oxygen %s limit %d", fields, args, limit)
+		count = get_count(client, 'oxygen', args)
 
-	res = client.query(query, :as => :json)
-	out = res.collect{ |row| row }
-	err = get_error(out)
+		res = client.query(query, :as => :json)
+		out = res.collect{ |row| row }
+		err = get_error(out)
+		store = {"count" => count, "error" => err, "data" => out}
+		redis_set(redis, key, JSON.generate(store))
+	end
+
 	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
 get '/taxa/?' do
-	limit = params[:limit] || 10
- 	params.delete("limit")
- 	params.keep_if { |key, value| key.to_s.match(/[Gg]enus|[Ss]pecies/) }
- 	args = get_args(params, prefix=true)
+	key = rediskey('taxa', params)
+	if redis_exists(redis, key)
+		result = JSON.parse(redis_get(redis, key))
+		out = result['data']
+		err = result['error']
+		count = result['count']
+	else
+		limit = params[:limit] || 10
+	 	params.delete("limit")
+	 	params.keep_if { |key, value| key.to_s.match(/[Gg]enus|[Ss]pecies/) }
+	 	args = get_args(params, prefix=true)
 
-	query = sprintf("
-		SELECT s.SpecCode,s.Genus,s.Species,s.SpeciesRefNo,s.Author,s.SubFamily,s.FamCode,s.GenCode,s.SubGenCode,s.Remark,f.Family,f.Order,f.Class
-			FROM species s
-			INNER JOIN families f on s.FamCode = f.FamCode
-			INNER JOIN genera g on s.GenCode = g.GenCode
-			%s limit %d", args, limit)
-	count = get_count(client, 'species', get_args(params, prefix=false))
+		query = sprintf("
+			SELECT s.SpecCode,s.Genus,s.Species,s.SpeciesRefNo,s.Author,s.SubFamily,s.FamCode,s.GenCode,s.SubGenCode,s.Remark,f.Family,f.Order,f.Class
+				FROM species s
+				INNER JOIN families f on s.FamCode = f.FamCode
+				INNER JOIN genera g on s.GenCode = g.GenCode
+				%s limit %d", args, limit)
+		count = get_count(client, 'species', get_args(params, prefix=false))
 
-	res = client.query(query, :as => :json)
-	out = res.collect{ |row| row }
-	err = get_error(out)
+		res = client.query(query, :as => :json)
+		out = res.collect{ |row| row }
+		err = get_error(out)
+		store = {"count" => count, "error" => err, "data" => out}
+		redis_set(redis, key, JSON.generate(store))
+	end
+
 	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
 get '/synonyms/?' do
-	limit = params[:limit] || 10
-	fields = params[:fields] || '*'
+	key = rediskey('synonyms', params)
+	if redis_exists(redis, key)
+		result = JSON.parse(redis_get(redis, key))
+		out = result['data']
+		err = result['error']
+		count = result['count']
+	else
+		limit = params[:limit] || 10
+		fields = params[:fields] || '*'
 
-	params.delete("limit")
- 	params.delete("fields")
+		params.delete("limit")
+	 	params.delete("fields")
 
- 	fields = check_fields(client, 'synonyms', fields)
- 	args = get_args(params)
+	 	fields = check_fields(client, 'synonyms', fields)
+	 	args = get_args(params)
 
- 	query = sprintf("SELECT %s FROM synonyms %s limit %d", fields, args, limit)
-	count = get_count(client, 'synonyms', args)
+	 	query = sprintf("SELECT %s FROM synonyms %s limit %d", fields, args, limit)
+		count = get_count(client, 'synonyms', args)
 
-	res = client.query(query, :as => :json)
-	out = res.collect{ |row| row }
-	err = get_error(out)
+		res = client.query(query, :as => :json)
+		out = res.collect{ |row| row }
+		err = get_error(out)
+		store = {"count" => count, "error" => err, "data" => out}
+		redis_set(redis, key, JSON.generate(store))
+	end
+
 	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
 
 get '/comnames/?' do
- 	limit = params[:limit] || 10
- 	fields = params[:fields] || '*'
- 	params.delete("limit")
- 	params.delete("fields")
+	key = rediskey('comnames', params)
+	if redis_exists(redis, key)
+		result = JSON.parse(redis_get(redis, key))
+		out = result['data']
+		err = result['error']
+		count = result['count']
+	else
+	 	limit = params[:limit] || 10
+	 	fields = params[:fields] || '*'
+	 	params.delete("limit")
+	 	params.delete("fields")
 
- 	fields = check_fields(client, 'comnames', fields)
- 	args = get_args(params)
+	 	fields = check_fields(client, 'comnames', fields)
+	 	args = get_args(params)
 
- 	query = sprintf("SELECT %s FROM comnames %s limit %d", fields, args, limit)
-	count = get_count(client, 'comnames', args)
+	 	query = sprintf("SELECT %s FROM comnames %s limit %d", fields, args, limit)
+		count = get_count(client, 'comnames', args)
 
-	res = client.query(query, :as => :json)
-	out = res.collect{ |row| row }
-	err = get_error(out)
+		res = client.query(query, :as => :json)
+		out = res.collect{ |row| row }
+		err = get_error(out)
+		store = {"count" => count, "error" => err, "data" => out}
+		redis_set(redis, key, JSON.generate(store))
+	end
 	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
-
 get '/populations/?' do
- 	limit = params[:limit] || 10
- 	fields = params[:fields] || '*'
- 	params.delete("limit")
- 	params.delete("fields")
- 	params.keep_if { |key, value| key.to_s.match(/[Ss]pecCode/) }
+	key = rediskey('PopGrowth', params)
+	if redis_exists(redis, key)
+		result = JSON.parse(redis_get(redis, key))
+		out = result['data']
+		err = result['error']
+		count = result['count']
+	else
+		limit = params[:limit] || 10
+	 	fields = params[:fields] || '*'
+	 	params.delete("limit")
+	 	params.delete("fields")
+	 	params.keep_if { |key, value| key.to_s.match(/[Ss]pecCode/) }
 
- 	fields = check_fields(client, 'PopGrowth', fields)
- 	args = get_args(params)
+	 	fields = check_fields(client, 'PopGrowth', fields)
+	 	args = get_args(params)
 
- 	query = sprintf("SELECT %s FROM PopGrowth %s limit %d", fields, args, limit)
-	count = get_count(client, 'PopGrowth', args)
+	 	query = sprintf("SELECT %s FROM PopGrowth %s limit %d", fields, args, limit)
+		count = get_count(client, 'PopGrowth', args)
 
-	res = client.query(query, :as => :json)
-	out = res.collect{ |row| row }
-	err = get_error(out)
+		res = client.query(query, :as => :json)
+		out = res.collect{ |row| row }
+		err = get_error(out)
+		store = {"count" => count, "error" => err, "data" => out}
+		redis_set(redis, key, JSON.generate(store))
+	end
+
 	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
 	return JSON.pretty_generate(data)
 end
 
 
 # helpers
+def redis_set(rd, key, value)
+	return rd.set(key, value)
+end
+
+def redis_get(rd, key)
+	return rd.get(key)
+end
+
+def redis_exists(rd, key)
+	return rd.exists(key)
+end
+
+def rediskey(table, x)
+	[table, '_', x.collect{ |key, value| [key,value].join(':') }.join].join
+end
+
 def get_error(x)
 	if x.length == 0
 		return "not found"

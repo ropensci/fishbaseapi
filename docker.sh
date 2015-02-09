@@ -2,16 +2,25 @@
 
 # fig doesn't always act the way I expect. So this script does the same thing manually
 # by just launching the three containers from the commandline.  
-# Note that ropensci/fishbaseapi is built by DockerHub auotmated build. 
+# Note that ropensci/fishbaseapi is built by DockerHub automated build. 
 
+
+## Start the redis container
 docker run --name fbredis -d redis:latest
+
+# We use this dir for permanent storage of the database even if the MySQL container is killed.
+if [ ! -d "$HOME/data/fishbase" ]
+then 
+  mkdir -p $HOME/data/fishbase
+fi
+
+## Start the mysql container
 docker run --name fbmysql -d -v $HOME/data/fishbase:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root mysql:latest
 
 ## Import the database if we don't have it.
 ## Assumes the database is called fbapp.sql and is in the working directory
-if [ ! -d "$HOME/data/fishbase" ]
+if [ ! -e "$HOME/data/fishbase/fbapp" ]
 then 
-  mkdir -p $HOME/data/fishbase
   docker run --rm -ti --link fbmysql:mysql \
     -v ${PWD}/fbapp.sql:/data/fbapp.sql \
     -w /data mysql mysql \
@@ -24,10 +33,12 @@ fi
 
 
 # Give the sql database a few seconds to start up first. 
-# Perhaps the api.rb could be convinced to re-attempt `Client.new` at intervals if the mysql server isn't there
+# FIXME (Perhaps the api.rb could be convinced to re-attempt `Client.new` at intervals if the mysql server isn't there)
 sleep 5
 
 # Make sure we have the latest version
 docker pull ropensci/rfishbaseapi
+
+# Start the API on port 4567
 docker run --name fbapi -d -p 4567:4567 --link fbmysql:mysql --link fbredis:redis ropensci/fishbaseapi
 

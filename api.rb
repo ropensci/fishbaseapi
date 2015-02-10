@@ -3,6 +3,7 @@ require 'sinatra'
 require 'json'
 require 'mysql2'
 require 'redis'
+require 'geolocater'
 
 log_file_path = "fishbaseapi2.log"
 host = ENV['MYSQL_PORT_3306_TCP_ADDR']
@@ -27,11 +28,22 @@ end
 redis = Redis.new(:host => ENV['REDIS_PORT_6379_TCP_ADDR'],
                   :port => ENV['REDIS_PORT_6379_TCP_PORT'])
 
-before do
-  # puts '[Params]'
-  # p params
-  puts '[env]'
-  p env
+# before do
+#   # puts '[Params]'
+#   # p params
+#   puts '[env]'
+#   p env
+# end
+
+def ip_anonymize(ip)
+	ismatch = ip.match('127.0.0.1|localhost')
+	if ismatch.nil?
+		res = Geolocater.geolocate_ip(ip)
+		out = res.keep_if { |key, value| key.to_s.match(/city|country_name/) }
+	else
+		out = {"city" => "localhost", "country_name" => "localhost"}
+	end
+	return out
 end
 
 class LogstashLogger < Rack::CommonLogger
@@ -44,7 +56,7 @@ class LogstashLogger < Rack::CommonLogger
 
     json = {
       '@timestamp' => now.utc.iso8601,
-      '@ip' => env['REMOTE_ADDR'],
+      '@ip' => ip_anonymize(env['REMOTE_ADDR']),
       '@fields'      => {
         'method'     => env['REQUEST_METHOD'],
         'path'       => env['PATH_INFO'],

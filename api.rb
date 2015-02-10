@@ -4,6 +4,7 @@ require 'json'
 require 'mysql2'
 require 'redis'
 
+log_file_path = "fishbaseapi2.log"
 host = ENV['MYSQL_PORT_3306_TCP_ADDR']
 
 # Set up MySQL DB
@@ -26,9 +27,54 @@ end
 redis = Redis.new(:host => ENV['REDIS_PORT_6379_TCP_ADDR'],
                   :port => ENV['REDIS_PORT_6379_TCP_PORT'])
 
-# before do
-#   puts '[Params]'
-#   p params
+before do
+  # puts '[Params]'
+  # p params
+  puts '[env]'
+  p env
+end
+
+class LogstashLogger < Rack::CommonLogger
+  private
+
+  def log(env, status, header, began_at)
+    now    = Time.now
+    length = extract_content_length(header)
+    logger = @logger || env['rack.errors']
+
+    json = {
+      '@timestamp' => now.utc.iso8601,
+      '@ip' => env['REMOTE_ADDR'],
+      '@fields'      => {
+        'method'     => env['REQUEST_METHOD'],
+        'path'       => env['PATH_INFO'],
+        'httpver'    => env['HTTP_VERSION'],
+        'useragent'  => env['HTTP_USER_AGENT'],
+        'params'     => env['rack.request.query_hash'],
+        'status'     => status.to_s[0..3],
+        'size'       => length,
+        'duration'   => now - began_at,
+      }
+    }
+
+    logger.puts(json.to_json)
+  end
+end
+
+configure do
+	enable :logging
+
+	file = File.new(File.join(File.expand_path('~'), log_file_path), 'a+')
+	file.sync = true
+
+  use LogstashLogger, file
+end
+
+# configure do
+#   enable :logging
+#   file = File.new("/Users/sacmac/fishbaseapi.log", 'a+')
+#   file.sync = true
+#   use Rack::CommonLogger, file
 # end
 
 not_found do

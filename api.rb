@@ -4,8 +4,9 @@ require 'json'
 require 'mysql2'
 require 'redis'
 require 'geolocater'
+require 'etcd'
 
-log_file_path = "fishbaseapi2.log"
+log_file_path = "fishbaseapi.log"
 host = ENV['MYSQL_PORT_3306_TCP_ADDR']
 
 # Set up MySQL DB
@@ -24,6 +25,9 @@ else
                              :reconnect => true)
 end
 
+# Set up etcd for ip address caching
+$etcdclient = Etcd.client
+
 # Set up Redis for caching
 redis = Redis.new(:host => ENV['REDIS_PORT_6379_TCP_ADDR'],
                   :port => ENV['REDIS_PORT_6379_TCP_PORT'])
@@ -36,14 +40,32 @@ redis = Redis.new(:host => ENV['REDIS_PORT_6379_TCP_ADDR'],
 # end
 
 def ip_anonymize(ip)
-	ismatch = ip.match('127.0.0.1|localhost')
+	ismatch = ip.match('127.0.0.1|localhost|::1')
 	if ismatch.nil?
-		res = Geolocater.geolocate_ip(ip)
-		out = res.keep_if { |key, value| key.to_s.match(/city|country_name/) }
+		if etcd_exists(ip)
+			out = etcd_get(ip)
+		else
+			res = Geolocater.geolocate_ip(ip)
+			out = res.keep_if { |key, value| key.to_s.match(/city|country_name/) }
+			etcd_set(ip, out)
+		end
 	else
 		out = {"city" => "localhost", "country_name" => "localhost"}
 	end
 	return out
+end
+
+def etcd_exists(ip)
+	return $etcdclient.exists?("/geoip/%s" % ip)
+end
+
+def etcd_get(ip)
+	val = $etcdclient.get("/geoip/%s" % ip).value
+	return JSON.parse(val)
+end
+
+def etcd_set(ip, value)
+	return $etcdclient.set("/geoip/%s" % ip, value: JSON.generate(value))
 end
 
 class LogstashLogger < Rack::CommonLogger

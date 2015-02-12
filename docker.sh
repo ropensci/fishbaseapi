@@ -9,10 +9,16 @@
 docker run --name fbredis -d redis:latest
 
 ## get etcd
-docker run --rm -it -p 4001:4001 7001:7001 -v /var/etcd/:/data microbox/
+# docker run --name fbetcd --rm -it -p 4001:4001 -p 7001:7001 -v /var/etcd/:/data microbox/etcd:latest
+### official from etcd
+# docker run -p 4001:4001 -v /usr/share/ca-certificates/:/etc/ssl/certs quay.io/coreos/etcd:v2.0.2
 
 ## get logstash and embeded elasticsearch
-docker run -d -f logstashconfig.conf -p 9292:9292 -p 9200:9200 fblogstash
+docker run --name fblogstash -d \
+	-e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/logging/logstashconfig.conf \
+	-p 9292:9292 \
+	-p 9200:9200 \
+	pblittle/docker-logstash
 
 # We use this dir for permanent storage of the database even if the MySQL container is killed.
 if [ ! -d "$HOME/data/fishbase" ]
@@ -46,5 +52,5 @@ sleep 5
 docker pull ropensci/fishbaseapi
 
 # Start the API on port 4567
-docker run --name fbapi -d -p 4567:4567 --link fbmysql:mysql --link fbredis:redis ropensci/fishbaseapi
+docker run --name fbapi -d -p 4567:4567 --link fbmysql:mysql --link fbredis:redis --link fbetcd:etcd --link fblogstash:logstash ropensci/fishbaseapi
 

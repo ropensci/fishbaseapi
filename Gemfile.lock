@@ -1,15 +1,12 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    etcd (0.2.4)
-      mixlib-log
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
     geolocater (0.1.0)
       faraday
       json
     json (1.8.2)
-    mixlib-log (1.6.0)
     multipart-post (2.0.0)
     mysql2 (0.3.17)
     rack (1.6.0)
@@ -26,7 +23,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  etcd
   geolocater
   json
   mysql2

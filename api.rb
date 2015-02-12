@@ -4,7 +4,6 @@ require 'json'
 require 'mysql2'
 require 'redis'
 require 'geolocater'
-require 'etcd'
 
 log_file_path = "fishbaseapi.log"
 host = ENV['MYSQL_PORT_3306_TCP_ADDR']
@@ -25,11 +24,8 @@ else
                              :reconnect => true)
 end
 
-# Set up etcd for ip address caching
-$etcdclient = Etcd.client
-
 # Set up Redis for caching
-redis = Redis.new(:host => ENV['REDIS_PORT_6379_TCP_ADDR'],
+$redis = Redis.new(:host => ENV['REDIS_PORT_6379_TCP_ADDR'],
                   :port => ENV['REDIS_PORT_6379_TCP_PORT'])
 
 # before do
@@ -42,30 +38,17 @@ redis = Redis.new(:host => ENV['REDIS_PORT_6379_TCP_ADDR'],
 def ip_anonymize(ip)
 	ismatch = ip.match('127.0.0.1|localhost|::1')
 	if ismatch.nil?
-		if etcd_exists(ip)
-			out = etcd_get(ip)
+		if redis_exists(ip)
+			out = JSON.parse(redis_get(ip))
 		else
 			res = Geolocater.geolocate_ip(ip)
 			out = res.keep_if { |key, value| key.to_s.match(/city|country_name/) }
-			etcd_set(ip, out)
+			redis_set(ip, JSON.generate(out))
 		end
 	else
 		out = {"city" => "localhost", "country_name" => "localhost"}
 	end
 	return out
-end
-
-def etcd_exists(ip)
-	return $etcdclient.exists?("/geoip/%s" % ip)
-end
-
-def etcd_get(ip)
-	val = $etcdclient.get("/geoip/%s" % ip).value
-	return JSON.parse(val)
-end
-
-def etcd_set(ip, value)
-	return $etcdclient.set("/geoip/%s" % ip, value: JSON.generate(value))
 end
 
 class LogstashLogger < Rack::CommonLogger
@@ -151,68 +134,68 @@ end
 
 get '/species/?:id?/?' do
 	key = rediskey('species', params)
-	if redis_exists(redis, key)
-		obj = get_cached(redis, key)
+	if redis_exists(key)
+		obj = get_cached(key)
 	else
-		obj = get_new_ids(client, redis, key, 'species', 'SpecCode', params)
+		obj = get_new_ids(client, key, 'species', 'SpecCode', params)
 	end
 	return give_data(obj)
 end
 
 get '/genera/?:id?/?' do
 	key = rediskey('genera', params)
-	if redis_exists(redis, key)
-		obj = get_cached(redis, key)
+	if redis_exists(key)
+		obj = get_cached(key)
 	else
-		obj = get_new_ids(client, redis, key, 'genera', 'GenCode', params)
+		obj = get_new_ids(client, key, 'genera', 'GenCode', params)
 	end
 	return give_data(obj)
 end
 
 get '/faoareas/?:id?/?' do
 	key = rediskey('faoareas', params)
-	if redis_exists(redis, key)
-		obj = get_cached(redis, key)
+	if redis_exists(key)
+		obj = get_cached(key)
 	else
-		obj = get_new_ids(client, redis, key, 'faoareas', 'AreaCode', params)
+		obj = get_new_ids(client, key, 'faoareas', 'AreaCode', params)
 	end
 	return give_data(obj)
 end
 
 get '/faoarrefs/?:id?/?' do
 	key = rediskey('faoarref', params)
-	if redis_exists(redis, key)
-		obj = get_cached(redis, key)
+	if redis_exists(key)
+		obj = get_cached(key)
 	else
-		obj = get_new_ids(client, redis, key, 'faoarref', 'AreaCode', params)
+		obj = get_new_ids(client, key, 'faoarref', 'AreaCode', params)
 	end
 	return give_data(obj)
 end
 
 get '/fooditems/?' do
 	key = rediskey('fooditems', params)
-	if redis_exists(redis, key)
-		obj = get_cached(redis, key)
+	if redis_exists(key)
+		obj = get_cached(key)
 	else
-		obj = get_new_noids(client, redis, key, 'fooditems', params)
+		obj = get_new_noids(client, key, 'fooditems', params)
 	end
 	return give_data(obj)
 end
 
 get '/oxygens/?' do
 	key = rediskey('oxygen', params)
-	if redis_exists(redis, key)
-		obj = get_cached(redis, key)
+	if redis_exists(key)
+		obj = get_cached(key)
 	else
-		obj = get_new_noids(client, redis, key, 'oxygen', params)
+		obj = get_new_noids(client, key, 'oxygen', params)
 	end
 	return give_data(obj)
 end
 
 get '/taxa/?' do
 	key = rediskey('taxa', params)
-	if redis_exists(redis, key)
-		result = JSON.parse(redis_get(redis, key))
+	if redis_exists(key)
+		result = JSON.parse(redis_get(key))
 		out = result['data']
 		err = result['error']
 		count = result['count']
@@ -234,7 +217,7 @@ get '/taxa/?' do
 		out = res.collect{ |row| row }
 		err = get_error(out)
 		store = {"count" => count, "error" => err, "data" => out}
-		redis_set(redis, key, JSON.generate(store))
+		redis_set(key, JSON.generate(store))
 	end
 
 	data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
@@ -243,45 +226,45 @@ end
 
 get '/synonyms/?' do
 	key = rediskey('synonyms', params)
-	if redis_exists(redis, key)
-		obj = get_cached(redis, key)
+	if redis_exists(key)
+		obj = get_cached(key)
 	else
-		obj = get_new_noids(client, redis, key, 'synonyms', params)
+		obj = get_new_noids(client, key, 'synonyms', params)
 	end
 	return give_data(obj)
 end
 
 get '/comnames/?' do
 	key = rediskey('comnames', params)
-	if redis_exists(redis, key)
-		obj = get_cached(redis, key)
+	if redis_exists(key)
+		obj = get_cached(key)
 	else
-		obj = get_new_noids(client, redis, key, 'comnames', params)
+		obj = get_new_noids(client, key, 'comnames', params)
 	end
 	return give_data(obj)
 end
 
 get '/populations/?' do
 	key = rediskey('PopGrowth', params)
-	if redis_exists(redis, key)
-		obj = get_cached(redis, key)
+	if redis_exists(key)
+		obj = get_cached(key)
 	else
-		obj = get_new_noids(client, redis, key, 'PopGrowth', params)
+		obj = get_new_noids(client, key, 'PopGrowth', params)
 	end
 	return give_data(obj)
 end
 
 # helpers
-def redis_set(rd, key, value)
-	return rd.set(key, value)
+def redis_set(key, value)
+	return $redis.set(key, value)
 end
 
-def redis_get(rd, key)
-	return rd.get(key)
+def redis_get(key)
+	return $redis.get(key)
 end
 
-def redis_exists(rd, key)
-	return rd.exists(key)
+def redis_exists(key)
+	return $redis.exists(key)
 end
 
 def rediskey(table, x)
@@ -350,11 +333,11 @@ def give_data(obj)
 	return JSON.pretty_generate(data)
 end
 
-def get_cached(redis, key)
-	return JSON.parse(redis_get(redis, key))
+def get_cached(key)
+	return JSON.parse(redis_get(key))
 end
 
-def get_new_ids(client, redis, key, table, matchfield, params)
+def get_new_ids(client, key, table, matchfield, params)
 	id = params[:id]
 	limit = params[:limit] || 10
 	fields = params[:fields] || '*'
@@ -371,10 +354,10 @@ def get_new_ids(client, redis, key, table, matchfield, params)
 		query = sprintf("SELECT %s FROM %s WHERE %s = '%d' limit %d", fields, table, matchfield, id.to_s, limit)
 		count = get_count(client, table, sprintf("WHERE %s = '%d'", matchfield, id.to_s))
 	end
-	return do_query(client, query, redis, key, count)
+	return do_query(client, query, key, count)
 end
 
-def get_new_noids(client, redis, key, table, params)
+def get_new_noids(client, key, table, params)
 	limit = params[:limit] || 10
 	fields = params[:fields] || '*'
 	params.delete("limit")
@@ -383,14 +366,14 @@ def get_new_noids(client, redis, key, table, params)
 	args = get_args(params)
 	query = sprintf("SELECT %s FROM %s %s limit %d", fields, table, args, limit)
 	count = get_count(client, table, args)
-	return do_query(client, query, redis, key, count)
+	return do_query(client, query, key, count)
 end
 
-def do_query(client, query, redis, key, count)
+def do_query(client, query, key, count)
 	res = client.query(query, :as => :json)
 	out = res.collect{ |row| row }
 	err = get_error(out)
 	store = {"count" => count, "error" => err, "data" => out}
-	redis_set(redis, key, JSON.generate(store))
+	redis_set(key, JSON.generate(store))
 	return store
 end

@@ -18,9 +18,9 @@ RUN apt-get update \
       libmysqlclient-dev \
       ruby
 
-COPY . /root/sinatra
+COPY . /opt/sinatra
 
-RUN cd /root/sinatra \
+RUN cd /opt/sinatra \
   && bundle install
 
 EXPOSE 4567

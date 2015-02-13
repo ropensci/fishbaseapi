@@ -17,11 +17,11 @@ docker run --name fbredis -d redis:latest
 ## Hmm, not clear why we aren't using linking here instead of exporting ports..
 ## get logstash and embeded elasticsearch
 docker run --name fblogstash -d \
-  -v /var/log \
+  -v /root \
 	-p 9292:9292 \
 	-p 9200:9200 \
+	-e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/logging/logstashconfig.conf \
 	pblittle/docker-logstash
-	# -e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/logging/logstashconfig.conf \
 
 
 

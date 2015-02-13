@@ -13,6 +13,8 @@ docker run --name fbredis -d redis:latest
 ### official from etcd
 # docker run -p 4001:4001 -v /usr/share/ca-certificates/:/etc/ssl/certs quay.io/coreos/etcd:v2.0.2
 
+
+## Hmm, not clear why we aren't using linking here instead of exporting ports..
 ## get logstash and embeded elasticsearch
 docker run --name fblogstash -d \
 	# -e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/logging/logstashconfig.conf \
@@ -33,7 +35,7 @@ docker run --name fbmysql -d -v $HOME/data/fishbase:/var/lib/mysql -e MYSQL_ROOT
 ## Assumes the database is called fbapp.sql and is in the working directory
 if [ ! -e "$HOME/data/fishbase/fbapp" ]
 then
-  docker run --rm -ti --link fbmysql:mysql \
+  docker run --rm --link fbmysql:mysql \
     -v ${PWD}/fbapp.sql:/data/fbapp.sql \
     -w /data mysql mysql \
     --host=$MYSQL_PORT_3306_TCP_ADDR \
@@ -52,5 +54,7 @@ sleep 5
 docker pull ropensci/fishbaseapi
 
 # Start the API on port 4567
-docker run --name fbapi -d -p 4567:4567 --link fbmysql:mysql --link fbredis:redis --link 74f50e5bd536:logstash ropensci/fishbaseapi:logging
+
+## Links just use whatever name we gave the container.  Hard-coding the hash to link is unlikely to work
+docker run --name fbapi -d -p 4567:4567 --link fbmysql:mysql --link fbredis:redis --link fblogstash:logstash ropensci/fishbaseapi:logging
 

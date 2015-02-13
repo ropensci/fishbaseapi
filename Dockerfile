@@ -25,4 +25,4 @@ RUN cd /opt/sinatra \
 
 EXPOSE 4567
 
-CMD ["ruby", "/root/sinatra/api.rb", "-o", "0.0.0.0"]
+CMD ["ruby", "/opt/sinatra/api.rb", "-o", "0.0.0.0"]

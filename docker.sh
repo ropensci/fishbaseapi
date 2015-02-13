@@ -15,7 +15,7 @@ docker run --name fbredis -d redis:latest
 
 ## get logstash and embeded elasticsearch
 docker run --name fblogstash -d \
-	-e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/logging/logstashconfig.conf \
+	# -e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/logging/logstashconfig.conf \
 	-p 9292:9292 \
 	-p 9200:9200 \
 	pblittle/docker-logstash
@@ -52,5 +52,5 @@ sleep 5
 docker pull ropensci/fishbaseapi
 
 # Start the API on port 4567
-docker run --name fbapi -d -p 4567:4567 --link fbmysql:mysql --link fbredis:redis --link fbetcd:etcd --link fblogstash:logstash ropensci/fishbaseapi
+docker run --name fbapi -d -p 4567:4567 --link fbmysql:mysql --link fbredis:redis --link 74f50e5bd536:logstash ropensci/fishbaseapi:logging
 

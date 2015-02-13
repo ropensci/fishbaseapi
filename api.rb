@@ -36,19 +36,24 @@ $redis = Redis.new(:host => ENV['REDIS_PORT_6379_TCP_ADDR'],
 # end
 
 def ip_anonymize(ip)
-	ismatch = ip.match('127.0.0.1|localhost|::1')
-	if ismatch.nil?
-		if redis_exists(ip)
-			out = JSON.parse(redis_get(ip))
-		else
-			res = Geolocater.geolocate_ip(ip)
-			out = res.keep_if { |key, value| key.to_s.match(/city|country_name/) }
-			redis_set(ip, JSON.generate(out))
-		end
-	else
-		out = {"city" => "localhost", "country_name" => "localhost"}
-	end
-	return out
+  begin
+    ismatch = ip.match('127.0.0.1|localhost|::1')
+    if ismatch.nil?
+      if redis_exists(ip)
+        out = JSON.parse(redis_get(ip))
+      else
+        res = Geolocater.geolocate_ip(ip)
+        out = res.keep_if { |key, value| key.to_s.match(/city|country_name/) }
+        redis_set(ip, JSON.generate(out))
+      end
+    else
+      out = {"city" => "localhost", "country_name" => "localhost"}
+    end
+    return out
+  rescue
+    return ip
+#    return {"city" => "localhost", "country_name" => "localhost"}
+  end
 end
 
 class LogstashLogger < Rack::CommonLogger
@@ -58,7 +63,6 @@ class LogstashLogger < Rack::CommonLogger
     now    = Time.now
     length = extract_content_length(header)
     logger = @logger || env['rack.errors']
-
     json = {
       '@timestamp' => now.utc.iso8601,
       '@ip' => ip_anonymize(env['REMOTE_ADDR']),

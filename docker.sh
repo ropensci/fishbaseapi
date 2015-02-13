@@ -55,6 +55,9 @@ sleep 5
 # Make sure we have the latest version
 # docker pull ropensci/fishbaseapi
 
+# Or just build locally to get the latest version
+docker build -t ropensci/fishbaseapi:logging .
+
 # Start the API on port 4567
 docker run --name fbapi -d -p 4567:4567 --link fbmysql:mysql --link fbredis:redis --link fblogstash:logstash --volumes-from fblogstash ropensci/fishbaseapi:logging
 

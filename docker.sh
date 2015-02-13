@@ -20,8 +20,9 @@ docker run --name fblogstash -d \
   -v /root \
 	-p 9292:9292 \
 	-p 9200:9200 \
-	-e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/logging/logstashconfig.conf \
+	-e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/logging/logstash.conf \
 	pblittle/docker-logstash
+#  -v ${PWD}/logstash.conf:/opt/logstash/conf.d/logstash.conf \
 
 
 
@@ -50,13 +51,13 @@ fi
 
 # Give the sql database a few seconds to start up first.
 # FIXME (Perhaps the api.rb could be convinced to re-attempt `Client.new` at intervals if the mysql server isn't there)
-sleep 5
+sleep 2
 
 # Make sure we have the latest version
 # docker pull ropensci/fishbaseapi
 
 # Or just build locally to get the latest version
-docker build -t ropensci/fishbaseapi:logging .
+# docker build -t ropensci/fishbaseapi:logging .
 
 # Start the API on port 4567
 docker run --name fbapi -d -p 4567:4567 --link fbmysql:mysql --link fbredis:redis --link fblogstash:logstash --volumes-from fblogstash ropensci/fishbaseapi:logging

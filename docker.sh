@@ -17,10 +17,10 @@ docker run --name fbredis -d redis:latest
 ## Hmm, not clear why we aren't using linking here instead of exporting ports..
 ## get logstash and embeded elasticsearch
 docker run --name fblogstash -d \
-	# -e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/logging/logstashconfig.conf \
 	-p 9292:9292 \
 	-p 9200:9200 \
 	pblittle/docker-logstash
+	# -e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/logging/logstashconfig.conf \
 
 # We use this dir for permanent storage of the database even if the MySQL container is killed.
 if [ ! -d "$HOME/data/fishbase" ]

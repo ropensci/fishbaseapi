@@ -67,6 +67,8 @@ class LogstashLogger < Rack::CommonLogger
       '@timestamp' => now.utc.iso8601,
       '@ip' => ip_anonymize(env['REMOTE_ADDR']),
       '@fields'      => {
+      	'remoteadd'  => env['REMOTE_ADDR'],
+      	'ipadd'      => $ip,
         'method'     => env['REQUEST_METHOD'],
         'path'       => env['PATH_INFO'],
         'httpver'    => env['HTTP_VERSION'],
@@ -112,6 +114,7 @@ get '/' do
 end
 
 get "/heartbeat/?" do
+	$ip = request.ip
 	return JSON.pretty_generate({
 		"paths" => [
 			"/heartbeat",

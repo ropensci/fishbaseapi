@@ -61,7 +61,7 @@ class LogstashLogger < Rack::CommonLogger
 
     json = {
       '@timestamp' => now.utc.iso8601,
-      '@ip' => ip_anonymize(ENV['LOGSTASH_PORT_9292_TCP_ADDR']),
+      '@ip' => ip_anonymize(env['REMOTE_ADDR']),
       '@fields'      => {
         'method'     => env['REQUEST_METHOD'],
         'path'       => env['PATH_INFO'],

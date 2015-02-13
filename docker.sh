@@ -30,7 +30,7 @@ fi
 sleep 2
 
 # Make sure we have the latest version
-# docker pull ropensci/fishbaseapi
+docker pull ropensci/fishbaseapi
 # Or just build locally to get the latest version
 # docker build -t ropensci/fishbaseapi:logging .
 

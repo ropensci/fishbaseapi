@@ -37,11 +37,8 @@ if [ ! -e "$HOME/data/fishbase/fbapp" ]
 then
   docker run --rm --link fbmysql:mysql \
     -v ${PWD}/fbapp.sql:/data/fbapp.sql \
-    -w /data mysql mysql \
-    --host=$MYSQL_PORT_3306_TCP_ADDR \
-    --protocol=$MYSQL_PORT_3306_TCP_PROTO \
-    --password=$MYSQL_ENV_MYSQL_ROOT_PASSWORD \
-    fbapp < fbapp.sql
+    -v ${PWD}/mysql_import.sh:/data/mysql_import.sh \
+    -w /data mysql bash mysql_import.sh 
 fi
 
 
@@ -57,4 +54,9 @@ docker pull ropensci/fishbaseapi
 
 ## Links just use whatever name we gave the container.  Hard-coding the hash to link is unlikely to work
 docker run --name fbapi -d -p 4567:4567 --link fbmysql:mysql --link fbredis:redis --link fblogstash:logstash ropensci/fishbaseapi:logging
+
+
+
+
+#docker run --rm --link fbmysql:mysql -v ${PWD}/fbapp.sql:/data/fbapp.sql -v ${PWD}/mysql_import.sh:/data/mysql_import.sh -w /data mysql ls
 

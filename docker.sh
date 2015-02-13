@@ -17,6 +17,7 @@ docker run --name fbredis -d redis:latest
 ## Hmm, not clear why we aren't using linking here instead of exporting ports..
 ## get logstash and embeded elasticsearch
 docker run --name fblogstash -d \
+  -v ${PWD}:/data \
 	-p 9292:9292 \
 	-p 9200:9200 \
 	pblittle/docker-logstash
@@ -51,5 +52,5 @@ sleep 5
 docker pull ropensci/fishbaseapi
 
 # Start the API on port 4567
-docker run --name fbapi -d -p 4567:4567 --link fbmysql:mysql --link fbredis:redis --link fblogstash:logstash ropensci/fishbaseapi:logging
+docker run --name fbapi -d -p 4567:4567 --link fbmysql:mysql --link fbredis:redis --link fblogstash:logstash -v ${PWD}:/data ropensci/fishbaseapi:logging
 

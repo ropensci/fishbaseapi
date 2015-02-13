@@ -23,7 +23,7 @@ COPY . /opt/sinatra
 RUN cd /opt/sinatra \
   && bundle install
 
-EXPOSE 4567
+EXPOSE 8080
 
 
 WORKDIR /opt/sinatra

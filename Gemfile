@@ -1,7 +1,8 @@
 source "http://rubygems.org/"
 
-gem 'sinatra'
+gem 'geolocater'
 gem 'json'
 gem 'mysql2'
 gem 'redis'
-gem 'geolocater'
+gem 'sinatra'
+gem 'unicorn'

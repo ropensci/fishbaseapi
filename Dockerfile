@@ -25,4 +25,8 @@ RUN cd /opt/sinatra \
 
 EXPOSE 4567
 
-CMD ["ruby", "/opt/sinatra/api.rb", "-o", "0.0.0.0"]
+
+WORKDIR /opt/sinatra
+CMD ["unicorn","-d","-c", "unicorn.conf"]
+
+# CMD ["ruby", "/opt/sinatra/api.rb", "-o", "0.0.0.0"]

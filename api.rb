@@ -104,7 +104,7 @@ class FBApp < Sinatra::Application
   # end
 
   not_found do
-    halt 404, {'Content-Type' => 'application/json'}, {'error' => 'Page not found'}
+    halt 404, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'route not found' })
   end
 
   before do
@@ -283,6 +283,7 @@ class FBApp < Sinatra::Application
 
   def get_error(x)
     if x.length == 0
+    	halt not_found
       return "not found"
     else
       return nil

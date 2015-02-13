@@ -21,7 +21,7 @@ docker run --name fbmysql -d -v $HOME/data/fishbase:/var/lib/mysql -e MYSQL_ROOT
 ## Assumes the database is called fbapp.sql and is in the working directory
 if [ ! -e "$HOME/data/fishbase/fbapp" ]
 then 
-  docker run --rm -ti --link fbmysql:mysql \
+  docker run --rm --link fbmysql:mysql \
     -v ${PWD}/fbapp.sql:/data/fbapp.sql \
     -w /data mysql mysql \
     --host=$MYSQL_PORT_3306_TCP_ADDR \

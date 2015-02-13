@@ -22,6 +22,10 @@ docker run --name fblogstash -d \
 	pblittle/docker-logstash
 	# -e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/logging/logstashconfig.conf \
 
+
+
+# docker run --link fblogstash:logstash --rm -ti ubuntu:latest bash
+
 # We use this dir for permanent storage of the database even if the MySQL container is killed.
 if [ ! -d "$HOME/data/fishbase" ]
 then
@@ -48,7 +52,7 @@ fi
 sleep 5
 
 # Make sure we have the latest version
-docker pull ropensci/fishbaseapi
+# docker pull ropensci/fishbaseapi
 
 # Start the API on port 4567
 docker run --name fbapi -d -p 4567:4567 --link fbmysql:mysql --link fbredis:redis --link fblogstash:logstash ropensci/fishbaseapi:logging

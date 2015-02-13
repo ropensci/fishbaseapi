@@ -1,34 +1,13 @@
 #!/bin/bash
-
-# fig doesn't always act the way I expect. So this script does the same thing manually
-# by just launching the three containers from the commandline.
-# Note that ropensci/fishbaseapi is built by DockerHub automated build.
-
-
-## Start the redis container
 docker run --name fbredis -d redis:latest
-
-## get etcd
-# docker run --name fbetcd --rm -it -p 4001:4001 -p 7001:7001 -v /var/etcd/:/data microbox/etcd:latest
-### official from etcd
-# docker run -p 4001:4001 -v /usr/share/ca-certificates/:/etc/ssl/certs quay.io/coreos/etcd:v2.0.2
-
-
-## Hmm, not clear why we aren't using linking here instead of exporting ports..
-## get logstash and embeded elasticsearch
 docker run --name fblogstash -d \
   -v /root \
 	-p 9292:9292 \
 	-p 9200:9200 \
 	-e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/logging/logstash.conf \
 	pblittle/docker-logstash
-#  -v ${PWD}/logstash.conf:/opt/logstash/conf.d/logstash.conf \
 
-
-
-# docker run --link fblogstash:logstash --rm -ti ubuntu:latest bash
-
-# We use this dir for permanent storage of the database even if the MySQL container is killed.
+## First time use only
 if [ ! -d "$HOME/data/fishbase" ]
 then
   mkdir -p $HOME/data/fishbase
@@ -47,18 +26,17 @@ then
     -w /data mysql bash mysql_import.sh 
 fi
 
-
-
 # Give the sql database a few seconds to start up first.
-# FIXME (Perhaps the api.rb could be convinced to re-attempt `Client.new` at intervals if the mysql server isn't there)
 sleep 2
 
 # Make sure we have the latest version
 # docker pull ropensci/fishbaseapi
-
 # Or just build locally to get the latest version
-docker build -t ropensci/fishbaseapi:logging .
+# docker build -t ropensci/fishbaseapi:logging .
 
-# Start the API on port 4567
-docker run --name fbapi -d -p 8080:8080 --link fbmysql:mysql --link fbredis:redis --link fblogstash:logstash --volumes-from fblogstash ropensci/fishbaseapi:logging
+## Start fb app, but expose only the nginx port (port 80), not the unicorn port (8080)
+docker run --name fbapi -d -p 80:80 --link fbmysql:mysql --link fbredis:redis --link fblogstash:logstash --volumes-from fblogstash ropensci/fishbaseapi:logging
+
+## NOTE: Sever name must be hardwired into nginx.conf. Please adjust appropriately
+docker run --name fbnginx -d --net container:fbapi -v $(pwd)/nginx.conf:/etc/nginx/nginx.conf nginx
 

@@ -8,6 +8,8 @@ require 'geolocater'
 
 class FBApp < Sinatra::Application
 
+	$use_caching = true
+  $use_logging = true
   log_file_path = "fishbaseapi.log"
   host = ENV['MYSQL_PORT_3306_TCP_ADDR']
 
@@ -88,7 +90,8 @@ class FBApp < Sinatra::Application
   end
 
   configure do
-    enable :logging
+    # enable :logging
+    set :logging, $use_logging
 
     file = File.new(File.join(File.expand_path('~'), log_file_path), 'a+')
     file.sync = true
@@ -266,7 +269,9 @@ class FBApp < Sinatra::Application
 
   # helpers
   def redis_set(key, value)
-    return $redis.set(key, value)
+  	if $use_caching
+    	return $redis.set(key, value)
+  	end
   end
 
   def redis_get(key)
@@ -274,7 +279,11 @@ class FBApp < Sinatra::Application
   end
 
   def redis_exists(key)
-    return $redis.exists(key)
+  	if !$use_caching
+  		return false
+  	else
+  		return $redis.exists(key)
+  	end
   end
 
   def rediskey(table, x)

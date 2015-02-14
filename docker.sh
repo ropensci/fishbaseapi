@@ -10,10 +10,10 @@ docker run --name fblogstash -d \
 	-e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/master/logstash.conf \
 	pblittle/docker-logstash
 
+docker run --name fbmysql -d -v $HOME/data/fishbase:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root mysql:latest
 
-# Make sure we have the latest version
+# Make sure we have the latest version by pulling or building
 docker pull ropensci/fishbaseapi
-# Or just build locally to get the latest version
 # docker build -t ropensci/fishbaseapi:logging .
 
 # Give the sql database a few seconds to start up first.

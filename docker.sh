@@ -24,5 +24,5 @@ sleep 2
 docker run --name fbapi -d -p 80:80 --link fbmysql:mysql --link fbredis:redis --link fblogstash:logstash --volumes-from fblogstash ropensci/fishbaseapi
 
 ## NOTE: Sever name must be hardwired into nginx.conf. Please adjust appropriately
-docker run --name fbnginx -d --net container:fbapi -v $(pwd)/nginx.conf:/etc/nginx/nginx.conf nginx
+docker run --name fbnginx -d --net container:fbapi -v ${PWD}/nginx.conf:/etc/nginx/nginx.conf nginx
 

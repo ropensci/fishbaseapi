@@ -34,8 +34,11 @@ class FBApp < Sinatra::Application
                     :port => ENV['REDIS_PORT_6379_TCP_PORT'])
 
   # before do
-  #   # puts '[Params]'
-  #   # p params
+  #   puts '[Params]'
+  #   p params
+  # end
+
+  # before do
   #   puts '[env]'
   #   p env
   # end

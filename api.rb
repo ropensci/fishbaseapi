@@ -8,7 +8,7 @@ require 'geolocater'
 
 class FBApp < Sinatra::Application
 
-	$use_caching = true
+  $use_caching = true
   $use_logging = true
   log_file_path = "fishbaseapi.log"
   host = ENV['MYSQL_PORT_3306_TCP_ADDR']
@@ -296,7 +296,6 @@ class FBApp < Sinatra::Application
   def get_error(x)
     if x.length == 0
     	halt not_found
-      return "not found"
     else
       return nil
     end
@@ -345,6 +344,18 @@ class FBApp < Sinatra::Application
     end
   end
 
+  def check_params(client, table, params)
+    if params.length == 0
+      return params
+    else
+      query = sprintf("SELECT * FROM %s limit 1", table)
+      res = client.query(query, :as => :json)
+      flexist = ["^", res.fields.join('$|^'), "$"].join('').downcase
+      params = params.keep_if { |key, value| key.downcase.to_s.match(flexist) }
+      return params
+    end
+  end
+
   def get_count(client, table, string)
     query = sprintf("SELECT count(*) as ct FROM %s %s", table, string)
     res = client.query(query, :as => :json)
@@ -368,7 +379,7 @@ class FBApp < Sinatra::Application
     params.delete("fields")
 
     fields = check_fields(client, table, fields)
-    args = get_args(params)
+    args = get_args(check_params(client, table, params))
 
     if id.nil?
       query = sprintf("SELECT %s FROM %s %s limit %d", fields, table, args, limit)
@@ -386,7 +397,7 @@ class FBApp < Sinatra::Application
     params.delete("limit")
     params.delete("fields")
     fields = check_fields(client, table, fields)
-    args = get_args(params)
+    args = get_args(check_params(client, table, params))
     query = sprintf("SELECT %s FROM %s %s limit %d", fields, table, args, limit)
     count = get_count(client, table, args)
     return do_query(client, query, key, count)

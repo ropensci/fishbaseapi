@@ -9,7 +9,7 @@ docker run --name fblogstash -d \
 	-e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/master/logstash.conf \
 	pblittle/docker-logstash
 
-docker run --name fbmysql -d -v $HOME/data/fishbase:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root -p 127.0.0.1:3306:3306 mysql:latest
+docker run --name fbmysql --restart=always -d -v $HOME/data/fishbase:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root mysql:latest
 
 # Make sure we have the latest version by pulling or building
 #docker pull ropensci/fishbaseapi
@@ -24,12 +24,4 @@ docker run --name fbapi -d -p 80:80 --link fbmysql:mysql --link fbredis:redis --
 
 ## NOTE: Sever name must be hardwired into nginx.conf. Please adjust appropriately
 docker run --name fbnginx -d --net container:fbapi -v ${PWD}/nginx.conf:/etc/nginx/nginx.conf nginx
-
-# Make containers persistant / auto-restarting (fig up doesn't do this? maybe needs fig start -a?)
-docker start -a fbredis &
-docker start -a fblogstash &
-docker start -a fbmysql &
-docker start -a fbapi &
-docker start -a fnginx &
-
 

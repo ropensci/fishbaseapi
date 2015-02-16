@@ -273,6 +273,26 @@ class FBApp < Sinatra::Application
     return give_data(obj)
   end
 
+  get '/countries/?' do
+    key = rediskey('country', params)
+    if redis_exists(key)
+      obj = get_cached(key)
+    else
+      obj = get_new_noids(client, key, 'country', params)
+    end
+    return give_data(obj)
+  end
+
+  get '/countref/?' do
+    key = rediskey('countref', params)
+    if redis_exists(key)
+      obj = get_cached(key)
+    else
+      obj = get_new_noids(client, key, 'countref', params)
+    end
+    return give_data(obj)
+  end
+
   # helpers
   def redis_set(key, value)
   	if $use_caching

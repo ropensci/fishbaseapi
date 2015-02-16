@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Look this up with:  `ip addr show docker0` (could figure out bash/sed trick to automate)
+DOCKER_IP=172.17.42.1
 
 docker run --name fbredis -d redis:latest
 
@@ -10,7 +12,7 @@ docker run --name fblogstash -d \
 	-e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/master/logstash.conf \
 	pblittle/docker-logstash
 
-docker run --name fbmysql -d -v $HOME/data/fishbase:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root mysql:latest
+docker run --name fbmysql -d -v $HOME/data/fishbase:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root -p 127.0.0.1:3306:3306 mysql:latest
 
 # Make sure we have the latest version by pulling or building
 docker pull ropensci/fishbaseapi
@@ -21,7 +23,7 @@ sleep 2
 
 
 ## Start fb app, but expose only the nginx port (port 80), not the unicorn port (8080)
-docker run --name fbapi -d -p 80:80 --link fbmysql:mysql --link fbredis:redis --link fblogstash:logstash --volumes-from fblogstash ropensci/fishbaseapi
+docker run --name fbapi -d -p 80:80 --link fbmysql:mysql --link fbredis:redis --volumes-from fblogstash -e MYSQL_PORT_3306_TCP_ADDR=$DOCKER_IP ropensci/fishbaseapi
 
 ## NOTE: Sever name must be hardwired into nginx.conf. Please adjust appropriately
 docker run --name fbnginx -d --net container:fbapi -v ${PWD}/nginx.conf:/etc/nginx/nginx.conf nginx

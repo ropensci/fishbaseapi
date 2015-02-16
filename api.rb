@@ -21,7 +21,10 @@ class FBApp < Sinatra::Application
                                 :reconnect => true)
   else
     # Connect to a MySQL server via a linked docker container
-    client = Mysql2::Client.new(:host => ENV['MYSQL_PORT_3306_TCP_ADDR'],
+    host = File.open('/etc/hosts').read.split("\n").grep(/mysql/).match(/[0-9]+.[0-9]+.[0-9].[0-9]+/)[0]
+    client = Mysql2::Client.new(
+                               :host => host,
+                               # :host => ENV['MYSQL_PORT_3306_TCP_ADDR'],
                                :port => ENV['MYSQL_PORT_3306_TCP_PORT'],
                                :password => ENV['MYSQL_ENV_MYSQL_ROOT_PASSWORD'],
                                :username => "root",

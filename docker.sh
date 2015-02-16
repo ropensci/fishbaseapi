@@ -25,7 +25,7 @@ docker run --name fbapi -d -p 80:80 --link fbmysql:mysql --link fbredis:redis --
 ## NOTE: Sever name must be hardwired into nginx.conf. Please adjust appropriately
 docker run --name fbnginx -d --net container:fbapi -v ${PWD}/nginx.conf:/etc/nginx/nginx.conf nginx
 
-# Make containers persistant / auto-restarting (fig doesn't do this?)
+# Make containers persistant / auto-restarting (fig up doesn't do this? maybe needs fig start -a?)
 docker start -a fbredis &
 docker start -a fblogstash &
 docker start -a fbmysql &

@@ -146,7 +146,8 @@ class FBApp < Sinatra::Application
 
   get '/mysqlping/?' do
     return JSON.pretty_generate({
-      "mysql_server_up" => client.ping
+      "mysql_server_up" => client.ping,
+      "mysql_host" => client.query_options[:host]
     })
   end
 

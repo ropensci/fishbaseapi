@@ -152,68 +152,48 @@ class FBApp < Sinatra::Application
     })
   end
 
-  # get '/species/?:id?/?' do
-  #   key = rediskey('species', params)
-  #   if redis_exists(key)
-  #     obj = get_cached(key)
-  #   else
-  #     obj = get_new_ids(key, 'species', 'SpecCode', params)
-  #   end
-  #   return give_data(obj)
-  # end
-
   get '/species/?:id?/?' do
     route('species', 'SpecCode')
   end
 
   get '/genera/?:id?/?' do
-    key = rediskey('genera', params)
-    if redis_exists(key)
-      obj = get_cached(key)
-    else
-      obj = get_new_ids(key, 'genera', 'GenCode', params)
-    end
-    return give_data(obj)
+    route('genera', 'GenCode')
   end
 
   get '/faoareas/?:id?/?' do
-    key = rediskey('faoareas', params)
-    if redis_exists(key)
-      obj = get_cached(key)
-    else
-      obj = get_new_ids(key, 'faoareas', 'AreaCode', params)
-    end
-    return give_data(obj)
+    route('faoareas', 'AreaCode')
   end
 
   get '/faoarref/?:id?/?' do
-    key = rediskey('faoarref', params)
-    if redis_exists(key)
-      obj = get_cached(key)
-    else
-      obj = get_new_ids(key, 'faoarref', 'AreaCode', params)
-    end
-    return give_data(obj)
+    route('faoarref', 'AreaCode')
   end
 
   get '/fooditems/?' do
-    key = rediskey('fooditems', params)
-    if redis_exists(key)
-      obj = get_cached(key)
-    else
-      obj = get_new_noids(key, 'fooditems', params)
-    end
-    return give_data(obj)
+    route_noid('fooditems')
   end
 
   get '/oxygen/?' do
-    key = rediskey('oxygen', params)
-    if redis_exists(key)
-      obj = get_cached(key)
-    else
-      obj = get_new_noids(key, 'oxygen', params)
-    end
-    return give_data(obj)
+    route_noid('oxygen')
+  end
+
+  get '/synonyms/?' do
+    route_noid('synonyms')
+  end
+
+  get '/comnames/?' do
+    route_noid('comnames')
+  end
+
+  get '/popgrowth/?' do
+    route_noid('PopGrowth')
+  end
+
+  get '/country/?' do
+    route_noid('country')
+  end
+
+  get '/countref/?' do
+    route_noid('countref')
   end
 
   get '/taxa/?' do
@@ -248,56 +228,6 @@ class FBApp < Sinatra::Application
     return JSON.pretty_generate(data)
   end
 
-  get '/synonyms/?' do
-    key = rediskey('synonyms', params)
-    if redis_exists(key)
-      obj = get_cached(key)
-    else
-      obj = get_new_noids(key, 'synonyms', params)
-    end
-    return give_data(obj)
-  end
-
-  get '/comnames/?' do
-    key = rediskey('comnames', params)
-    if redis_exists(key)
-      obj = get_cached(key)
-    else
-      obj = get_new_noids(key, 'comnames', params)
-    end
-    return give_data(obj)
-  end
-
-  get '/popgrowth/?' do
-    key = rediskey('PopGrowth', params)
-    if redis_exists(key)
-      obj = get_cached(key)
-    else
-      obj = get_new_noids(key, 'PopGrowth', params)
-    end
-    return give_data(obj)
-  end
-
-  get '/country/?' do
-    key = rediskey('country', params)
-    if redis_exists(key)
-      obj = get_cached(key)
-    else
-      obj = get_new_noids(key, 'country', params)
-    end
-    return give_data(obj)
-  end
-
-  get '/countref/?' do
-    key = rediskey('countref', params)
-    if redis_exists(key)
-      obj = get_cached(key)
-    else
-      obj = get_new_noids(key, 'countref', params)
-    end
-    return give_data(obj)
-  end
-
   # helpers
   def route(table, var)
     key = rediskey(table, params)
@@ -305,6 +235,16 @@ class FBApp < Sinatra::Application
       obj = get_cached(key)
     else
       obj = get_new_ids(key, table, var, params)
+    end
+    return give_data(obj)
+  end
+
+  def route_noid(table)
+    key = rediskey(table, params)
+    if redis_exists(key)
+      obj = get_cached(key)
+    else
+      obj = get_new_noids(key, table, params)
     end
     return give_data(obj)
   end

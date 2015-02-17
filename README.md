@@ -20,13 +20,15 @@ will be here when there's a public url, for testing locally it's `http://localho
 * `/species`
 * `/genera`
 * `/faoareas`
-* `/faoarrefs`
+* `/faoarref`
 * `/fooditems`
-* `/oxygens`
+* `/oxygen`
 * `/taxa`
 * `/synonyms`
 * `/comnames`
-* `/populations`
+* `/popgrowth`
+* `/country`
+* `/countref`
 
 ## Setup database
 
@@ -75,13 +77,15 @@ curl -L http://localhost:4567
         "/species/:id?<params>",
         "/genera/:id?<params>",
         "/faoareas/:id?<params>",
-        "/faoarrefs/:id?<params>",
+        "/faoarref/:id?<params>",
         "/fooditems?<params>",
-        "/oxygens?<params>",
+        "/oxygen?<params>",
         "/taxa?<params>",
         "/synonyms?<params>",
         "/comnames?<params>",
-        "/populations?<params>"
+        "/popgrowth?<params>",
+        "/country?<params>",
+        "/countref?<params>"
     ]
 }
 ```
@@ -202,7 +206,7 @@ http 'http://localhost:4567/faoareas/2?limit=2' | jq '.data[]'
 ## faoarrefs
 
 ```sh
-http 'http://localhost:4567/faoarrefs?limit=3&fields=SpeciesCount,AreaCode,Shelf,Coastline' | jq '.data[]'
+http 'http://localhost:4567/faoarref?limit=3&fields=SpeciesCount,AreaCode,Shelf,Coastline' | jq '.data[]'
 ```
 
 ```sh
@@ -258,7 +262,7 @@ http 'http://localhost:4567/fooditems/?limit=3' | jq '.data[] | {species: .SpecC
 ## Get metabolism data from oxygen table
 
 ```sh
-http 'http://localhost:4567/oxygens?limit=3&speccode=2' | jq '.data[] | {species: .SpecCode, weight: .Weight, salinity: .Salinity, oxygen_consumption: .OxygenCons}'
+http 'http://localhost:4567/oxygen?limit=3&speccode=2' | jq '.data[] | {species: .SpecCode, weight: .Weight, salinity: .Salinity, oxygen_consumption: .OxygenCons}'
 ```
 
 ```sh

@@ -22,7 +22,7 @@ class FBApp < Sinatra::Application
   else
     # Connect to a MySQL server via a linked docker container
     client = Mysql2::Client.new(
-                               :host => "mysql", 
+                               :host => "mysql",
                                :port => ENV['MYSQL_PORT_3306_TCP_PORT'],
                                :password => ENV['MYSQL_ENV_MYSQL_ROOT_PASSWORD'],
                                :username => "root",
@@ -132,13 +132,15 @@ class FBApp < Sinatra::Application
         "/species/:id?<params>",
         "/genera/:id?<params>",
         "/faoareas/:id?<params>",
-        "/faoarrefs/:id?<params>",
+        "/faoarref/:id?<params>",
         "/fooditems?<params>",
-        "/oxygens?<params>",
+        "/oxygen?<params>",
         "/taxa?<params>",
         "/synonyms?<params>",
         "/comnames?<params>",
-        "/populations?<params>"
+        "/popgrowth?<params>",
+        "/country?<params>",
+        "/countref?<params>"
       ]
     })
   end
@@ -180,7 +182,7 @@ class FBApp < Sinatra::Application
     return give_data(obj)
   end
 
-  get '/faoarrefs/?:id?/?' do
+  get '/faoarref/?:id?/?' do
     key = rediskey('faoarref', params)
     if redis_exists(key)
       obj = get_cached(key)
@@ -200,7 +202,7 @@ class FBApp < Sinatra::Application
     return give_data(obj)
   end
 
-  get '/oxygens/?' do
+  get '/oxygen/?' do
     key = rediskey('oxygen', params)
     if redis_exists(key)
       obj = get_cached(key)
@@ -262,7 +264,7 @@ class FBApp < Sinatra::Application
     return give_data(obj)
   end
 
-  get '/populations/?' do
+  get '/popgrowth/?' do
     key = rediskey('PopGrowth', params)
     if redis_exists(key)
       obj = get_cached(key)
@@ -272,7 +274,7 @@ class FBApp < Sinatra::Application
     return give_data(obj)
   end
 
-  get '/countries/?' do
+  get '/country/?' do
     key = rediskey('country', params)
     if redis_exists(key)
       obj = get_cached(key)

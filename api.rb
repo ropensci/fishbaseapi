@@ -15,13 +15,13 @@ class FBApp < Sinatra::Application
 
   # Set up MySQL DB
   if host.to_s == ''
-    client = Mysql2::Client.new(:host => "localhost",
+    $client = Mysql2::Client.new(:host => "localhost",
                                 :username => "root",
                                 :database => "fbapp",
                                 :reconnect => true)
   else
     # Connect to a MySQL server via a linked docker container
-    client = Mysql2::Client.new(
+    $client = Mysql2::Client.new(
                                :host => "mysql",
                                :port => ENV['MYSQL_PORT_3306_TCP_PORT'],
                                :password => ENV['MYSQL_ENV_MYSQL_ROOT_PASSWORD'],
@@ -147,19 +147,23 @@ class FBApp < Sinatra::Application
 
   get '/mysqlping/?' do
     return JSON.pretty_generate({
-      "mysql_server_up" => client.ping,
-      "mysql_host" => client.query_options[:host]
+      "mysql_server_up" => $client.ping,
+      "mysql_host" => $client.query_options[:host]
     })
   end
 
+  # get '/species/?:id?/?' do
+  #   key = rediskey('species', params)
+  #   if redis_exists(key)
+  #     obj = get_cached(key)
+  #   else
+  #     obj = get_new_ids(key, 'species', 'SpecCode', params)
+  #   end
+  #   return give_data(obj)
+  # end
+
   get '/species/?:id?/?' do
-    key = rediskey('species', params)
-    if redis_exists(key)
-      obj = get_cached(key)
-    else
-      obj = get_new_ids(client, key, 'species', 'SpecCode', params)
-    end
-    return give_data(obj)
+    route('species', 'SpecCode')
   end
 
   get '/genera/?:id?/?' do
@@ -167,7 +171,7 @@ class FBApp < Sinatra::Application
     if redis_exists(key)
       obj = get_cached(key)
     else
-      obj = get_new_ids(client, key, 'genera', 'GenCode', params)
+      obj = get_new_ids(key, 'genera', 'GenCode', params)
     end
     return give_data(obj)
   end
@@ -177,7 +181,7 @@ class FBApp < Sinatra::Application
     if redis_exists(key)
       obj = get_cached(key)
     else
-      obj = get_new_ids(client, key, 'faoareas', 'AreaCode', params)
+      obj = get_new_ids(key, 'faoareas', 'AreaCode', params)
     end
     return give_data(obj)
   end
@@ -187,7 +191,7 @@ class FBApp < Sinatra::Application
     if redis_exists(key)
       obj = get_cached(key)
     else
-      obj = get_new_ids(client, key, 'faoarref', 'AreaCode', params)
+      obj = get_new_ids(key, 'faoarref', 'AreaCode', params)
     end
     return give_data(obj)
   end
@@ -197,7 +201,7 @@ class FBApp < Sinatra::Application
     if redis_exists(key)
       obj = get_cached(key)
     else
-      obj = get_new_noids(client, key, 'fooditems', params)
+      obj = get_new_noids(key, 'fooditems', params)
     end
     return give_data(obj)
   end
@@ -207,7 +211,7 @@ class FBApp < Sinatra::Application
     if redis_exists(key)
       obj = get_cached(key)
     else
-      obj = get_new_noids(client, key, 'oxygen', params)
+      obj = get_new_noids(key, 'oxygen', params)
     end
     return give_data(obj)
   end
@@ -231,9 +235,9 @@ class FBApp < Sinatra::Application
           INNER JOIN families f on s.FamCode = f.FamCode
           INNER JOIN genera g on s.GenCode = g.GenCode
           %s limit %d", args, limit)
-      count = get_count(client, 'species', get_args(params, prefix=false))
+      count = get_count('species', get_args(params, prefix=false))
 
-      res = client.query(query, :as => :json)
+      res = $client.query(query, :as => :json)
       out = res.collect{ |row| row }
       err = get_error(out)
       store = {"count" => count, "error" => err, "data" => out}
@@ -249,7 +253,7 @@ class FBApp < Sinatra::Application
     if redis_exists(key)
       obj = get_cached(key)
     else
-      obj = get_new_noids(client, key, 'synonyms', params)
+      obj = get_new_noids(key, 'synonyms', params)
     end
     return give_data(obj)
   end
@@ -259,7 +263,7 @@ class FBApp < Sinatra::Application
     if redis_exists(key)
       obj = get_cached(key)
     else
-      obj = get_new_noids(client, key, 'comnames', params)
+      obj = get_new_noids(key, 'comnames', params)
     end
     return give_data(obj)
   end
@@ -269,7 +273,7 @@ class FBApp < Sinatra::Application
     if redis_exists(key)
       obj = get_cached(key)
     else
-      obj = get_new_noids(client, key, 'PopGrowth', params)
+      obj = get_new_noids(key, 'PopGrowth', params)
     end
     return give_data(obj)
   end
@@ -279,7 +283,7 @@ class FBApp < Sinatra::Application
     if redis_exists(key)
       obj = get_cached(key)
     else
-      obj = get_new_noids(client, key, 'country', params)
+      obj = get_new_noids(key, 'country', params)
     end
     return give_data(obj)
   end
@@ -289,12 +293,22 @@ class FBApp < Sinatra::Application
     if redis_exists(key)
       obj = get_cached(key)
     else
-      obj = get_new_noids(client, key, 'countref', params)
+      obj = get_new_noids(key, 'countref', params)
     end
     return give_data(obj)
   end
 
   # helpers
+  def route(table, var)
+    key = rediskey(table, params)
+    if redis_exists(key)
+      obj = get_cached(key)
+    else
+      obj = get_new_ids(key, table, var, params)
+    end
+    return give_data(obj)
+  end
+
   def redis_set(key, value)
   	if $use_caching
     	return $redis.set(key, value)
@@ -338,9 +352,9 @@ class FBApp < Sinatra::Application
     end
   end
 
-  def check_fields(client, table, fields)
+  def check_fields(table, fields)
     query = sprintf("SELECT * FROM %s limit 1", table)
-    res = client.query(query, :as => :json)
+    res = $client.query(query, :as => :json)
     flexist = res.fields
     fields = fields.split(',')
     if fields.length == 1
@@ -368,21 +382,21 @@ class FBApp < Sinatra::Application
     end
   end
 
-  def check_params(client, table, params)
+  def check_params(table, params)
     if params.length == 0
       return params
     else
       query = sprintf("SELECT * FROM %s limit 1", table)
-      res = client.query(query, :as => :json)
+      res = $client.query(query, :as => :json)
       flexist = ["^", res.fields.join('$|^'), "$"].join('').downcase
       params = params.keep_if { |key, value| key.downcase.to_s.match(flexist) }
       return params
     end
   end
 
-  def get_count(client, table, string)
+  def get_count(table, string)
     query = sprintf("SELECT count(*) as ct FROM %s %s", table, string)
-    res = client.query(query, :as => :json)
+    res = $client.query(query, :as => :json)
     res.collect{ |row| row }[0]["ct"]
   end
 
@@ -395,40 +409,40 @@ class FBApp < Sinatra::Application
     return JSON.parse(redis_get(key))
   end
 
-  def get_new_ids(client, key, table, matchfield, params)
+  def get_new_ids(key, table, matchfield, params)
     id = params[:id]
     limit = params[:limit] || 10
     fields = params[:fields] || '*'
     params.delete("limit")
     params.delete("fields")
 
-    fields = check_fields(client, table, fields)
-    args = get_args(check_params(client, table, params))
+    fields = check_fields(table, fields)
+    args = get_args(check_params(table, params))
 
     if id.nil?
       query = sprintf("SELECT %s FROM %s %s limit %d", fields, table, args, limit)
-      count = get_count(client, table, args)
+      count = get_count(table, args)
     else
       query = sprintf("SELECT %s FROM %s WHERE %s = '%d' limit %d", fields, table, matchfield, id.to_s, limit)
-      count = get_count(client, table, sprintf("WHERE %s = '%d'", matchfield, id.to_s))
+      count = get_count(table, sprintf("WHERE %s = '%d'", matchfield, id.to_s))
     end
-    return do_query(client, query, key, count)
+    return do_query(query, key, count)
   end
 
-  def get_new_noids(client, key, table, params)
+  def get_new_noids(key, table, params)
     limit = params[:limit] || 10
     fields = params[:fields] || '*'
     params.delete("limit")
     params.delete("fields")
-    fields = check_fields(client, table, fields)
-    args = get_args(check_params(client, table, params))
+    fields = check_fields(table, fields)
+    args = get_args(check_params(table, params))
     query = sprintf("SELECT %s FROM %s %s limit %d", fields, table, args, limit)
-    count = get_count(client, table, args)
-    return do_query(client, query, key, count)
+    count = get_count(table, args)
+    return do_query(query, key, count)
   end
 
-  def do_query(client, query, key, count)
-    res = client.query(query, :as => :json)
+  def do_query(query, key, count)
+    res = $client.query(query, :as => :json)
     out = res.collect{ |row| row }
     err = get_error(out)
     store = {"count" => count, "error" => err, "data" => out}

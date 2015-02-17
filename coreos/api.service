@@ -1,0 +1,14 @@
+[Unit]
+Description=Sinatra Ruby API container
+After=mysql.service
+Requires=mysql.service
+
+[Service]
+# Avoid timing out due to pulling container, etc with TimeoutStartSec=0
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill api 
+ExecStartPre=-/usr/bin/docker rm api
+ExecStartPre=/usr/bin/docker pull api:latest
+ExecStart=/usr/bin/docker run --name=api --link mysql:mysql --link redis:redis --volumes-from logstash ropensci/fishbaseapi:latest
+ExecStop=/usr/bin/docker stop api 
+

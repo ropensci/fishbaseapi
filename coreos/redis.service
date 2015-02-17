@@ -1,0 +1,14 @@
+[Unit]
+Description=Redis container
+After=docker.service
+Requires=docker.service
+
+[Service]
+# Avoid timing out due to pulling container, etc with TimeoutStartSec=0
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill redis 
+ExecStartPre=-/usr/bin/docker rm redis
+ExecStartPre=/usr/bin/docker pull redis:latest
+ExecStart=/usr/bin/docker run --name=redis redis:latest
+ExecStop=/usr/bin/docker stop redis 
+

@@ -1,0 +1,14 @@
+[Unit]
+Description=MySQL container
+After=redis.service
+Requires=redis.service
+
+[Service]
+# Avoid timing out due to pulling container, etc with TimeoutStartSec=0
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill mysql
+ExecStartPre=-/usr/bin/docker rm mysql
+ExecStartPre=/usr/bin/docker pull mysql:latest
+ExecStart=/usr/bin/docker run --name=mysql -v $HOME/data/fishbase:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root mysql:latest
+ExecStop=/usr/bin/docker stop mysql 
+

@@ -1,0 +1,14 @@
+[Unit]
+Description=Nginx container
+After=api.service
+Requires=api.service
+
+[Service]
+# Avoid timing out due to pulling container, etc with TimeoutStartSec=0
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill nginx 
+ExecStartPre=-/usr/bin/docker rm nginx
+ExecStartPre=/usr/bin/docker pull nginx:latest
+ExecStart=/usr/bin/docker run --name=nginx -p 80:80 --link api:api -v ${HOME}/nginx.conf:/etc/nginx/nginx.conf nginx:latest
+ExecStop=/usr/bin/docker stop nginx 
+

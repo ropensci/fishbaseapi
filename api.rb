@@ -97,7 +97,7 @@ class FBApp < Sinatra::Application
     # enable :logging
     set :logging, $use_logging
 
-    file = File.new(File.join(File.expand_path('~'), log_file_path), 'a+')
+    file = File.new(log_file_path, 'a+')
     file.sync = true
 
     use LogstashLogger, file

@@ -6,7 +6,7 @@ NGINX_CONF=${PWD}/nginx.conf
 
 docker run --name fbredis -d redis:latest
 docker run --name fblogstash -d \
-  -v /root \
+  -v /var/log/fishbase \
 	-p 9292:9292 \
 	-p 9200:9200 \
   -e ES_HOST=${SERVER}\

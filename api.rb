@@ -10,7 +10,7 @@ class FBApp < Sinatra::Application
 
   $use_caching = true
   $use_logging = true
-  log_file_path = "/var/log/fishbase/api.log"
+  log_file_path = "fishbaseapi.log"
   host = ENV['MYSQL_PORT_3306_TCP_ADDR']
 
   # Set up MySQL DB
@@ -97,7 +97,7 @@ class FBApp < Sinatra::Application
     # enable :logging
     set :logging, $use_logging
 
-    file = File.new(log_file_path, 'a+')
+    file = File.new(File.join(File.expand_path('~'), log_file_path), 'a+')
     file.sync = true
 
     use LogstashLogger, file

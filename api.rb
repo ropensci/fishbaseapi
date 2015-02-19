@@ -152,12 +152,23 @@ class FBApp < Sinatra::Application
     })
   end
 
-  get '/species/?:id?/?' do
-    route('species', 'SpecCode')
+
+  ## list endpoints alphabetically for easy search 
+
+  get '/comnames/?' do
+    route_noid('comnames')
   end
 
-  get '/genera/?:id?/?' do
-    route('genera', 'GenCode')
+  get '/country/?' do
+    route_noid('country')
+  end
+
+  get '/countref/?' do
+    route_noid('countref')
+  end
+
+  get '/ecology/?' do
+    route_noid('ecology')
   end
 
   get '/faoareas/?:id?/?' do
@@ -172,29 +183,45 @@ class FBApp < Sinatra::Application
     route_noid('fooditems')
   end
 
+  get '/genera/?:id?/?' do
+    route('genera', 'GenCode')
+  end
+
   get '/oxygen/?' do
     route_noid('oxygen')
+  end
+
+  get '/popchar/?' do
+    route_noid('popchar')
+  end
+
+  get '/popgrowth/?' do
+    route_noid('popgrowth')
+  end
+
+  get '/poplf/?' do
+    route_noid('poplf')
+  end
+
+  get '/popll/?' do
+    route_noid('popll')
+  end
+
+  get '/poplw/?' do
+    route_noid('poplw')
+  end
+
+  get '/species/?:id?/?' do
+    route('species', 'SpecCode')
   end
 
   get '/synonyms/?' do
     route_noid('synonyms')
   end
 
-  get '/comnames/?' do
-    route_noid('comnames')
-  end
 
-  get '/popgrowth/?' do
-    route_noid('PopGrowth')
-  end
 
-  get '/country/?' do
-    route_noid('country')
-  end
 
-  get '/countref/?' do
-    route_noid('countref')
-  end
 
   get '/taxa/?' do
     key = rediskey('taxa', params)

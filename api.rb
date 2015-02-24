@@ -153,7 +153,7 @@ class FBApp < Sinatra::Application
   end
 
 
-  ## list endpoints alphabetically for easy search 
+  ## list endpoints alphabetically for easy search
 
   get '/comnames/?' do
     route_noid('comnames')
@@ -260,6 +260,9 @@ class FBApp < Sinatra::Application
     key = rediskey(table, params)
     if redis_exists(key)
       obj = get_cached(key)
+      if obj.nil?
+        obj = get_new_ids(key, table, var, params)
+      end
     else
       obj = get_new_ids(key, table, var, params)
     end
@@ -270,6 +273,9 @@ class FBApp < Sinatra::Application
     key = rediskey(table, params)
     if redis_exists(key)
       obj = get_cached(key)
+      if obj.nil?
+        obj = get_new_noids(key, table, params)
+      end
     else
       obj = get_new_noids(key, table, params)
     end
@@ -278,19 +284,31 @@ class FBApp < Sinatra::Application
 
   def redis_set(key, value)
   	if $use_caching
-    	return $redis.set(key, value)
+      begin
+        return $redis.set(key, value)
+      rescue
+        return nil
+      end
   	end
   end
 
   def redis_get(key)
-    return $redis.get(key)
+    begin
+      return $redis.get(key)
+    rescue
+      return nil
+    end
   end
 
   def redis_exists(key)
   	if !$use_caching
   		return false
   	else
-  		return $redis.exists(key)
+      begin
+        return $redis.exists(key)
+      rescue
+        return false
+      end
   	end
   end
 
@@ -373,7 +391,12 @@ class FBApp < Sinatra::Application
   end
 
   def get_cached(key)
-    return JSON.parse(redis_get(key))
+    tmp = redis_get(key)
+    if tmp.nil?
+      return nil
+    else
+      return JSON.parse(tmp)
+    end
   end
 
   def get_new_ids(key, table, matchfield, params)

@@ -1,441 +1,76 @@
-Fishbase API
-=======
+FishBase API
+============
 
-Draft Fishbase API - using Ruby's Sinatra framework
+This is a volunteer effort from rOpenSci to provide a modern [RESTful API](http://en.wikipedia.org/wiki/Representational_state_transfer) to the backend SQL database behind the popular web resource, [fishbase.org](http://fishbase.org). The FishBase team have provided a snapshot of the database for our development purposes only and have expressed interest in hosting the finished API as a resource for all their users.
 
-`http` is a command line tool from the Python library [httpie](https://github.com/jakubroztocil/httpie) used below - `curl` will do that same thing.
+User quick start
+----------------
 
-`jq` is used below to make examples brief - get it at [http://stedolan.github.io/jq/](http://stedolan.github.io/jq/).
+At this time, this API is deployed for development purposes only.  The testing server may be available only intermittently and all endpoints are subject to change. Please check back here for updates when the API is officially released by FishBase.org. 
 
-This is being developed on a local machine - will be on a public server soon (hopefully). Data is not included in this repo, so you can't actually follow the below instructions, unless you have the DB :)
+- The test API is being served from [fishbaseapi.info](http://fishbaseapi.info)
+- Draft documentation of the API is available at [docs.fishbaseapi.apiary.io](http://docs.fishbaseapi.apiary.io/#)
+- The [rfishbase2.0](https://github.com/ropensci/rfishbase/tree/rfishbase2.0) R package provides a convenient and powerful way to interact with the API.
 
-## Base URL
 
-will be here when there's a public url, for testing locally it's `http://localhost:4567`
+Technical specifications
+------------------------
 
-## The endpoints so far
+### Quick start
 
-* `/heartbeat`
-* `/mysqlping`
-* `/species`
-* `/genera`
-* `/faoareas`
-* `/faoarref`
-* `/fooditems`
-* `/oxygen`
-* `/taxa`
-* `/synonyms`
-* `/comnames`
-* `/popgrowth`
-* `/country`
-* `/countref`
+- **Dependencies**: Any machine with Docker installed, see: [docs.docker.com/installation](http://docs.docker.com/installation)
+- [Download](https://github.com/ropensci/fishbaseapi/archive/master.zip) or clone the fishbaseapi repository
+- Place a snapshot of the FishBase SQL dump (not provided) in a file called `fbapp.sql` inside the downloaded directory.
 
-## Setup database
+- From that directory, run the `import.sh` bash script, which will use Docker to import the dump into a MySQL docker container. This may take a while but needs only be done once.
+- Run the `docker.sh` script to launch the API.  Alternately, the containers can be launched with `fig up`, or using the `fleet` service files provided for the CoreOS architecture. 
 
-Uncompress the database dump, e.g.: `2013-12-13_10-53-23_fbapp.7z`. Then start mysql and load into mysql
+### Technical overview
 
-```sh
-mysql.server start
-mysql -u root fbapp < 2013-12-13_10-53-23_fbapp.sql
+- The API is written in Ruby using the Sinatra Framework. Currently all API methods are defined in the `api.rb` file. The Dockerfile included here defines the runtime environment required, which is downloaded automatically from Docker Hub as the [ropensci/fishbaseapi](https://registry.hub.docker.com/u/ropensci/fishbaseapi/) container. 
+- The API is served through a ruby unicorn server running behind a NGINX reverse proxy server (using the official Docker NGINX image). 
+- The API sends queries to a separate, linked MySQL container (using the official Docker MySQL image).
+- API queries are cached in a REDIS database provided by a linked REDIS container (again using an official Docker image)
+- Logfiles can be collected, queried, and visualized using Logstash, ElasticSearch and Kibana respectively (still in development).
+
+See the `docker.sh` script which orchestrates the linking and running of these separate containers. 
+
+Design principles
+-----------------
+
+### RESTful design
+
+The API implementation follows RESTful design.  Data is queried by means of `GET` requests to specific URL endpoints, e.g.
+
+```
+GET http://fishbaseapi.info/species/2
 ```
 
-The load step takes a while...
+Or optionally, using particular queries
 
-## Clone
-
-```sh
-git clone git@github.com:ropensci/fishbaseapi.git
-cd fishbaseapi
+```
+GET http://fishbaseapi.info/species?Genus=Labroides
 ```
 
-## Setup
-
-```sh
-bundle install
+```
+GET http://fishbaseapi.info/species?Genus=Labroides&fields=Species
 ```
 
-## Start Sinatra
-
-```sh
-ruby api.rb
-```
-
-## Heartbeat
-
-The root `localhost:4567` redirects to `/heartbeat` 
-
-```sh
-curl -L http://localhost:4567
-# or equivalently curl http://localhost:4567/heartbeat
-```
-
-```sh
-{
-    "paths": [
-        "/heartbeat",
-        "/mysqlping",
-        "/species/:id?<params>",
-        "/genera/:id?<params>",
-        "/faoareas/:id?<params>",
-        "/faoarref/:id?<params>",
-        "/fooditems?<params>",
-        "/oxygen?<params>",
-        "/taxa?<params>",
-        "/synonyms?<params>",
-        "/comnames?<params>",
-        "/popgrowth?<params>",
-        "/country?<params>",
-        "/countref?<params>"
-    ]
-}
-```
-
-## Get a species by id 
-
-This id is the `SpecCode` in many tables in the FishBase DB
-
-```sh
-curl http://localhost:4567/species/2
-```
-
-```sh
-{
-    "count": 1,
-    "data": [
-        {
-            "AnaCat": "potamodromous",
-            "AquacultureRef": 12108,
-            "Aquarium": "never/rarely",
-            "AquariumFishII": " ",
-            "AquariumRef": null,
-            "Author": "(Linnaeus, 1758)",
-            "BaitRef": null,
-            "BodyShapeI": "fusiform / normal",
-            "Brack": -1,
-            "Comments": "Occur in a wide variety of freshwater habitats like rivers, lakes, sewage canals and irrigation channels (Ref. 28714).  Mainly diurnal.  Feed mainly on phytoplankton or benthic algae.    Oviparous (Ref. 205).  Mouthbrooding by females (Ref. 2). Extended temperature range 8-42 °C, natural temperature range 13.5 - 33 °C (Ref. 3).  Marketed fresh and frozen (Ref. 9987).",
-            "CommonLength": null,
-            "CommonLengthF": null,
-            "CommonLengthRef": null,
-            "Complete": null,
-            "Dangerous": "potential pest",
-            "DangerousRef": null,
-            "DateChecked": "2003-01-28 00:00:00 -0800",
-            "DateEntered": "1990-10-17 00:00:00 -0700",
-            "DateModified": "2013-03-30 00:00:00 -0700",
-    ...<cutoff>
-        }
-    ],
-    "error": null,
-    "returned": 1
-}
-```
-
-## Get a species searching by genus
-
-```sh
-http 'http://localhost:4567/species/?genus=Aborichthys' | jq '.data[] | {author: .Author, genus: .Genus, species: .Species}'
-```
-
-```sh
-{
-  "species": "elongatus",
-  "genus": "Aborichthys",
-  "author": "Hora, 1921"
-}
-{
-  "species": "garoensis",
-  "genus": "Aborichthys",
-  "author": "Hora, 1925"
-}
-{
-  "species": "kempi",
-  "genus": "Aborichthys",
-  "author": "Chaudhuri, 1913"
-}
-{
-  "species": "rosammai",
-  "genus": "Aborichthys",
-  "author": "Sen, 2009"
-}
-{
-  "species": "tikaderi",
-  "genus": "Aborichthys",
-  "author": "Barman, 1985"
-}
-```
+Queries return data in the JSON format. By default a limit of 10 entries matching the query are returned, though this can be configured by appending the `&limit=` option to the query URL. Simply visit any of these URLs in a browser for an example return object. 
 
 
-## faoareas
+### API Endpoints
 
-```sh
-http 'http://localhost:4567/faoareas/2?limit=2' | jq '.data[]'
-```
+The API design is to some extent constrained by the existing schema of the FishBase.org database.  At this time, endpoints correspond 1:1 with the tables of the database, and are named accordingly.  Future endpoints may provide more higher-level synthesis.  At this time, endpoints are implemented manually as time allows and existing use cases suggest; see [issue #2](https://github.com/ropensci/fishbaseapi/issues/2#issuecomment-73113433) for an overview. 
 
-```sh
-{
-    "AreaCode": 2,
-    "DateChecked": null,
-    "DateEntered": "1990-10-19 00:00:00 -0700",
-    "DateModified": "1994-04-18 00:00:00 -0700",
-    "Entered": 2,
-    "Expert": null,
-    "Modified": 2,
-    "SpecCode": 2,
-    "Status": "introduced",
-    "StockCode": 1,
-    "TS": null,
-    "autoctr": 484
-},
-{
-    "AreaCode": 2,
-    "DateChecked": null,
-    "DateEntered": "1993-08-04 00:00:00 -0700",
-    "DateModified": "1994-08-02 00:00:00 -0700",
-    "Entered": 2,
-    "Expert": null,
-    "Modified": null,
-    "SpecCode": 3,
-    "Status": "introduced",
-    "StockCode": 3,
-    "TS": null,
-    "autoctr": 490
-}
-```
+Richer processing of (some of) the endpoint returns can be done client-side, as illustrated in the (in-development) [rfishbase2.0](https://github.com/ropensci/rfishbase/tree/rfishbase2.0) R client for the API.
+
+### Why Docker? 
+
+Docker provides a fast and robust way to deploy all the necessary software required for the API on almost any platform. By using separate containers for the different services associated with the API, it becomes easier to scale the API across a cluster, isolate and diagnose points of failure. Individual containers providing services such as the MySQL database or REDIS cache can be restarted without disrupting other services of the API. 
 
 
-## faoarrefs
-
-```sh
-http 'http://localhost:4567/faoarref?limit=3&fields=SpeciesCount,AreaCode,Shelf,Coastline' | jq '.data[]'
-```
-
-```sh
-{
-  "Coastline": 37908,
-  "Shelf": 1326,
-  "AreaCode": 1,
-  "SpeciesCount": 3519
-}
-{
-  "Coastline": 183950,
-  "Shelf": 5632,
-  "AreaCode": 2,
-  "SpeciesCount": 1827
-}
-{
-  "Coastline": 30663,
-  "Shelf": 1985,
-  "AreaCode": 3,
-  "SpeciesCount": 5189
-}
-```
 
 
-## Get food items
-
-```sh
-http 'http://localhost:4567/fooditems/?limit=3' | jq '.data[] | {species: .SpecCode, food1: .FoodI, food2: .FoodII, food3: .FoodIII}'
-```
-
-```sh
-{
-  "food3": "debris",
-  "food2": "detritus",
-  "food1": "detritus",
-  "species": 2
-}
-{
-  "food3": "debris",
-  "food2": "detritus",
-  "food1": "detritus",
-  "species": 2
-}
-{
-  "food3": "n.a./others",
-  "food2": "others",
-  "food1": "others",
-  "species": 2
-}
-```
 
 
-## Get metabolism data from oxygen table
-
-```sh
-http 'http://localhost:4567/oxygen?limit=3&speccode=2' | jq '.data[] | {species: .SpecCode, weight: .Weight, salinity: .Salinity, oxygen_consumption: .OxygenCons}'
-```
-
-```sh
-{
-  "oxygen_consumption": 245.89999,
-  "salinity": 0,
-  "weight": 2.1,
-  "species": 2
-}
-{
-  "oxygen_consumption": 185.89999,
-  "salinity": 0,
-  "weight": 9.2,
-  "species": 2
-}
-{
-  "oxygen_consumption": 142.39999,
-  "salinity": 0,
-  "weight": 9.5,
-  "species": 2
-}
-```
-
-## Taxonomic data endpoint
-
-This endpoint performs a join between the `speices`, `families`, and `genera` tables.
-
-```sh
-http 'localhost:4567/taxa/?species=elongatus&limit=3'
-```
-
-```sh
-{
-    "count": 83,
-    "data": [
-        {
-            "Author": "Hora, 1921",
-            "Class": "Actinopterygii",
-            "FamCode": 692,
-            "Family": "Nemacheilidae",
-            "GenCode": 784,
-            "Genus": "Aborichthys",
-            "Order": "Cypriniformes",
-            "Remark": null,
-            "SpecCode": 24516,
-            "Species": "elongatus",
-            "SpeciesRefNo": 4832,
-            "SubFamily": null,
-            "SubGenCode": null
-        },
-        {
-            "Author": "(Regan, 1908)",
-            "Class": "Actinopterygii",
-            "FamCode": 122,
-            "Family": "Cyprinidae",
-            "GenCode": 1697,
-            "Genus": "Acheilognathus",
-            "Order": "Cypriniformes",
-            "Remark": "Needs a taxonomic reference.",
-            "SpecCode": 9525,
-            "Species": "elongatus",
-            "SpeciesRefNo": 6376,
-            "SubFamily": "Acheilognathinae",
-            "SubGenCode": null
-        },
-        {
-            "Author": "(Whitley, 1952)",
-            "Class": "Actinopterygii",
-            "FamCode": 268,
-            "Family": "Aploactinidae",
-            "GenCode": 9786,
-            "Genus": "Adventor",
-            "Order": "Scorpaeniformes",
-            "Remark": null,
-            "SpecCode": 27470,
-            "Species": "elongatus",
-            "SpeciesRefNo": 6192,
-            "SubFamily": null,
-            "SubGenCode": null
-        }
-    ],
-    "error": null,
-    "returned": 3
-}
-```
-
-## Synonyms endpoint
-
-This endpoint only queries the `synonyms` table.
-
-```sh
-http 'http://localhost:4567/synonyms?speccode=9&limit=2' | jq '.data[] | {syncode: .SynCode, speccode: .SpecCode, syngenus: .SynGenus, synspecies: .SynSpecies, status: .Status}'
-```
-
-```sh
-{
-  "status": "synonym",
-  "synspecies": "stellairs",
-  "syngenus": "Abalistes",
-  "speccode": 9,
-  "syncode": 149720
-}
-{
-  "status": "accepted name",
-  "synspecies": "stellaris",
-  "syngenus": "Abalistes",
-  "speccode": 9,
-  "syncode": 53544
-}
-```
-
-
-## Modify requests
-
-### limit number of results
-
-```sh
-http 'http://localhost:4567/species/?genus=Aborichthys&limit=5' | jq '.data[] | {vulnerability: .Vulnerability, genus: .Genus, length: .Length}'
-```
-
-```sh
-{
-  "length": 5.4,
-  "genus": "Aborichthys",
-  "vulnerability": 13.79
-}
-{
-  "length": 3.8,
-  "genus": "Aborichthys",
-  "vulnerability": 10
-}
-{
-  "length": 8.1,
-  "genus": "Aborichthys",
-  "vulnerability": 21.72
-}
-{
-  "length": null,
-  "genus": "Aborichthys",
-  "vulnerability": 19.03
-}
-{
-  "length": 10.5,
-  "genus": "Aborichthys",
-  "vulnerability": 26.05
-}
-```
-
-### get certain fields back
-
-```sh
-http 'http://localhost:4567/species/?genus=Aborichthys&fields=Genus,Length' | jq '.data[]'
-```
-
-```sh
-{
-    "Genus": "Aborichthys",
-    "Length": 5.4
-},
-{
-    "Genus": "Aborichthys",
-    "Length": 3.8
-},
-{
-    "Genus": "Aborichthys",
-    "Length": 8.1
-},
-{
-    "Genus": "Aborichthys",
-    "Length": null
-},
-{
-    "Genus": "Aborichthys",
-    "Length": 10.5
-}
-```

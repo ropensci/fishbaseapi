@@ -117,7 +117,7 @@ class FBApp < Sinatra::Application
   end
 
   error 500 do
-    JSON.generate({ 'error' => 'server error' })
+    halt 500, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'server error' })
   end
 
   before do

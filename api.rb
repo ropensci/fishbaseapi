@@ -36,15 +36,20 @@ class FBApp < Sinatra::Application
                     :timeout => 20,
                     :connect_timeout => 20)
 
-  # before do
-  #   puts '[Params]'
-  #   p params
-  # end
+  before do
+    puts '[Params]'
+    p params
+  end
 
-  # before do
-  #   puts '[env]'
-  #   p env
-  # end
+  before do
+    puts '[env]'
+    p env
+  end
+
+  before do
+    puts '[sinatra errors]'
+    p env['sinatra.error']
+  end
 
   def ip_anonymize(ip)
     begin
@@ -98,6 +103,8 @@ class FBApp < Sinatra::Application
   configure do
     # enable :logging
     set :logging, $use_logging
+    set :raise_errors, false
+    set :show_exceptions, false
 
     file = File.new(File.join(File.expand_path('~'), log_file_path), 'a+')
     file.sync = true
@@ -115,6 +122,10 @@ class FBApp < Sinatra::Application
   not_found do
     halt 404, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'route not found' })
   end
+
+  # error 400 do |err|
+  #   halt 400, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'invalid request #{err}' })
+  # end
 
   error 500 do
     halt 500, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'server error' })
@@ -418,7 +429,14 @@ class FBApp < Sinatra::Application
 
   def get_new_ids(key, table, matchfield, params)
     id = params[:id]
-    limit = params[:limit] || 10
+
+    limit = params[:limit] || '10'
+    offset = params[:offset] || '0'
+    check_class(limit, 'limit')
+    check_class(offset, 'offset')
+    limit = check_hang_equal(limit, '10')
+    offset = check_hang_equal(offset, '0')
+
     fields = params[:fields] || '*'
     params.delete("limit")
     params.delete("fields")
@@ -427,23 +445,29 @@ class FBApp < Sinatra::Application
     args = get_args(check_params(table, params))
 
     if id.nil?
-      query = sprintf("SELECT %s FROM %s %s limit %d", fields, table, args, limit)
+      query = sprintf("SELECT %s FROM %s %s limit %d offset %d", fields, table, args, limit, offset)
       count = get_count(table, args)
     else
-      query = sprintf("SELECT %s FROM %s WHERE %s = '%d' limit %d", fields, table, matchfield, id.to_s, limit)
+      query = sprintf("SELECT %s FROM %s WHERE %s = '%d' limit %d offset %d", fields, table, matchfield, id.to_s, limit, offset)
       count = get_count(table, sprintf("WHERE %s = '%d'", matchfield, id.to_s))
     end
     return do_query(query, key, count)
   end
 
   def get_new_noids(key, table, params)
-    limit = params[:limit] || 10
+    limit = params[:limit] || '10'
+    offset = params[:offset] || '0'
+    check_class(limit, 'limit')
+    check_class(offset, 'offset')
+    limit = check_hang_equal(limit, '10')
+    offset = check_hang_equal(offset, '0')
+
     fields = params[:fields] || '*'
     params.delete("limit")
     params.delete("fields")
     fields = check_fields(table, fields)
     args = get_args(check_params(table, params))
-    query = sprintf("SELECT %s FROM %s %s limit %d", fields, table, args, limit)
+    query = sprintf("SELECT %s FROM %s %s limit %d offset %d", fields, table, args, limit, offset)
     count = get_count(table, args)
     return do_query(query, key, count)
   end
@@ -455,6 +479,22 @@ class FBApp < Sinatra::Application
     store = {"count" => count, "error" => err, "data" => out}
     redis_set(key, JSON.generate(store))
     return store
+  end
+
+  def check_class(x, param)
+    mm = x.match(/[a-zA-Z]+/)
+    if !mm.nil?
+      # halt 400
+      halt 400, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'invalid request', 'message' => sprintf('%s must be an integer', param)})
+    end
+  end
+
+  def check_hang_equal(x, default)
+    if x == ""
+      return default
+    else
+      return x
+    end
   end
 
 end

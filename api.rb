@@ -225,12 +225,19 @@ class FBApp < Sinatra::Application
 
   get '/taxa/?' do
     key = rediskey('taxa', params)
+
+    result = false
     if redis_exists(key)
-      result = JSON.parse(redis_get(key))
-      out = result['data']
-      err = result['error']
-      count = result['count']
-    else
+      result = get_cached(key)
+      if !result.nil?
+        out = result['data']
+        err = result['error']
+        count = result['count']
+        result = true
+      end
+    end
+
+    if !result
       limit = params[:limit] || 10
       params.delete("limit")
       params.keep_if { |key, value| key.to_s.match(/[Gg]enus|[Ss]pecies/) }
@@ -249,6 +256,10 @@ class FBApp < Sinatra::Application
       err = get_error(out)
       store = {"count" => count, "error" => err, "data" => out}
       redis_set(key, JSON.generate(store))
+    end
+
+    if result.nil?
+      halt not_found
     end
 
     data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }

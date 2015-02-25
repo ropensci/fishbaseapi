@@ -346,7 +346,7 @@ class FBApp < Sinatra::Application
 
   def get_error(x)
     if x.length == 0
-    	halt not_found
+    	return { 'message' => 'no results found' }
     else
       return nil
     end

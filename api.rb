@@ -116,6 +116,10 @@ class FBApp < Sinatra::Application
     halt 404, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'route not found' })
   end
 
+  server_error do
+    halt 500, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'server error' })
+  end
+
   before do
     headers "Content-Type" => "application/json; charset=utf8"
     cache_control :public, :must_revalidate, :max_age => 60

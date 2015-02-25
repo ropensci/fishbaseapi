@@ -436,6 +436,7 @@ class FBApp < Sinatra::Application
     check_class(offset, 'offset')
     limit = check_hang_equal(limit, '10')
     offset = check_hang_equal(offset, '0')
+    check_max(limit, 5000)
 
     fields = params[:fields] || '*'
     params.delete("limit")
@@ -461,6 +462,7 @@ class FBApp < Sinatra::Application
     check_class(offset, 'offset')
     limit = check_hang_equal(limit, '10')
     offset = check_hang_equal(offset, '0')
+    check_max(limit, 5000)
 
     fields = params[:fields] || '*'
     params.delete("limit")
@@ -481,10 +483,15 @@ class FBApp < Sinatra::Application
     return store
   end
 
+  def check_max(x, max)
+    if x.to_i > max
+      halt 400, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'invalid request', 'message' => sprintf('maximum limit is %d', max)})
+    end
+  end
+
   def check_class(x, param)
     mm = x.match(/[a-zA-Z]+/)
     if !mm.nil?
-      # halt 400
       halt 400, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'invalid request', 'message' => sprintf('%s must be an integer', param)})
     end
   end

@@ -8,7 +8,7 @@ require 'geolocater'
 
 class FBApp < Sinatra::Application
 
-  $use_caching = true
+  $use_caching = false
   $use_logging = true
   log_file_path = "fishbaseapi.log"
   host = ENV['MYSQL_PORT_3306_TCP_ADDR']

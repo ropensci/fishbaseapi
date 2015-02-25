@@ -116,8 +116,8 @@ class FBApp < Sinatra::Application
     halt 404, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'route not found' })
   end
 
-  server_error do
-    halt 500, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'server error' })
+  error 500 do
+    JSON.generate({ 'error' => 'server error' })
   end
 
   before do

@@ -17,5 +17,5 @@ docker run --name fbapi -d --link fbmysql:mysql --link fbredis:redis --volumes-f
 # Must generate a .htpassword file first:
 # assuming apache2-utils is installed: sudo htpasswd -cb .htpasswd $USER $PASSWORD
 
-docker run --name fbnginx -d -p 80:80 -p 81:81 --link fblogstash:logstash --link fbapi:api -v ${PWD}/nginx.conf:/etc/nginx/nginx.conf -v ${PWD}/.htpasswd:/etc/nginx/.htpasswd nginx:latest
+docker run --name fbnginx -d -p 80:80 -p 9200:9200 -p 9292:9292 --link fblogstash:logstash --link fbapi:api -v ${PWD}/nginx.conf:/etc/nginx/nginx.conf -v ${PWD}/.htpasswd:/etc/nginx/.htpasswd nginx:latest
 

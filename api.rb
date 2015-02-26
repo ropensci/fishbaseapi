@@ -46,29 +46,60 @@ class FBApp < Sinatra::Application
   #   p env
   # end
 
-  def ip_anonymize(ip)
-    begin
-      ismatch = ip.match('127.0.0.1|localhost|::1')
-      if ismatch.nil?
-        if redis_exists(ip)
-          out = JSON.parse(redis_get(ip))
-        else
-          res = Geolocater.geolocate_ip(ip)
-          out = res.keep_if { |key, value| key.to_s.match(/city|country_name/) }
-          redis_set(ip, JSON.generate(out))
-        end
-      else
-        out = {"city" => "localhost", "country_name" => "localhost"}
-      end
-      return out
-    rescue
-      return ip
-  #    return {"city" => "localhost", "country_name" => "localhost"}
-    end
-  end
 
   class LogstashLogger < Rack::CommonLogger
     private
+
+    ### FIXME UGH, duplicate this definition so it's available to the private class.  
+    def redis_exists(key)
+      if !$use_caching
+        return false
+      else
+        begin
+          return $redis.exists(key)
+        rescue
+          return false
+        end
+      end
+    end
+    def redis_set(key, value)
+      if $use_caching
+        begin
+          return $redis.set(key, value)
+        rescue
+          return nil
+        end
+      end
+    end
+    def redis_get(key)
+      begin
+        return $redis.get(key)
+      rescue
+        return nil
+      end
+    end
+
+
+    def ip_anonymize(ip)
+      begin
+        ismatch = ip.match('127.0.0.1|localhost|::1')
+        if ismatch.nil?
+          if redis_exists(ip)
+            out = JSON.parse(redis_get(ip))
+          else
+            res = Geolocater.geolocate_ip(ip)
+            out = res.keep_if { |key, value| key.to_s.match(/city|country_name/) }
+            redis_set(ip, JSON.generate(out))
+          end
+        else
+          out = {"city" => "localhost", "country_name" => "localhost"}
+        end
+        return out
+      rescue
+        return ip
+    #    return {"city" => "localhost", "country_name" => "localhost"}
+      end
+    end
 
     def log(env, status, header, began_at)
       now    = Time.now
@@ -79,7 +110,7 @@ class FBApp < Sinatra::Application
         '@ip' => ip_anonymize(env['REMOTE_ADDR']),
         '@fields'      => {
           'remoteadd'  => env['REMOTE_ADDR'],
-          'ipadd'      => $ip,
+#          'ipadd'      => $ip,
           'method'     => env['REQUEST_METHOD'],
           'path'       => env['PATH_INFO'],
           'httpver'    => env['HTTP_VERSION'],

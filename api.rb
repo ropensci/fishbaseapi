@@ -36,20 +36,15 @@ class FBApp < Sinatra::Application
                     :timeout => 500,
                     :connect_timeout => 500)
 
-  before do
-    puts '[Params]'
-    p params
-  end
+  # before do
+  #   puts '[Params]'
+  #   p params
+  # end
 
-  before do
-    puts '[env]'
-    p env
-  end
-
-  before do
-    puts '[sinatra errors]'
-    p env['sinatra.error']
-  end
+  # before do
+  #   puts '[env]'
+  #   p env
+  # end
 
   def ip_anonymize(ip)
     begin

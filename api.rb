@@ -146,18 +146,23 @@ class FBApp < Sinatra::Application
       "paths" => [
         "/heartbeat",
         "/mysqlping",
-        "/species/:id?<params>",
-        "/genera/:id?<params>",
+        "/comnames?<params>",
+        "/countref?<params>",
+        "/country?<params>",
+        "/ecology?<params>",
         "/faoareas/:id?<params>",
         "/faoarref/:id?<params>",
         "/fooditems?<params>",
+        "/genera/:id?<params>",
         "/oxygen?<params>",
-        "/taxa?<params>",
-        "/synonyms?<params>",
-        "/comnames?<params>",
+        "/popchar?<params>",
         "/popgrowth?<params>",
-        "/country?<params>",
-        "/countref?<params>"
+        "/poplf?<params>",
+        "/popll?<params>",
+        "/poplw?<params>",
+        "/species/:id?<params>",
+        "/synonyms?<params>",
+        "/taxa?<params>"
       ]
     })
   end

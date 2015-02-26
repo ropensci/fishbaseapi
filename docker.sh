@@ -1,5 +1,5 @@
 #!/bin/bash
-docker rm -f fbredis fbmysql fbapi fblogstash fbnginx
+docker rm -f -v fbredis fbmysql fbapi fblogstash fbnginx
 
 docker run --name fbredis -d redis:latest
 docker run --name fblogstash -d \

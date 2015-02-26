@@ -3,9 +3,7 @@ docker rm -f fbredis fbmysql fbapi fblogstash fbnginx
 
 docker run --name fbredis -d redis:latest
 docker run --name fblogstash -d \
-  -v /root \
-	-p 9292:9292 \
-	-p 9200:9200 \
+  -v /var/log/logstash \
 	-e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/master/logstash.conf \
 	pblittle/docker-logstash
 

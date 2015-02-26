@@ -5,7 +5,6 @@ docker run --name fbredis -d redis:latest
 docker run --name fblogstash -d \
   -p 9292:9292 \
   -v /var/log/fishbase \
-  -e ES_HOST=localhost \
   -v ${PWD}/logstashconf:/opt/logstash/conf.d \
 	pblittle/docker-logstash
 

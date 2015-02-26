@@ -10,7 +10,7 @@ class FBApp < Sinatra::Application
 
   $use_caching = false
   $use_logging = true
-  log_file_path = "fishbaseapi.log"
+  log_file_path = "/var/log/fishbase/api.log"
   host = ENV['MYSQL_PORT_3306_TCP_ADDR']
 
   # Set up MySQL DB
@@ -132,18 +132,12 @@ class FBApp < Sinatra::Application
     set :raise_errors, false
     set :show_exceptions, false
 
-    file = File.new(File.join(File.expand_path('~'), log_file_path), 'a+')
+    file = File.new(log_file_path, 'a+')
     file.sync = true
 
     use LogstashLogger, file
   end
 
-  # configure do
-  #   enable :logging
-  #   file = File.new("/Users/sacmac/fishbaseapi.log", 'a+')
-  #   file.sync = true
-  #   use Rack::CommonLogger, file
-  # end
 
   not_found do
     halt 404, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'route not found' })

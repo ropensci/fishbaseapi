@@ -3,9 +3,13 @@ docker rm -f -v fbredis fbmysql fbapi fblogstash fbnginx
 
 docker run --name fbredis -d redis:latest
 docker run --name fblogstash -d \
-  -v /var/log/logstash \
-	-e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/master/logstash.conf \
+  -p 9292:9292 \
+  -v /var/log/fishbase \
+  -e ES_HOST=localhost \
+  -v ${PWD}/logstashconf:/opt/logstash/conf.d \
 	pblittle/docker-logstash
+
+# -e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/master/logstash.conf \
 
 docker run --name fbmysql --restart=always -d -v $HOME/data/fishbase:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root mysql:latest
 docker build -t  ropensci/fishbaseapi:latest .

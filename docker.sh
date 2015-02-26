@@ -3,7 +3,6 @@
 docker rm -f -v fbredis fbmysql fbapi fblogstash fbnginx
 docker run --name fbredis -d redis:latest
 docker run --name fblogstash -d \
-  -p 9292:9292 \
   -v /var/log/fishbase \
   -v ${PWD}/logstashconf:/opt/logstash/conf.d \
 	pblittle/docker-logstash

@@ -9,7 +9,7 @@ docker run --name fblogstash -d \
 ## ##  -e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/master/logstash.conf \
 
 docker run --name fbmysql --restart=always -d -v $HOME/data/fishbase:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root mysql:latest
-#docker build -t  ropensci/fishbaseapi:latest .
+docker build -t  ropensci/fishbaseapi:latest .
 
 docker run --name fbapi -d --link fbmysql:mysql --link fbredis:redis --volumes-from fblogstash ropensci/fishbaseapi:latest
 

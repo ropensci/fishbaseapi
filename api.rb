@@ -9,7 +9,7 @@ require "sinatra/multi_route"
 class FBApp < Sinatra::Application
   register Sinatra::MultiRoute
 
-  $use_caching = false
+  $use_caching = true
   $use_logging = true
   log_file_path = "/var/log/fishbase/api.log"
   host = ENV['MYSQL_PORT_3306_TCP_ADDR']

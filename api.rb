@@ -4,9 +4,10 @@ require 'json'
 require 'mysql2'
 require 'redis'
 require 'geolocater'
-
+require "sinatra/multi_route"
 
 class FBApp < Sinatra::Application
+  register Sinatra::MultiRoute
 
   $use_caching = false
   $use_logging = true
@@ -128,6 +129,8 @@ class FBApp < Sinatra::Application
 
   before do
     headers "Content-Type" => "application/json; charset=utf8"
+    headers "Access-Control-Allow-Methods" => "HEAD, GET"
+    headers "Access-Control-Allow-Origin" => "*"
     cache_control :public, :must_revalidate, :max_age => 60
   end
 
@@ -281,6 +284,10 @@ class FBApp < Sinatra::Application
 
     data = { "count" => count, "returned" => out.length, "error" => err, "data" => out }
     return JSON.pretty_generate(data)
+  end
+
+  route :put, :post, :delete, :copy, :options, :trace, '/*' do
+    halt 405
   end
 
   # helpers

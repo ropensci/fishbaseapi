@@ -109,7 +109,7 @@ class FBApp < Sinatra::Application
         '@timestamp' => now.utc.iso8601,
         '@ip' => ip_anonymize(env['REMOTE_ADDR']),
         '@fields'      => {
-          'remoteadd'  => env['REMOTE_ADDR'],
+#          'remoteadd'  => env['REMOTE_ADDR'],
 #          'ipadd'      => $ip,
           'method'     => env['REQUEST_METHOD'],
           'path'       => env['PATH_INFO'],

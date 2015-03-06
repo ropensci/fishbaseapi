@@ -51,7 +51,7 @@ class FBApp < Sinatra::Application
   class LogstashLogger < Rack::CommonLogger
     private
 
-    ### FIXME UGH, duplicate this definition so it's available to the private class.  
+    ### FIXME UGH, duplicate this definition so it's available to the private class.
     def redis_exists(key)
       if !$use_caching
         return false
@@ -346,7 +346,7 @@ class FBApp < Sinatra::Application
       args = get_args(params, prefix=true)
 
       query = sprintf("
-        SELECT s.SpecCode,s.Genus,s.Species,s.SpeciesRefNo,s.Author,s.SubFamily,s.FamCode,s.GenCode,s.SubGenCode,s.Remark,f.Family,f.Order,f.Class
+        SELECT s.SpecCode,s.Genus,s.Species,s.SpeciesRefNo,s.Author,s.FBname,s.SubFamily,s.FamCode,s.GenCode,s.SubGenCode,s.Remark,f.Family,f.Order,f.Class
           FROM species s
           INNER JOIN families f on s.FamCode = f.FamCode
           INNER JOIN genera g on s.GenCode = g.GenCode

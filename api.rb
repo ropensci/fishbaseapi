@@ -172,18 +172,29 @@ class FBApp < Sinatra::Application
         "/comnames?<params>",
         "/countref?<params>",
         "/country?<params>",
+        "/diet?<params>",
         "/ecology?<params>",
+        "/ecosystems?<params>",
         "/faoareas/:id?<params>",
         "/faoarref/:id?<params>",
         "/fooditems?<params>",
         "/genera/:id?<params>",
+        "/intrcase?<params>",
+        "/morphdat?<params>",
+        "/morphmet?<params>",
+        "/occurrence?<params>",
         "/oxygen?<params>",
         "/popchar?<params>",
         "/popgrowth?<params>",
         "/poplf?<params>",
         "/popll?<params>",
+        "/popqb?<params>",
         "/poplw?<params>",
+        "/predats?<params>",
+        "/ration?<params>",
         "/species/:id?<params>",
+        "/speed?<params>",
+        "/swimming?<params>",
         "/synonyms?<params>",
         "/taxa?<params>"
       ]
@@ -212,9 +223,18 @@ class FBApp < Sinatra::Application
     route_noid('countref')
   end
 
+  get '/diet/?' do
+    route_noid('diet')
+  end
+
   get '/ecology/?' do
     route_noid('ecology')
   end
+
+  get '/ecosystems/?' do
+    route_noid('ecosystems')
+  end
+
 
   get '/faoareas/?:id?/?' do
     route('faoareas', 'AreaCode')
@@ -231,6 +251,24 @@ class FBApp < Sinatra::Application
   get '/genera/?:id?/?' do
     route('genera', 'GenCode')
   end
+
+  get '/intrcase/?' do
+    route_noid('intrcase')
+  end
+
+
+  get '/morphdat/?' do
+    route_noid('morphdat')
+  end
+
+  get '/morphmet/?' do
+    route_noid('morphdat')
+  end
+
+  get '/occurrence/?' do
+    route_noid('occurrence')
+  end
+
 
   get '/oxygen/?' do
     route_noid('oxygen')
@@ -252,12 +290,31 @@ class FBApp < Sinatra::Application
     route_noid('popll')
   end
 
+  get '/popqb/?' do
+    route_noid('popqb')
+  end
+
   get '/poplw/?' do
     route_noid('poplw')
   end
 
+  get '/predats/?' do
+    route_noid('predats')
+  end
+
+  get '/ration/?' do
+    route_noid('ration')
+  end
+
   get '/species/?:id?/?' do
     route('species', 'SpecCode')
+  end
+  get '/speed/?' do
+    route_noid('speed')
+  end
+
+  get '/swimming/?' do
+    route_noid('swimming')
   end
 
   get '/synonyms/?' do

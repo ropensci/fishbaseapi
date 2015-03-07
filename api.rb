@@ -198,6 +198,7 @@ class FBApp < Sinatra::Application
         "/poplw?<params>",
         "/predats?<params>",
         "/ration?<params>",
+        "/refrens?<params>",
         "/species/:id?<params>",
         "/speed?<params>",
         "/swimming?<params>",
@@ -310,6 +311,10 @@ class FBApp < Sinatra::Application
 
   get '/ration/?' do
     route_noid('ration')
+  end
+
+  get '/refrens/?' do
+    route_noid('refrens')
   end
 
   get '/species/?:id?/?' do

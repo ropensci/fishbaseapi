@@ -171,7 +171,8 @@ class FBApp < Sinatra::Application
   get "/heartbeat/?" do
     $ip = request.ip
     return JSON.pretty_generate({
-      "paths" => [
+      "routs" => [
+        "/docs",
         "/heartbeat",
         "/mysqlping",
         "/comnames?<params>",

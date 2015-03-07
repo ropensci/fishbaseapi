@@ -11,7 +11,8 @@ class FBApp < Sinatra::Application
 
   $use_caching = true
   $use_logging = true
-  log_file_path = "/var/log/fishbase/api.log"
+  # log_file_path = "/var/log/fishbase/api.log"
+  log_file_path = "api.log"
   host = ENV['MYSQL_PORT_3306_TCP_ADDR']
 
   # Set up MySQL DB
@@ -161,6 +162,10 @@ class FBApp < Sinatra::Application
 
   get '/' do
     redirect '/heartbeat'
+  end
+
+  get '/docs' do
+    redirect 'http://docs.fishbaseapi.apiary.io'
   end
 
   get "/heartbeat/?" do

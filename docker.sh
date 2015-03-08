@@ -7,7 +7,8 @@ docker run --name fbredis -d redis:latest
 docker run --name fblogstash -d \
   -v /var/log/fishbase \
   -v ${PWD}/logstashconf:/opt/logstash/conf.d \
-	pblittle/docker-logstash
+  -e ES_PROXY_HOST=$ESHOST \
+  pblittle/docker-logstash
 
 ##  -e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/master/logstash.conf \
 

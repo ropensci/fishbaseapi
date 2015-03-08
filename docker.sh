@@ -19,7 +19,8 @@ docker run --name fbmysql \
 
 docker run --name fbgeoip -d allingeek/docker-freegeoip
 
-docker build -t  ropensci/fishbaseapi:latest .
+#docker build -t  ropensci/fishbaseapi:latest .
+docker pull ropensci/fishbaseapi:latest
 docker run --name fbapi -d \
   --link fbmysql:mysql \
   --link fbredis:redis \

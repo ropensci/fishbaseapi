@@ -1,6 +1,9 @@
 redis:
   image: redis:latest
 
+geoip:
+  image: allingeek/docker-freegeoip
+
 mysql:
   image: mysql:latest
   volumes: 
@@ -10,28 +13,32 @@ mysql:
 
 logstash:
   image: pblittle/docker-logstash:latest
-  ports:
-    - "9292:9292"
-    - "9200:9200"
-  environment:
-    LOGSTASH_CONFIG_URL: https://raw.githubusercontent.com/ropensci/fishbaseapi/master/logstash.conf
     volumes:
-      - /root
+      - /var/log/fishbase
+      - ${PWD}/logstashconf:/opt/logstash/conf.d 
+#  environment:
+#    LOGSTASH_CONFIG_URL: https://raw.githubusercontent.com/ropensci/fishbaseapi/master/logstash.conf
 
 api:
   image: ropensci/fishbaseapi:latest
   links:
     - mysql
     - redis
-  ports:
-   - "80:80"
+    - geoip
   volumes_from: 
     - logstash
 
 nginx:
   image: nginx:latest
-  net: "container:fishbaseapi_api_1"
+  ports:
+   - "80:80"
+   - "9292:9292"
+   - "9200:9200"
+  links:
+    - logstash
+    - api
   volumes:
     - ${PWD}/nginx.conf:/etc/nginx/nginx.conf
-  volumes_from: 
-    - api
+    - ${PWD}/.htpasswd:/etc/nginx/.htpasswd
+    - ${PWD}/es.crt:/etc/ssl/certs/es.crt
+    - ${PWD}/es.key:/etc/ssl/private/es.key

@@ -31,8 +31,8 @@ docker run --name fbapi -d \
 # Must generate a .htpassword file first:
 # assuming apache2-utils is installed: sudo htpasswd -cb .htpasswd $USER $PASSWORD
 
-docker run --name fbnginx \
-  -d -p 80:80 -p 9200:9200 -p 9292:9292 \
+docker run --name fbnginx -d \
+  -p 80:80 -p 9200:9200 -p 9292:9292 \
   --link fblogstash:logstash \
   --link fbapi:api \
   -v ${PWD}/nginx.conf:/etc/nginx/nginx.conf \

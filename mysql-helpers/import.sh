@@ -15,7 +15,9 @@ then
   docker run --rm --link fbmysql:mysql \
     -v ${PWD}/fbapp.sql:/data/fbapp.sql \
     -v ${PWD}/mysql_import.sh:/data/mysql_import.sh \
-    -w /data mysql bash mysql_import.sh 
+    -w /data \
+    --entrypoint 'bin/bash' \
+    mysql:latest run-mysql --execute="source fbapp.sql;"
 fi
 
 

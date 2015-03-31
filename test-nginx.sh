@@ -9,7 +9,7 @@ docker run --name nginx -d \
   -p 443:443 \
   -v ${PWD}/nginx-ssl.conf:/etc/nginx/nginx.conf \
   -v ${PWD}/.htpasswd:/etc/nginx/.htpasswd \
-  -v ${PWD}/ssl.crt:/etc/nginx/ssl/certs/nginx.crt \
-  -v ${PWD}/ssl.key:/etc/nginx/ssl/private/nginx.key \
+  -v ${PWD}/ssl.crt:/etc/nginx/ssl/nginx.crt \
+  -v ${PWD}/ssl.key:/etc/nginx/ssl/nginx.key \
   nginx:latest
 

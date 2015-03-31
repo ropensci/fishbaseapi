@@ -171,7 +171,7 @@ class FBApp < Sinatra::Application
   get "/heartbeat/?" do
     $ip = request.ip
     return JSON.pretty_generate({
-      "routs" => [
+      "routes" => [
         "/docs",
         "/heartbeat",
         "/mysqlping",
@@ -183,9 +183,11 @@ class FBApp < Sinatra::Application
         "/ecosystems?<params>",
         "/faoareas/:id?<params>",
         "/faoarref/:id?<params>",
+        "/fecundity?<params>",
         "/fooditems?<params>",
         "/genera/:id?<params>",
         "/intrcase?<params>",
+        "/maturity?<params>",
         "/morphdat?<params>",
         "/morphmet?<params>",
         "/occurrence?<params>",
@@ -199,8 +201,11 @@ class FBApp < Sinatra::Application
         "/predats?<params>",
         "/ration?<params>",
         "/refrens?<params>",
+        "/reproduc?<params>",
         "/species/:id?<params>",
+        "/spawning?<params>",
         "/speed?<params>",
+        "/stocks?<params>",
         "/swimming?<params>",
         "/synonyms?<params>",
         "/taxa?<params>"
@@ -251,6 +256,11 @@ class FBApp < Sinatra::Application
     route('faoarref', 'AreaCode')
   end
 
+  get '/fecundity/?' do
+    route_noid('fecundity')
+  end
+
+
   get '/fooditems/?' do
     route_noid('fooditems')
   end
@@ -263,6 +273,9 @@ class FBApp < Sinatra::Application
     route_noid('intrcase')
   end
 
+  get '/maturity/?' do
+    route_noid('maturity')
+  end
 
   get '/morphdat/?' do
     route_noid('morphdat')
@@ -317,12 +330,26 @@ class FBApp < Sinatra::Application
     route_noid('refrens')
   end
 
+  get '/reproduc/?' do
+    route_noid('reproduc')
+  end
+
+  get '/spawning/?' do
+    route_noid('spawning')
+  end
+
   get '/species/?:id?/?' do
     route('species', 'SpecCode')
   end
+
   get '/speed/?' do
     route_noid('speed')
   end
+
+  get '/stocks/?' do
+    route_noid('stocks')
+  end
+
 
   get '/swimming/?' do
     route_noid('swimming')

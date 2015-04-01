@@ -38,7 +38,7 @@ docker run --name fbnginx -d \
   --link fbapi:api \
   -v ${PWD}/nginx.conf:/etc/nginx/nginx.conf \
   -v ${PWD}/.htpasswd:/etc/nginx/.htpasswd \
-  -v ${PWD}/es.crt:/etc/ssl/certs/es.crt \
-  -v ${PWD}/es.key:/etc/ssl/private/es.key \
+  -v ${PWD}/bundle.crt:/etc/ssl/certs/es.crt \
+  -v ${PWD}/ssl.key:/etc/ssl/private/es.key \
   nginx:latest
 

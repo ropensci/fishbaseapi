@@ -22,8 +22,8 @@ Technical specifications
 - [Download](https://github.com/ropensci/fishbaseapi/archive/master.zip) or clone the fishbaseapi repository
 - Place a snapshot of the FishBase SQL dump (not provided) in a file called `fbapp.sql` inside the downloaded directory.
 
-- From that directory, run the `import.sh` bash script, which will use Docker to import the dump into a MySQL docker container. This may take a while but needs only be done once.
-- Run the `docker.sh` script to launch the API.  Alternately, the containers can be launched with `fig up`, or using the `fleet` service files provided for the CoreOS architecture. 
+- From that directory, run the `mysqp-helpers/import.sh` bash script, which will use Docker to import the dump into a MySQL docker container. This may take a while but needs only be done once.
+- Run the `docker.sh` script to launch the API.  (Alternately, the containers can be launched with `fig up`, or using the `fleet` service files provided for the CoreOS architecture.)
 
 ### Technical overview
 

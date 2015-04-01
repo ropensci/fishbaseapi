@@ -1,5 +1,8 @@
 #!/bin/bash
-## First time use only
+
+## First time use only. Imports the latest fishbase data from an fbapp.sql dump
+
+
 if [ ! -d "$HOME/data/fishbase" ]
 then
   mkdir -p $HOME/data/fishbase
@@ -14,7 +17,7 @@ if [ ! -e "$HOME/data/fishbase/fbapp" ]
 then
   docker run --rm --link fbmysql:mysql \
     -v ${PWD}/fbapp.sql:/data/fbapp.sql \
-    -v ${PWD}/mysql_import.sh:/data/mysql_import.sh \
+    -v ${PWD}/helper.sh:/data/helper.sh \
     -w /data \
     --entrypoint 'bin/bash' \
     mysql:latest run-mysql --execute="source fbapp.sql;"

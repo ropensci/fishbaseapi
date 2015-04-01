@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Start the mysql container
+## Start the mysql container if necessary, and then drop into an interactive MySQL session
 CONTAINER=$(docker ps -a | grep "fbmysql" | cut -f1 -d" ") 
 
 if [ -z "$CONTAINER" ]; then

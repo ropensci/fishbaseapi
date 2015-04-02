@@ -7,6 +7,10 @@ if [ ! -d "$HOME/data/fishbase" ]
 then
   mkdir -p $HOME/data/fishbase
 fi
+if [ ! -d "$HOME/log/fishbase" ]
+then
+  mkdir -p $HOME/log/fishbase
+fi
 
 ## Start the mysql container
 docker run --name fbmysql -d -v $HOME/data/fishbase:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root mysql:latest

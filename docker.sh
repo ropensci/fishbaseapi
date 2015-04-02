@@ -5,7 +5,7 @@ docker rm -f -v fbredis fbmysql fbapi fblogstash fbnginx fbgeoip
 docker run --name fbredis -d redis:latest
 
 docker run --name fblogstash -d \
-  -v /var/log/fishbase \
+  -v $HOME/log/fishbase:/var/log/fishbase \
   -v ${PWD}/logstashconf:/opt/logstash/conf.d \
   -e ES_PROXY_HOST=$ESHOST \
   pblittle/docker-logstash

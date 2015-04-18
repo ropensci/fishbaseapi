@@ -32,7 +32,7 @@ class FBApp < Sinatra::Application
   end
 
   # Set up Redis for caching
-  $redis = Redis.new(:host => ENV['REDIS_PORT_6379_TCP_ADDR'],
+  $redis = Redis.new(:host => "redis",
                     :port => ENV['REDIS_PORT_6379_TCP_PORT'],
                     :timeout => 500,
                     :connect_timeout => 500)

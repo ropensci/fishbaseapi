@@ -8,7 +8,7 @@ User quick start
 
 At this time, this API is deployed for development purposes only.  The testing server may be available only intermittently and all endpoints are subject to change. Please check back here for updates when the API is officially released by FishBase.org. 
 
-- The test API is being served from [fishbaseapi.info](http://fishbaseapi.info)
+- The test API is being served from [fishbase.ropensci.org](http://fishbase.ropensci.org)
 - Draft documentation of the API is available at [docs.fishbaseapi.apiary.io](http://docs.fishbaseapi.apiary.io/#)
 - The [rfishbase2.0](https://github.com/ropensci/rfishbase/tree/rfishbase2.0) R package provides a convenient and powerful way to interact with the API.
 

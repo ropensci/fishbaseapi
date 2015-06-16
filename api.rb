@@ -108,7 +108,7 @@ class FBApp < Sinatra::Application
       logger = @logger || env['rack.errors']
       json = {
         '@timestamp' => now.utc.iso8601,
-        '@ip' => ip_anonymize(env['REMOTE_ADDR']),
+        '@ip' => ip_anonymize($ip),
         '@fields'      => {
 #          'remoteadd'  => env['REMOTE_ADDR'],
 #          'ipadd'      => $ip,
@@ -411,6 +411,7 @@ class FBApp < Sinatra::Application
 
   # helpers
   def route(table, var)
+    $ip = request.ip
     key = rediskey(table, params)
     if redis_exists(key)
       obj = get_cached(key)
@@ -424,6 +425,7 @@ class FBApp < Sinatra::Application
   end
 
   def route_noid(table)
+    $ip = request.ip
     key = rediskey(table, params)
     if redis_exists(key)
       obj = get_cached(key)

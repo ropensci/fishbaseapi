@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker rm -f -v fbredis fbmysql fbapi fbes fblogstash fbnginx fbgeoip
+docker rm -f -v fbredis fbes fblogstash fbgeoip fbmysql slbmysql fbapi fbnginx
 
 
 ## Start some services: redis, elasticsearch, logstash, freegeoip

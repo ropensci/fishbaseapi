@@ -13,6 +13,6 @@ map '/' do
 	run FBApp
 end
 
-map '/sealifebase' do
-	run SLBApp
-end
+#map '/sealifebase' do
+#	run SLBApp
+#end

@@ -1,17 +1,15 @@
 #!/bin/bash
 
-docker rm -f -v fbredis fbmysql fbapi fblogstash fbnginx fbgeoip
+docker rm -f -v fbredis fbmysql fbapi fbes fblogstash fbnginx fbgeoip
 
 docker run --name fbredis -d redis:latest
-docker run --name fbes -d elasticsearch:latest
 
-docker run --name fblogstash -d -v "$PWD"/logstashconf:/config-dir logstash:latest logstash -f /config-dir/logstash.conf
-#
-#docker run --name fblogstash -d \
-#  -v $HOME/log/fishbase:/var/log/fishbase \
-#  -v ${PWD}/logstashconf:/opt/logstash/conf.d \
-#  -e ES_PROXY_HOST=$ESHOST \
-#  pblittle/docker-logstash
+## Use official elasticsearch
+docker run --name fbes -p 9288:9200 -d -v "$HOME/log/fishbase":/usr/share/elasticsearch/data elasticsearch:latest
+
+## Use official logstash
+docker run --name fblogstash --link fbes:es -d -v "$PWD/logstashconf":/config-dir -v $HOME/log/fishbase:/var/log/fishbase logstash:latest logstash -f /config-dir/logstash.conf
+
 
 ##  -e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/master/logstash.conf \
 
@@ -36,7 +34,8 @@ docker run --name fbapi -d \
 # assuming apache2-utils is installed: sudo htpasswd -cb .htpasswd $USER $PASSWORD
 
 docker run --name fbnginx -d \
-  -p 80:80 -p 9200:9200 -p 9292:9292 \
+  -p 80:80 -p 9200:9200 \
+  --link fbes:es \
   --link fblogstash:logstash \
   --link fbapi:api \
   -v ${PWD}/nginx.conf:/etc/nginx/nginx.conf \

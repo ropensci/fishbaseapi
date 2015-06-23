@@ -29,5 +29,7 @@ docker run --name some-mysql -d -v $DATAPATH:/var/lib/mysql -e MYSQL_ROOT_PASSWO
 
 docker run -it --link some-mysql:mysql --rm -v ${PWD}/fbapp.sql:/fbapp.sql mysql sh -c 'exec mysql -h"$MYSQL_PORT_3306_TCP_ADDR" -P"$MYSQL_PORT_3306_TCP_PORT" -uroot -p"$MYSQL_ENV_MYSQL_ROOT_PASSWORD"'
 
+## FIXME now you still need to go and probably change permissions of $DATAPATH/fbapp dir/contents.  
+
 docker stop some-mysql
 docker rm some-mysql

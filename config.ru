@@ -6,5 +6,13 @@ require 'redis'
 require 'geolocater'
 
 require File.join( File.dirname(__FILE__), 'api.rb')
+require File.join( File.dirname(__FILE__), 'sealifebase.rb')
 
-run FBApp
+
+map '/' do
+	run FBApp
+end
+
+map '/sealifebase' do
+	run SLBApp
+end

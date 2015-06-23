@@ -159,15 +159,15 @@ class SLBApp < Sinatra::Application
     cache_control :public, :must_revalidate, :max_age => 60
   end
 
-  get '/' do
-    redirect '/heartbeat'
+  get '/sealifebase' do
+    redirect '/sealifebase/heartbeat'
   end
 
   get '/docs' do
     redirect 'http://docs.fishbaseapi.apiary.io'
   end
 
-  get "/heartbeat/?" do
+  get "/sealifebase/heartbeat/?" do
     $ip = request.ip
     return JSON.pretty_generate({
       "routes" => [
@@ -212,7 +212,7 @@ class SLBApp < Sinatra::Application
     })
   end
 
-  get '/mysqlping/?' do
+  get '/sealifebase/mysqlping/?' do
     return JSON.pretty_generate({
       "mysql_server_up" => $client.ping,
       "mysql_host" => $client.query_options[:host]
@@ -337,7 +337,7 @@ class SLBApp < Sinatra::Application
     route_noid('spawning')
   end
 
-  get '/species/?:id?/?' do
+  get '/sealifebase/species/?:id?/?' do
     route('species', 'SpecCode')
   end
 

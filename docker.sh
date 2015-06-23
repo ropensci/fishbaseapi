@@ -1,17 +1,16 @@
 #!/bin/bash
 
-docker rm -f -v fbredis fbmysql fbapi fbes fblogstash fbnginx fbgeoip
+docker rm -f -v fbredis fbes fblogstash fbgeoip fbmysql slbmysql fbapi fbnginx
 
+
+## Start some services: redis, elasticsearch, logstash, freegeoip
 docker run --name fbredis -d redis:latest
-
-## Use official elasticsearch
 docker run --name fbes -d -v "$HOME/log/fishbase":/usr/share/elasticsearch/data elasticsearch:latest
+docker run --name fblogstash --link fbes:es -d -v "$PWD/logstashconf":/config-dir -v $HOME/log:/var/log logstash:latest logstash -f /config-dir/logstash.conf
+docker run --name fbgeoip -d allingeek/docker-freegeoip
 
-## Use official logstash
-docker run --name fblogstash --link fbes:es -d -v "$PWD/logstashconf":/config-dir -v $HOME/log/fishbase:/var/log/fishbase logstash:latest logstash -f /config-dir/logstash.conf
 
-
-##  -e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/master/logstash.conf \
+######### FishBase DataBase ##################
 
 docker run --name fbmysql \
   --restart=always -d \
@@ -19,16 +18,26 @@ docker run --name fbmysql \
   -e MYSQL_ROOT_PASSWORD=root \
   mysql:latest
 
-docker run --name fbgeoip -d allingeek/docker-freegeoip
+###### SeaLifeBase DataBase & API ############
+
+docker run --name slbmysql \
+  --restart=always -d \
+  -v $HOME/data/sealifebase:/var/lib/mysql \
+  -e MYSQL_ROOT_PASSWORD=root \
+  mysql:latest
+
+
 
 docker build -t ropensci/fishbaseapi:latest .
 #docker pull ropensci/fishbaseapi:latest
 docker run --name fbapi -d \
+  --link slbmysql:sealifebase \
   --link fbmysql:mysql \
   --link fbredis:redis \
   --link fbgeoip:geoip \
   --volumes-from fblogstash \
   ropensci/fishbaseapi:latest
+
 
 # Must generate a .htpassword file first:
 # assuming apache2-utils is installed: sudo htpasswd -cb .htpasswd $USER $PASSWORD

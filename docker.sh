@@ -3,12 +3,15 @@
 docker rm -f -v fbredis fbmysql fbapi fblogstash fbnginx fbgeoip
 
 docker run --name fbredis -d redis:latest
+docker run --name fbes -d elasticsearch:latest
 
-docker run --name fblogstash -d \
-  -v $HOME/log/fishbase:/var/log/fishbase \
-  -v ${PWD}/logstashconf:/opt/logstash/conf.d \
-  -e ES_PROXY_HOST=$ESHOST \
-  pblittle/docker-logstash
+docker run --name fblogstash -d -v "$PWD"/logstashconf:/config-dir logstash:latest logstash -f /config-dir/logstash.conf
+#
+#docker run --name fblogstash -d \
+#  -v $HOME/log/fishbase:/var/log/fishbase \
+#  -v ${PWD}/logstashconf:/opt/logstash/conf.d \
+#  -e ES_PROXY_HOST=$ESHOST \
+#  pblittle/docker-logstash
 
 ##  -e LOGSTASH_CONFIG_URL=https://raw.githubusercontent.com/ropensci/fishbaseapi/master/logstash.conf \
 

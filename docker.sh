@@ -4,6 +4,7 @@ docker rm -f -v fbredis fbes fblogstash fbgeoip fbmysql slbmysql fbapi fbnginx
 
 
 ## Start some services: redis, elasticsearch, logstash, freegeoip
+docker run --name slbredis -d redis:latest
 docker run --name fbredis -d redis:latest
 docker run --name fbes -d -v "$HOME/log/fishbase":/usr/share/elasticsearch/data elasticsearch:latest
 docker run --name fblogstash --link fbes:es -d -v "$PWD/logstashconf":/config-dir -v $HOME/log:/var/log logstash:latest logstash -f /config-dir/logstash.conf
@@ -33,6 +34,7 @@ docker build -t ropensci/fishbaseapi:latest .
 docker run --name fbapi -d \
   --link slbmysql:sealifebase \
   --link fbmysql:mysql \
+  --link slbredis:slbredis \
   --link fbredis:redis \
   --link fbgeoip:geoip \
   --volumes-from fblogstash \

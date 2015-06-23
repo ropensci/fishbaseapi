@@ -7,6 +7,7 @@ require 'geolocater'
 require "sinatra/multi_route"
 
 class SLBApp < Sinatra::Application
+  private
   register Sinatra::MultiRoute
 
   $use_caching = true
@@ -16,13 +17,13 @@ class SLBApp < Sinatra::Application
 
   # Set up MySQL DB
   if host.to_s == ''
-    $client = Mysql2::Client.new(:host => "localhost",
+    $slbclient = Mysql2::Client.new(:host => "localhost",
                                 :username => "root",
                                 :database => "slbapp",
                                 :reconnect => true)
   else
     # Connect to a MySQL server via a linked docker container
-    $client = Mysql2::Client.new(
+    $slbclient = Mysql2::Client.new(
                                :host => "sealifebase",
                                :port => ENV['MYSQL_PORT_3306_TCP_PORT'],
                                :password => ENV['MYSQL_ENV_MYSQL_ROOT_PASSWORD'],
@@ -32,7 +33,7 @@ class SLBApp < Sinatra::Application
   end
 
   # Set up Redis for caching
-  $redis = Redis.new(:host => "redis",
+  $slbredis = Redis.new(:host => "slbredis",
                     :port => ENV['REDIS_PORT_6379_TCP_PORT'],
                     :timeout => 500,
                     :connect_timeout => 500)
@@ -57,7 +58,7 @@ class SLBApp < Sinatra::Application
         return false
       else
         begin
-          return $redis.exists(key)
+          return $slbredis.exists(key)
         rescue
           return false
         end
@@ -66,7 +67,7 @@ class SLBApp < Sinatra::Application
     def redis_set(key, value)
       if $use_caching
         begin
-          return $redis.set(key, value)
+          return $slbredis.set(key, value)
         rescue
           return nil
         end
@@ -74,7 +75,7 @@ class SLBApp < Sinatra::Application
     end
     def redis_get(key)
       begin
-        return $redis.get(key)
+        return $slbredis.get(key)
       rescue
         return nil
       end
@@ -214,8 +215,8 @@ class SLBApp < Sinatra::Application
 
   get '/mysqlping/?' do
     return JSON.pretty_generate({
-      "mysql_server_up" => $client.ping,
-      "mysql_host" => $client.query_options[:host]
+      "mysql_server_up" => $slbclient.ping,
+      "mysql_host" => $slbclient.query_options[:host]
     })
   end
 
@@ -390,7 +391,7 @@ class SLBApp < Sinatra::Application
           %s limit %d", args, limit)
       count = get_count('species', get_args(params, prefix=false))
 
-      res = $client.query(query, :as => :json)
+      res = $slbclient.query(query, :as => :json)
       out = res.collect{ |row| row }
       err = get_error(out)
       store = {"count" => count, "error" => err, "data" => out}
@@ -441,7 +442,7 @@ class SLBApp < Sinatra::Application
   def redis_set(key, value)
   	if $use_caching
       begin
-        return $redis.set(key, value)
+        return $slbredis.set(key, value)
       rescue
         return nil
       end
@@ -450,7 +451,7 @@ class SLBApp < Sinatra::Application
 
   def redis_get(key)
     begin
-      return $redis.get(key)
+      return $slbredis.get(key)
     rescue
       return nil
     end
@@ -461,7 +462,7 @@ class SLBApp < Sinatra::Application
   		return false
   	else
       begin
-        return $redis.exists(key)
+        return $slbredis.exists(key)
       rescue
         return false
       end
@@ -495,7 +496,7 @@ class SLBApp < Sinatra::Application
 
   def check_fields(table, fields)
     query = sprintf("SELECT * FROM %s limit 1", table)
-    res = $client.query(query, :as => :json)
+    res = $slbclient.query(query, :as => :json)
     flexist = res.fields
     fields = fields.split(',')
     if fields.length == 1
@@ -528,7 +529,7 @@ class SLBApp < Sinatra::Application
       return params
     else
       query = sprintf("SELECT * FROM %s limit 1", table)
-      res = $client.query(query, :as => :json)
+      res = $slbclient.query(query, :as => :json)
       flexist = ["^", res.fields.join('$|^'), "$"].join('').downcase
       params = params.keep_if { |key, value| key.downcase.to_s.match(flexist) }
       return params
@@ -537,7 +538,7 @@ class SLBApp < Sinatra::Application
 
   def get_count(table, string)
     query = sprintf("SELECT count(*) as ct FROM %s %s", table, string)
-    res = $client.query(query, :as => :json)
+    res = $slbclient.query(query, :as => :json)
     res.collect{ |row| row }[0]["ct"]
   end
 
@@ -603,7 +604,7 @@ class SLBApp < Sinatra::Application
   end
 
   def do_query(query, key, count)
-    res = $client.query(query, :as => :json)
+    res = $slbclient.query(query, :as => :json)
     out = res.collect{ |row| row }
     err = get_error(out)
     store = {"count" => count, "error" => err, "data" => out}

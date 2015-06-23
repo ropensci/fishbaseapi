@@ -5,7 +5,7 @@ docker rm -f -v fbredis fbmysql fbapi fbes fblogstash fbnginx fbgeoip
 docker run --name fbredis -d redis:latest
 
 ## Use official elasticsearch
-docker run --name fbes -p 9288:9200 -d -v "$HOME/log/fishbase":/usr/share/elasticsearch/data elasticsearch:latest
+docker run --name fbes -d -v "$HOME/log/fishbase":/usr/share/elasticsearch/data elasticsearch:latest
 
 ## Use official logstash
 docker run --name fblogstash --link fbes:es -d -v "$PWD/logstashconf":/config-dir -v $HOME/log/fishbase:/var/log/fishbase logstash:latest logstash -f /config-dir/logstash.conf

@@ -180,7 +180,7 @@ class SLBApp < Sinatra::Application
         "/country?<params>",
         "/diet?<params>",
         "/ecology?<params>",
-        "/ecosystems?<params>",
+        "/ecosystem?<params>",
         "/faoareas/:id?<params>",
         "/faoarref/:id?<params>",
         "/fecundity?<params>",
@@ -243,8 +243,8 @@ class SLBApp < Sinatra::Application
     route_noid('ecology')
   end
 
-  get '/ecosystems/?' do
-    route_noid('ecosystems')
+  get '/ecosystem/?' do
+    route_noid('ecosystem')
   end
 
 

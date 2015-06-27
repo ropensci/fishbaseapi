@@ -1,5 +1,8 @@
 language: ruby
 
 script:
-  - bundle exec rake test
+	- bundle exec rake test
 
+notifications:
+  slack:
+    secure: r4KytE/RIm8j8RnIJRD8sJ+4vUfIv2Yb+IASWyOBF3hyWOks3Pod89R9s3Q5WZ5e/RlI2m0UpsQ4VqHfu4Jao5bDsEIa6h7M7p2QNDtsEGIjluQDoJU2j+lmIenacj+/Ioggr0NaFblomsfi6BIwG3Flz/ELPqrMfEoznNpKhs4=

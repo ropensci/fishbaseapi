@@ -12,6 +12,7 @@ GEM
     multi_json (1.10.1)
     multipart-post (2.0.0)
     mysql2 (0.3.17)
+    netrc (0.7.9)
     rack (1.6.0)
     rack-protection (1.5.3)
       rack
@@ -20,6 +21,8 @@ GEM
     raindrops (0.13.0)
     rake (10.4.2)
     redis (3.2.0)
+    rest_client (1.8.3)
+      netrc (~> 0.7.7)
     sinatra (1.4.5)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -46,6 +49,7 @@ DEPENDENCIES
   mysql2
   rake
   redis
+  rest_client
   sinatra
   sinatra-contrib
   unicorn

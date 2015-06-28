@@ -1,5 +1,5 @@
 require 'rake/testtask'
 
 Rake::TestTask.new do |t|
-  t.pattern = "spec/spec-remote.rb"
+  t.pattern = "spec/spec-*.rb"
 end

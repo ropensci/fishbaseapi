@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Remove any versions of running containers first
-docker rm -f -v fbredis fbes fblogstash fbgeoip fbmysql slbmysql fbapi fbnginx
+docker rm -f -v fbredis slbredis fbes fblogstash fbgeoip fbmysql slbmysql fbapi fbnginx
 
 # Make sure services are up-to-date
 docker pull redis:latest

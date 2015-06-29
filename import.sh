@@ -21,7 +21,7 @@ docker run --name some-mysql -d -v $DATAPATH:/var/lib/mysql -e MYSQL_ROOT_PASSWO
 ## Import the database if we don't have it.
 ## Assumes the database is called fbapp.sql and is in the working dir 
 
-## FIXME for some strange reason, this doesn't work (even on command line paste).  Instead run the command below and manually issue `CREATE DATABASE fbapp; SOURCE fbapp.sql`
+## FIXME First set max_packet before running this: http://stackoverflow.com/questions/12425287/mysql-server-has-gone-away-when-importing-large-sql-file/26884290#26884290
 
 #docker run -it --link some-mysql:mysql --rm -v ${PWD}/fbapp.sql:/fbapp.sql mysql sh -c 'exec mysql -h"$MYSQL_PORT_3306_TCP_ADDR" -P"$MYSQL_PORT_3306_TCP_PORT" -uroot -p"$MYSQL_ENV_MYSQL_ROOT_PASSWORD" --execute="CREATE DATABASE fbapp; SOURCE fbapp.sql;"'
 

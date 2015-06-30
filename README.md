@@ -1,6 +1,8 @@
 FishBase API
 ============
 
+[![Build Status](https://travis-ci.org/ropensci/fishbaseapi.svg)](https://travis-ci.org/ropensci/fishbaseapi)
+
 This is a volunteer effort from rOpenSci to provide a modern [RESTful API](http://en.wikipedia.org/wiki/Representational_state_transfer) to the backend SQL database behind the popular web resource, [fishbase.org](http://fishbase.org). The FishBase team have provided a snapshot of the database for our development purposes only and have expressed interest in hosting the finished API as a resource for all their users.
 
 User quick start

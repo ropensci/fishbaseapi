@@ -11,7 +11,6 @@ class FBApp < Sinatra::Application
 
   $use_caching = true
   $use_logging = true
-  # log_file_path = "api.log"
   log_file_path = "/var/log/fishbase/api.log"
   host = ENV['MYSQL_PORT_3306_TCP_ADDR']
 

@@ -6,7 +6,7 @@ require 'json'
 
 class RemoteRoutes < MiniTest::Test
 
-  $heartbeat = "{\n  \"routes\": [\n    \"/docs\",\n    \"/heartbeat\",\n    \"/mysqlping\",\n    \"/comnames?<params>\",\n    \"/countref?<params>\",\n    \"/country?<params>\",\n    \"/diet?<params>\",\n    \"/ecology?<params>\",\n    \"/ecosystem?<params>\",\n    \"/faoareas/:id?<params>\",\n    \"/faoarref/:id?<params>\",\n    \"/fecundity?<params>\",\n    \"/fooditems?<params>\",\n    \"/genera/:id?<params>\",\n    \"/intrcase?<params>\",\n    \"/maturity?<params>\",\n    \"/morphdat?<params>\",\n    \"/morphmet?<params>\",\n    \"/occurrence?<params>\",\n    \"/oxygen?<params>\",\n    \"/popchar?<params>\",\n    \"/popgrowth?<params>\",\n    \"/poplf?<params>\",\n    \"/popll?<params>\",\n    \"/popqb?<params>\",\n    \"/poplw?<params>\",\n    \"/predats?<params>\",\n    \"/ration?<params>\",\n    \"/refrens?<params>\",\n    \"/reproduc?<params>\",\n    \"/species/:id?<params>\",\n    \"/spawning?<params>\",\n    \"/speed?<params>\",\n    \"/stocks?<params>\",\n    \"/swimming?<params>\",\n    \"/synonyms?<params>\",\n    \"/taxa?<params>\"\n  ]\n}"
+  $heartbeat = "{\n  \"routes\": [\n    \"/docs\",\n    \"/heartbeat\",\n    \"/mysqlping\",\n    \"/comnames?<params>\",\n    \"/countref?<params>\",\n    \"/country?<params>\",\n    \"/diet?<params>\",\n    \"/ecology?<params>\",\n    \"/ecosystem?<params>\",\n    \"/faoareas/:id?<params>\",\n    \"/faoarref/:id?<params>\",\n    \"/fecundity?<params>\",\n    \"/fooditems?<params>\",\n    \"/genera/:id?<params>\",\n    \"/intrcase?<params>\",\n    \"/listfields?<params>\",\n    \"/maturity?<params>\",\n    \"/morphdat?<params>\",\n    \"/morphmet?<params>\",\n    \"/occurrence?<params>\",\n    \"/oxygen?<params>\",\n    \"/popchar?<params>\",\n    \"/popgrowth?<params>\",\n    \"/poplf?<params>\",\n    \"/popll?<params>\",\n    \"/popqb?<params>\",\n    \"/poplw?<params>\",\n    \"/predats?<params>\",\n    \"/ration?<params>\",\n    \"/refrens?<params>\",\n    \"/reproduc?<params>\",\n    \"/species/:id?<params>\",\n    \"/spawning?<params>\",\n    \"/speed?<params>\",\n    \"/stocks?<params>\",\n    \"/swimming?<params>\",\n    \"/synonyms?<params>\",\n    \"/taxa?<params>\"\n  ]\n}"
   $countref = {"GrowthCountFresh"=>38, "ABB"=>"AFG"}
   $country = {"autoctr"=>851, "Stockcode"=>32, "C_Code"=>"428", "SpecCode"=>24, "CountryRefNo"=>188, "AlsoRef"=>nil, "Status"=>"native", "CurrentPresence"=>"present", "Freshwater"=>0, "Brackish"=>1, "Saltwater"=>0, "Land"=>0, "Comments"=>nil, "Abundance"=>nil, "RefAbundance"=>nil, "Importance"=>"commercial", "RefImportance"=>8984, "ExVesselPrice"=>2454.0215, "Aquaculture"=>nil, "RefAquaculture"=>nil, "LiveExportOrg"=>0, "LiveExport"=>nil, "RefLiveExport"=>nil, "Game"=>0, "Bait"=>0, "Regulations"=>nil, "RefRegulations"=>nil, "Threatened"=>0, "CountrySubComp"=>0, "Entered"=>2, "DateEntered"=>"1993-11-12 00:00:00 +0000", "Modified"=>1, "DateModified"=>"1999-03-22 00:00:00 +0000", "Expert"=>nil, "DateChecked"=>nil, "TS"=>nil}
   $diet = {"DietCode"=>1, "StockCode"=>79, "Speccode"=>69, "DietRefNo"=>9604, "SampleStage"=>"recruits/juv.", "SampleSize"=>37, "YearStart"=>nil, "YearEnd"=>nil, "January"=>0, "February"=>0, "March"=>0, "April"=>-1, "May"=>-1, "June"=>-1, "July"=>0, "August"=>0, "September"=>0, "October"=>0, "November"=>0, "December"=>0, "C_Code"=>"826", "Locality"=>"Off the west coast of the Isle of Man, 1977-1978", "E_Code"=>235, "Method"=>nil, "MethodType"=>nil, "Remark"=>"Length type derived from given length in Species table.", "OtherItems"=>0.1, "PercentEmpty"=>nil, "Troph"=>3.83, "seTroph"=>0.37, "SizeMin"=>30.0, "SizeMax"=>39.0, "SizeType"=>"TL", "FishLength"=>34.5, "Entered"=>34, "DateEntered"=>"1995-07-29 00:00:00 +0000", "Modified"=>nil, "DateModified"=>"2010-12-17 00:00:00 +0000", "Expert"=>nil, "DateChecked"=>nil}
@@ -103,6 +103,12 @@ class RemoteRoutes < MiniTest::Test
 
   def test_route_intrcase
     res = fetch('intrcase')
+    assert res.ok?
+    # assert_equal $intrcase, res.body
+  end
+
+  def test_route_listfields
+    res = fetch('listfields')
     assert res.ok?
     # assert_equal $intrcase, res.body
   end

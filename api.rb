@@ -186,6 +186,7 @@ class FBApp < Sinatra::Application
         "/fooditems?<params>",
         "/genera/:id?<params>",
         "/intrcase?<params>",
+        "/listfields?<params>",
         "/maturity?<params>",
         "/morphdat?<params>",
         "/morphmet?<params>",
@@ -405,6 +406,34 @@ class FBApp < Sinatra::Application
     return JSON.pretty_generate(data)
   end
 
+  get '/listfields/?' do
+    fields = params[:fields] || nil
+    exact = params[:exact] || false
+    data = list_fields()
+    if !fields.nil?
+      if exact
+        fields = fields.split(',').collect{ |x| sprintf("^%s$", x) }.join(',')
+      end
+      fields = fields.gsub(',', '|')
+      p fields
+      data['data'].keep_if{ |a, b| !!a['COLUMN_NAME'].match(fields) }
+
+      data['count'] = data['data'].length
+      data['returned'] = data['data'].length
+    end
+    return JSON.pretty_generate(data)
+  end
+
+  def list_fields
+    query = "SELECT TABLE_NAME,COLUMN_NAME FROM information_schema.`columns` C WHERE TABLE_SCHEMA = 'fbapp'"
+    res = $client.query(query, :as => :json)
+    out = res.collect{ |row| row }
+    err = get_error(out)
+    data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
+    return data
+  end
+
+  # prohibit certain methods
   route :put, :post, :delete, :copy, :options, :trace, '/*' do
     halt 405
   end

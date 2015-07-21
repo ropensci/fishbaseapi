@@ -33,6 +33,7 @@ The Fishbase API is the new API for [Fishbase.org](http://www.fishbase.org/).
     * [fooditems](#fooditems)
     * [genera](#fooditems)
     * [intrcase](#intrcase)
+    * [listfields](#listfields)
     * [maturity](#maturity)
     * [morphdat](#morphdat)
     * [morphmet](#morphmet)
@@ -417,6 +418,16 @@ Search the fooditems table
 > GET [/intrcase{?limit}{?offset}{?fields}]
 
 Search the intrcase table
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
+
+### listfields
+
+> GET [/listfields{?fields}{?exact}]
+
+List fields across all tables. Optionally, search for particular fields. In addition, toggle the `exact` parameter to search for an exact match.
 
 + Response 200
     + [Headers](#response-headers)

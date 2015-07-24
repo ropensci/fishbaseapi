@@ -1,0 +1,6 @@
+TABLE_NAME,COLUMN_NAME
+predatorecosystemtype,AutoCtr
+predatorecosystemtype,Predatorlevel
+predatorecosystemtype,Predator
+predatorecosystemtype,EcosystemType
+predatorecosystemtype,TS

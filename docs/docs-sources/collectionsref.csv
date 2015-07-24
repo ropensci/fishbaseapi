@@ -1,0 +1,9 @@
+TABLE_NAME,COLUMN_NAME
+collectionsref,OccurrenceRefNo
+collectionsref,Museum
+collectionsref,Acronym
+collectionsref,C_code
+collectionsref,logoname
+collectionsref,URL
+collectionsref,Logo
+collectionsref,TS

@@ -1,0 +1,6 @@
+TABLE_NAME,COLUMN_NAME
+zweb_tour,tourno
+zweb_tour,sentence
+zweb_tour,Remark
+zweb_tour,Url
+zweb_tour,TS

@@ -1,0 +1,5 @@
+TABLE_NAME,COLUMN_NAME
+cultures,SpecCode
+cultures,StockCode
+cultures,CultCode
+cultures,TS

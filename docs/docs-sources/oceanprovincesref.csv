@@ -1,0 +1,16 @@
+TABLE_NAME,COLUMN_NAME
+oceanprovincesref,AutoCtr
+oceanprovincesref,RegionNo
+oceanprovincesref,RegionCode
+oceanprovincesref,DomainNo
+oceanprovincesref,Domain
+oceanprovincesref,Region
+oceanprovincesref,Area
+oceanprovincesref,PrimProd1
+oceanprovincesref,PrimProd2
+oceanprovincesref,PrimProd3
+oceanprovincesref,RegionDescription
+oceanprovincesref,Comment
+oceanprovincesref,Modified
+oceanprovincesref,DateModified
+oceanprovincesref,TS

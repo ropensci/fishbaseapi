@@ -1,0 +1,13 @@
+TABLE_NAME,COLUMN_NAME
+ciguafb,AutoCtr
+ciguafb,SpecCode
+ciguafb,ValidGenus
+ciguafb,ValidSpecies
+ciguafb,CountryCT
+ciguafb,C_Code
+ciguafb,FrequencyCT
+ciguafb,DistributionCT
+ciguafb,NoteCT
+ciguafb,RefCountryCT
+ciguafb,DalzelCode
+ciguafb,TS

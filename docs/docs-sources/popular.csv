@@ -1,0 +1,7 @@
+TABLE_NAME,COLUMN_NAME
+popular,Speccode
+popular,SpeciesID
+popular,Genus
+popular,Species
+popular,Sciname
+popular,Results

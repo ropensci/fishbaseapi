@@ -171,21 +171,10 @@ class FBApp < Sinatra::Application
   get '/docs/?:table?/?' do
     table = params[:table]
     if table.nil?
-      return read_docs_table()
+      return read_table("tables.csv")
     else
-      get_table
+      read_table(table)
     end
-  end
-
-  def read_docs_table
-    dat = File.read('docs/docs-sources/tables.csv')
-    csv = CSV.new(dat, :headers => true, :header_converters => :symbol, :converters => :all)
-    hash = csv.to_a.map {|row| row.to_hash }
-    JSON.pretty_generate(hash)
-  end
-
-  def get_table
-    JSON.pretty_generate({"message": "nothing to see yet"})
   end
 
   get "/heartbeat/?" do
@@ -241,9 +230,7 @@ class FBApp < Sinatra::Application
     })
   end
 
-
   ## list endpoints alphabetically for easy search
-
   get '/comnames/?' do
     route_noid('comnames')
   end
@@ -268,7 +255,6 @@ class FBApp < Sinatra::Application
     route_noid('ecosystem')
   end
 
-
   get '/faoareas/?:id?/?' do
     route('faoareas', 'AreaCode')
   end
@@ -281,7 +267,6 @@ class FBApp < Sinatra::Application
     route_noid('fecundity')
   end
 
-
   get '/fooditems/?' do
     route_noid('fooditems')
   end
@@ -292,6 +277,24 @@ class FBApp < Sinatra::Application
 
   get '/intrcase/?' do
     route_noid('intrcase')
+  end
+
+  get '/listfields/?' do
+    fields = params[:fields] || nil
+    exact = params[:exact] || false
+    data = list_fields()
+    if !fields.nil?
+      if exact
+        fields = fields.split(',').collect{ |x| sprintf("^%s$", x) }.join(',')
+      end
+      fields = fields.gsub(',', '|')
+      p fields
+      data['data'].keep_if{ |a, b| !!a['COLUMN_NAME'].match(fields) }
+
+      data['count'] = data['data'].length
+      data['returned'] = data['data'].length
+    end
+    return JSON.pretty_generate(data)
   end
 
   get '/maturity/?' do
@@ -427,22 +430,17 @@ class FBApp < Sinatra::Application
     return JSON.pretty_generate(data)
   end
 
-  get '/listfields/?' do
-    fields = params[:fields] || nil
-    exact = params[:exact] || false
-    data = list_fields()
-    if !fields.nil?
-      if exact
-        fields = fields.split(',').collect{ |x| sprintf("^%s$", x) }.join(',')
-      end
-      fields = fields.gsub(',', '|')
-      p fields
-      data['data'].keep_if{ |a, b| !!a['COLUMN_NAME'].match(fields) }
+  # prohibit certain methods
+  route :put, :post, :delete, :copy, :options, :trace, '/*' do
+    halt 405
+  end
 
-      data['count'] = data['data'].length
-      data['returned'] = data['data'].length
-    end
-    return JSON.pretty_generate(data)
+  # helpers
+  def read_table(x)
+    dat = File.read('docs/docs-sources/' + x + '.csv')
+    csv = CSV.new(dat, :headers => true, :header_converters => :symbol, :converters => :all)
+    hash = csv.to_a.map {|row| row.to_hash }
+    JSON.pretty_generate(hash)
   end
 
   def list_fields
@@ -454,12 +452,6 @@ class FBApp < Sinatra::Application
     return data
   end
 
-  # prohibit certain methods
-  route :put, :post, :delete, :copy, :options, :trace, '/*' do
-    halt 405
-  end
-
-  # helpers
   def route(table, var)
     $ip = request.ip
     key = rediskey(table, params)

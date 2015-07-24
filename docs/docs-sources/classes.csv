@@ -1,0 +1,15 @@
+TABLE_NAME,COLUMN_NAME
+classes,ClassNum
+classes,Class
+classes,ClassRefNo
+classes,SortNo
+classes,Synonym
+classes,AuthorYear
+classes,CommonName
+classes,BodyShapeI
+classes,WaterSalinity
+classes,SpeciesCount
+classes,SuperClass
+classes,Subclass
+classes,Remarks
+classes,TS

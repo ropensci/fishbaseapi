@@ -1,0 +1,7 @@
+TABLE_NAME,COLUMN_NAME
+languagegroup,LangGroupCode
+languagegroup,LanguageFamily
+languagegroup,LanguageBranch
+languagegroup,LanguageGroup
+languagegroup,Extinct
+languagegroup,TS

@@ -1,0 +1,12 @@
+TABLE_NAME,COLUMN_NAME
+myersdata,autoctr
+myersdata,id
+myersdata,RecLag
+myersdata,RecYear
+myersdata,ssb
+myersdata,Rec
+myersdata,ssbscaled
+myersdata,RecScaled
+myersdata,land
+myersdata,frpl
+myersdata,TS

@@ -1,0 +1,13 @@
+TABLE_NAME,COLUMN_NAME
+oceanprovinces,StockCode
+oceanprovinces,RegionNo
+oceanprovinces,SpecCode
+oceanprovinces,Status
+oceanprovinces,ProvinceRef
+oceanprovinces,Entered
+oceanprovinces,DateEntered
+oceanprovinces,Modified
+oceanprovinces,DateModified
+oceanprovinces,Expert
+oceanprovinces,DateChecked
+oceanprovinces,TS

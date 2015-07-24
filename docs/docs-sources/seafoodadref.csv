@@ -1,0 +1,11 @@
+TABLE_NAME,COLUMN_NAME
+seafoodadref,GuideID
+seafoodadref,GuideName
+seafoodadref,GuideURL
+seafoodadref,c_code_web
+seafoodadref,Entered
+seafoodadref,DateEntered
+seafoodadref,Modified
+seafoodadref,DateModified
+seafoodadref,Expert
+seafoodadref,DateChecked

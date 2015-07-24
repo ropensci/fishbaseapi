@@ -1,0 +1,7 @@
+TABLE_NAME,COLUMN_NAME
+instmembership,ID
+instmembership,Country
+instmembership,C_Code
+instmembership,Status
+instmembership,Year
+instmembership,TS

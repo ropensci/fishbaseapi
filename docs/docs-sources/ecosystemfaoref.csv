@@ -1,0 +1,5 @@
+TABLE_NAME,COLUMN_NAME
+ecosystemfaoref,E_CODE
+ecosystemfaoref,AreaCode
+ecosystemfaoref,Remark
+ecosystemfaoref,TS

@@ -1,0 +1,5 @@
+TABLE_NAME,COLUMN_NAME
+zweb_continent,Continent
+zweb_continent,AreaCode
+zweb_continent,MapID
+zweb_continent,TS

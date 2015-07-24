@@ -1,0 +1,4 @@
+TABLE_NAME,COLUMN_NAME
+faoarfam,FamCode
+faoarfam,AreaCode
+faoarfam,TS

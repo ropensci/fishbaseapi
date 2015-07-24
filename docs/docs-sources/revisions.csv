@@ -1,0 +1,5 @@
+TABLE_NAME,COLUMN_NAME
+revisions,FamCode
+revisions,RefNo
+revisions,GenCode
+revisions,TS

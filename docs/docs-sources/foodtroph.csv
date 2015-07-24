@@ -1,0 +1,10 @@
+TABLE_NAME,COLUMN_NAME
+foodtroph,FoodLevel
+foodtroph,Food
+foodtroph,TL
+foodtroph,SETL
+foodtroph,RefNo
+foodtroph,Remark
+foodtroph,MaxLength
+foodtroph,MinLength
+foodtroph,TS

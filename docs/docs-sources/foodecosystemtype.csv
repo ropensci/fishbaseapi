@@ -1,0 +1,6 @@
+TABLE_NAME,COLUMN_NAME
+foodecosystemtype,AutoCtr
+foodecosystemtype,FoodLevel
+foodecosystemtype,Food
+foodecosystemtype,EcosystemType
+foodecosystemtype,TS

@@ -1,0 +1,17 @@
+TABLE_NAME,COLUMN_NAME
+ecosystemcountry,autoctr
+ecosystemcountry,E_CODE
+ecosystemcountry,EcosystemRefNo
+ecosystemcountry,C_Code
+ecosystemcountry,Speccode
+ecosystemcountry,Stockcode
+ecosystemcountry,Status
+ecosystemcountry,Abundance
+ecosystemcountry,Remarks
+ecosystemcountry,Entered
+ecosystemcountry,Dateentered
+ecosystemcountry,Modified
+ecosystemcountry,Datemodified
+ecosystemcountry,Expert
+ecosystemcountry,Datechecked
+ecosystemcountry,TS

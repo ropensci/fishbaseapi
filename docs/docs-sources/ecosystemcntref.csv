@@ -1,0 +1,5 @@
+TABLE_NAME,COLUMN_NAME
+ecosystemcntref,E_CODE
+ecosystemcntref,C_CODE
+ecosystemcntref,Remark
+ecosystemcntref,TS

@@ -1,0 +1,12 @@
+TABLE_NAME,COLUMN_NAME
+miniessay,EssayID
+miniessay,MiniEssay
+miniessay,MiniEssayMore
+miniessay,MiniEssayMore1
+miniessay,Entered
+miniessay,DateEntered
+miniessay,Modified
+miniessay,DateModified
+miniessay,Expert
+miniessay,DateChecked
+miniessay,TS

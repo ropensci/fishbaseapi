@@ -1,0 +1,6 @@
+TABLE_NAME,COLUMN_NAME
+elecsub,EleCode
+elecsub,Allele
+elecsub,AlleleFrequency
+elecsub,Comment
+elecsub,TS

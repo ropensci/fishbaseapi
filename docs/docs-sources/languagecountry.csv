@@ -1,0 +1,8 @@
+TABLE_NAME,COLUMN_NAME
+languagecountry,LangCode
+languagecountry,C_Code
+languagecountry,NumberofSpeakers
+languagecountry,RefNo
+languagecountry,Remarks
+languagecountry,LangCountryRank
+languagecountry,TS

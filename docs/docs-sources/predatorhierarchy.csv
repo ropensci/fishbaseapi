@@ -1,0 +1,11 @@
+TABLE_NAME,COLUMN_NAME
+predatorhierarchy,AutoCtr
+predatorhierarchy,PREDATORRank
+predatorhierarchy,PREDATORIIRank
+predatorhierarchy,PREDATORStageRank
+predatorhierarchy,PREYStageRank
+predatorhierarchy,PREDATORI
+predatorhierarchy,PREDATORII
+predatorhierarchy,PREDATORStage
+predatorhierarchy,PREYStage
+predatorhierarchy,TS

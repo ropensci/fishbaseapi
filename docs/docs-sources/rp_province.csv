@@ -1,0 +1,6 @@
+TABLE_NAME,COLUMN_NAME
+rp_province,AutoCtr
+rp_province,Region
+rp_province,RegionName
+rp_province,Province
+rp_province,TS

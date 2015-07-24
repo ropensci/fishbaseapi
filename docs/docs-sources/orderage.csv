@@ -1,0 +1,6 @@
+TABLE_NAME,COLUMN_NAME
+orderage,AutoCtr
+orderage,Order
+orderage,OtherOrders
+orderage,CommonAncestor
+orderage,TS

@@ -1,0 +1,12 @@
+TABLE_NAME,COLUMN_NAME
+latgraphs,SpecCode
+latgraphs,Northernmost
+latgraphs,NorthSouthS
+latgraphs,Southermost
+latgraphs,NorthSouthN
+latgraphs,LatBeg
+latgraphs,LatEnd
+latgraphs,LoClass
+latgraphs,HiClass
+latgraphs,TotClass
+latgraphs,TS

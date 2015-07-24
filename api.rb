@@ -3,6 +3,7 @@ require 'sinatra'
 require 'json'
 require 'mysql2'
 require 'redis'
+require 'csv'
 require 'geolocater'
 require "sinatra/multi_route"
 
@@ -163,15 +164,35 @@ class FBApp < Sinatra::Application
     redirect '/heartbeat'
   end
 
-  get '/docs' do
-    redirect 'http://docs.fishbaseapi.apiary.io'
+  # get '/docs' do
+  #   redirect 'http://docs.fishbaseapi.apiary.io'
+  # end
+
+  get '/docs/?:table?/?' do
+    table = params[:table]
+    if table.nil?
+      return read_docs_table()
+    else
+      get_table
+    end
+  end
+
+  def read_docs_table
+    dat = File.read('docs/docs-sources/tables.csv')
+    csv = CSV.new(dat, :headers => true, :header_converters => :symbol, :converters => :all)
+    hash = csv.to_a.map {|row| row.to_hash }
+    JSON.pretty_generate(hash)
+  end
+
+  def get_table
+    JSON.pretty_generate({"message": "nothing to see yet"})
   end
 
   get "/heartbeat/?" do
     $ip = request.ip
     return JSON.pretty_generate({
       "routes" => [
-        "/docs",
+        "/docs/:table?",
         "/heartbeat",
         "/mysqlping",
         "/comnames?<params>",

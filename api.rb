@@ -12,7 +12,8 @@ class FBApp < Sinatra::Application
 
   $use_caching = true
   $use_logging = true
-  log_file_path = "/var/log/fishbase/api.log"
+  log_file_path = "api.log"
+  # log_file_path = "/var/log/fishbase/api.log"
   host = ENV['MYSQL_PORT_3306_TCP_ADDR']
 
   # Set up MySQL DB
@@ -171,7 +172,7 @@ class FBApp < Sinatra::Application
   get '/docs/?:table?/?' do
     table = params[:table]
     if table.nil?
-      return read_table("tables.csv")
+      return read_table("tables")
     else
       read_table(table)
     end
@@ -440,7 +441,9 @@ class FBApp < Sinatra::Application
     dat = File.read('docs/docs-sources/' + x + '.csv')
     csv = CSV.new(dat, :headers => true, :header_converters => :symbol, :converters => :all)
     hash = csv.to_a.map {|row| row.to_hash }
-    JSON.pretty_generate(hash)
+    err = get_error(hash)
+    data = { "count" => hash.length, "returned" => hash.length, "error" => err, "data" => hash }
+    return JSON.pretty_generate(data)
   end
 
   def list_fields

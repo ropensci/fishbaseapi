@@ -1,8 +1,8 @@
 require 'rake/testtask'
 
-# Rake::TestTask.new do |t|
-#   t.pattern = "spec/spec-remote-*.rb"
-# end
+# to run
+# local test suite: rake local TESTOPTS='-v'
+# remote test suite: rake remote TESTOPTS='-v'
 
 task :test_local do
   Rake::TestTask.new('local') do |t|

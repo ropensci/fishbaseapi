@@ -384,10 +384,10 @@ class SLBApp < Sinatra::Application
       args = get_args(params, prefix=true)
 
       query = sprintf("
-        SELECT s.SpecCode,s.Genus,s.Species,s.SpeciesRefNo,s.Author,s.FBname,s.SubFamily,s.FamCode,s.GenCode,s.SubGenCode,s.Remark,f.Family,f.Order,f.Class
+        SELECT s.SpecCode,s.Genus,s.Species,s.SpeciesRefNo,s.Author,s.FBname,s.SubFamily,s.FamCode,s.Remark,f.Family,f.Order,f.Class
           FROM species s
           INNER JOIN families f on s.FamCode = f.FamCode
-          INNER JOIN genera g on s.GenCode = g.GenCode
+          INNER JOIN genera g on s.Genus = g.GEN_NAME
           %s limit %d", args, limit)
       count = get_count('species', get_args(params, prefix=false))
 

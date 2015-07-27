@@ -17,21 +17,21 @@ The Fishbase API is the new API for [Fishbase.org](http://www.fishbase.org/).
     * [root](#root)
     * [heartbeat](#heartbeat)
     * [docs](#docs)
-    * [species](#species)
-    * [species by id](#species-by-id)
-    * [genera](#genera)
-    * [genera by id](#genera-by-id)
     * [common name](#comnames)
-    * [country](#country)
     * [countref](#countref)
+    * [country](#country)
     * [diet](#diet)
     * [ecology](#ecology)
+    * [ecosystem](#ecosystem)
     * [fao areas routes](#fao-areas-routes)
-        * [faoarref](#faoarref)
         * [faoareas](#faoareas)
+        * [faoareas by id](#faoareas-by-id)
+        * [faoarref](#faoarref)
+        * [faoarref by id](#faoarref-by-id)
     * [fecundity](#fecundity)
     * [fooditems](#fooditems)
-    * [genera](#fooditems)
+    * [genera](#genera)
+    * [genera by id](#genera-by-id)
     * [intrcase](#intrcase)
     * [listfields](#listfields)
     * [maturity](#maturity)
@@ -49,8 +49,9 @@ The Fishbase API is the new API for [Fishbase.org](http://www.fishbase.org/).
     * [ration](#ration)
     * [refrens](#refrens)
     * [reproduc](#reproduc)
-    * [spawning](#spawning)
     * [species](#species)
+    * [species by id](#species-by-id)
+    * [spawning](#spawning)
     * [speed](#speed)
     * [stocks](#stocks)
     * [swimming](#swimming)
@@ -63,17 +64,18 @@ http://fishbase.ropensci.org
 
 ## HTTP methods
 
-This is essentially a `read only` API. That is, we only allow `GET` requests on this API.
+This is essentially a `read only` API. That is, we only allow `GET` (and `HEAD`) requests on this API.
 
-Requests of all other types will be rejected, including `POST`, `PUT`, `COPY`, `HEAD`, `DELETE`.
+Requests of all other types will be rejected with appropriate `405` code, including `POST`, `PUT`, `COPY`, `HEAD`, `DELETE`, etc.
 
 ## Response Codes
 
 * 200 (OK) - request good!
 * 302 (Found) - the root `/`, redirects to `/heartbeat`, and `/docs` redirects to these documents
-* 400 (Bad request) - occurs when you have a malformed request, fix it and try again
-* 404 (Not found) - occurs when you request a route that does not exist, fix it and try again
-* 500 (Internal server error) - Server got itself in trouble; get in touch with us.
+* 400 (Bad request) - When you have a malformed request, fix it and try again
+* 404 (Not found) - When you request a route that does not exist, fix it and try again
+* 405 (Method not allowed) - When you use a prohibited HTTP method (we only allow `GET` and `HEAD`)
+* 500 (Internal server error) - Server got itself in trouble; get in touch with us. (in [Issues](https://github.com/ropensci/fishbaseapi/issues))
 
 
 `400` responses will look something like
@@ -112,6 +114,22 @@ X-Content-Type-Options: nosniff
 {
     "error": "route not found"
 }
+```
+
+`405` responses will look something like (with an empty body)
+
+```
+HTTP/1.1 405 Method Not Allowed
+Access-Control-Allow-Methods: HEAD, GET
+Access-Control-Allow-Origin: *
+Cache-Control: public, must-revalidate, max-age=60
+Connection: close
+Content-Length: 0
+Content-Type: application/json; charset=utf8
+Date: Mon, 27 Jul 2015 20:48:27 GMT
+Server: nginx/1.9.3
+Status: 405 Method Not Allowed
+X-Content-Type-Options: nosniff
 ```
 
 `500` responses will look something like
@@ -172,19 +190,27 @@ Response bodies generally look like:
 }]
 ```
 
+Successful requests have 4 slots: 
+
+* count: Number records found 
+* returned: Number records returned
+* error: If an error did not occur this is `null`, otherwise, an error message.
+* data: The hash of data if any data returned. If no data found, this is an empty hash (hash of length zero)
+
 ## Media Types
 
-We use server up JSON in this API. All responses will have `Content-Type: application/json; ; charset=utf8`.
+We serve up only JSON in this API. All responses will have `Content-Type: application/json; charset=utf8`.
 
 ## Pagination
 
-The query parameters `limit` (default = 10) and `offset` (default = 0) are always sent on the request.
+The query parameters `limit` (default = 10) and `offset` (default = 0) are always sent on the request (this doesn't apply to some routes, which don't accept any parameters (e.g., `/docs`)).
 
-The response body from the server will include data on records found in `count` and number
-returned in `returned`:
+The response body from the server will include data on records found in `count` and number returned in `returned`:
 
 * `"count": 1056`
 * `"returned": 10`
+
+Ideally, we'd put in a helpful [links object](http://jsonapi.org/format/#fetching-pagination) - hopefully we'll get that done in the future. 
 
 ## Authentication
 
@@ -208,10 +234,15 @@ Above parameters common to all routes except:
 * [docs](#docs)
 * [mysqlping](#mysqlping)
 
+In addition, these do not support `limit` or `offset`:
+
+* [listfields](#listfields)
+ 
 ### Additional parameters
 
 Right now, any field that is returned from a route can also be queried on, except for the [/taxa route](#taxa), which only accepts `species` and `genus` in addition to the common parameters. All of the fields from each route are too long to list here - inspect data returned from a small data request, then change your query as desired.
 
+Right now, parameters that are not found are silently dropped. For example, if you query with `/species?foo=bar` in a query, and `foo` is not a field in `species` route, then the `foo=bar` part is ignored. We may in the future error when parameters are not found.
 
 ## Routes
 
@@ -239,15 +270,15 @@ Get heartbeat for the Fishbase API [GET]
     ```
             [{
                 "routes": [
-                    "/docs",
+                    "/docs/:table?",
                     "/heartbeat",
                     "/mysqlping",
                     "/comnames?<params>",
                     "/countref?<params>",
                     "/country?<params>",
                     "/diet?<params>",
-                    "/morphdat?<params>",
-                    "/morphmet?<params>",
+                    "/ecology?<params>",
+                    "/ecosystem?<params>",
                     ...
                 ]
             }]
@@ -257,13 +288,21 @@ Get heartbeat for the Fishbase API [GET]
 
 > GET [/docs]
 
-Go to the Fishbase API documentation
+Get brief description of each table in the Fishbase database. 
 
-This path redirects to `http://docs.fishbaseapi.apiary.io`
++ Response 200 (application/json)
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
 
-+ Response 302 (application/json)
+### docs by table
 
-See [docs.fishbaseapi.apiary.io](http://docs.fishbaseapi.apiary.io) or you can look at this page
+> GET [/docs/{table}]
+
+Get all field names in a table. In the future, the returned data will include metadata on what each field means (understandable to a human), and what kind of data each field holds.
+
++ Response 200 (application/json)
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
 
 ### mysqlping
 
@@ -271,28 +310,125 @@ See [docs.fishbaseapi.apiary.io](http://docs.fishbaseapi.apiary.io) or you can l
 
 Ping the MySQL server to see if it's up or not. Returns logical.
 
-### species
+### comnames
 
-> GET [/species{?genus}{?species}{?limit}{?offset}{?fields}]
+> GET [/comnames{?limit}{?offset}{?fields}]
 
-List species
-
-+ Parameters
-    + genus (string, optional) ... String `name` of a genus.
-    + species (string, optional) ... String `name` of a specific epithet.
+Search the common names table
 
 + Response 200
     + [Headers](#response-headers)
     + [Body](#response-bodies)
 
-### Species by id
+### countref
 
-> GET [/species/{id}]
+> GET [/countref{?limit}{?offset}{?fields}]
 
-List species by id
+Count ref
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
+
+### country
+
+> GET [/country{?limit}{?offset}{?fields}]
+
+Search the country table
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
+
+### diet
+
+> GET [/diet{?limit}{?offset}{?fields}]
+
+Search the fish diet table
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
+
+### ecology
+
+> GET [/ecology{?limit}{?offset}{?fields}]
+
+Search the ecology table
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
+
+### ecosystem
+
+> GET [/ecosystem{?limit}{?offset}{?fields}]
+
+Search the ecosystem table
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
+
+### fao areas routes
+
+#### faoareas
+
+> GET [/faoareas{?limit}{?offset}{?fields}]
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
+
+#### faoareas by id
+
+> GET [/faoareas{id}]
+
+List faoareas by id
 
 + Parameters
-    + id (integer, required, `5`) ... Species id `number`.
+    + id (required, integer, `5`) ... faoarea id `number`.
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
+    
+#### faoarref
+
+> GET [/faoarref{?limit}{?offset}{?fields}]
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
+
+#### faoarref by id
+
+> GET [/faoarref{id}]
+
+List faoareas by id
+
++ Parameters
+    + id (required, integer, `5`) ... faoarref id `number`.
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
+
+### fecundity
+
+> GET [/fecundity{?limit}{?offset}{?fields}]
+
+Search the fecundity table
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
+
+### fooditems
+
+> GET [/fooditems{?limit}{?offset}{?fields}]
+
+Search the fooditems table
 
 + Response 200
     + [Headers](#response-headers)
@@ -320,94 +456,6 @@ List genera by id
 
 + Parameters
     + id (required, integer, `5`) ... Genus id `number`.
-
-+ Response 200
-    + [Headers](#response-headers)
-    + [Body](#response-bodies)
-
-### comnames
-
-> GET [/comnames{?limit}{?offset}{?fields}]
-
-Search the common names table
-
-+ Response 200
-    + [Headers](#response-headers)
-    + [Body](#response-bodies)
-
-### country
-
-> GET [/country{?limit}{?offset}{?fields}]
-
-Search the country table
-
-+ Response 200
-    + [Headers](#response-headers)
-    + [Body](#response-bodies)
-
-### countref
-
-> GET [/countref{?limit}{?offset}{?fields}]
-
-Count ref
-
-+ Response 200
-    + [Headers](#response-headers)
-    + [Body](#response-bodies)
-
-### diet
-
-> GET [/diet{?limit}{?offset}{?fields}]
-
-Search the fish diet table
-
-+ Response 200
-    + [Headers](#response-headers)
-    + [Body](#response-bodies)
-
-### ecology
-
-> GET [/ecology{?limit}{?offset}{?fields}]
-
-Search the ecology table
-
-+ Response 200
-    + [Headers](#response-headers)
-    + [Body](#response-bodies)
-
-### fecundity
-
-> GET [/fecundity{?limit}{?offset}{?fields}]
-
-Search the fecundity table
-
-+ Response 200
-    + [Headers](#response-headers)
-    + [Body](#response-bodies)
-
-### fooditems
-
-> GET [/fooditems{?limit}{?offset}{?fields}]
-
-Search the fooditems table
-
-+ Response 200
-    + [Headers](#response-headers)
-    + [Body](#response-bodies)
-
-### fao areas routes
-
-#### faoarref
-
-> GET [/faoarref{?limit}{?offset}{?fields}]
-
-+ Response 200
-    + [Headers](#response-headers)
-    + [Body](#response-bodies)
-
-#### faoareas
-
-> GET [/faoareas{?limit}{?offset}{?fields}]
 
 + Response 200
     + [Headers](#response-headers)
@@ -448,6 +496,16 @@ Search the maturity table
 > GET [/morphdat{?limit}{?offset}{?fields}]
 
 Search the morphdat table
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
+
+### morphmet
+
+> GET [/morphmet{?limit}{?offset}{?fields}]
+
+Search the morphmet table
 
 + Response 200
     + [Headers](#response-headers)
@@ -576,6 +634,32 @@ Search the reproduc table
     + [Headers](#response-headers)
     + [Body](#response-bodies)
 
+### species
+
+> GET [/species{?genus}{?species}{?limit}{?offset}{?fields}]
+
+List species
+
++ Parameters
+    + genus (string, optional) ... String `name` of a genus.
+    + species (string, optional) ... String `name` of a specific epithet.
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
+
+### Species by id
+
+> GET [/species/{id}]
+
+List species by id
+
++ Parameters
+    + id (integer, required, `5`) ... Species id `number`.
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
 
 ### spawning
 
@@ -587,7 +671,6 @@ Search the spawning table
     + [Headers](#response-headers)
     + [Body](#response-bodies)
 
-
 ### speed
 
 > GET [/speed{?limit}{?offset}{?fields}]
@@ -598,6 +681,15 @@ Search the speed table
     + [Headers](#response-headers)
     + [Body](#response-bodies)
 
+### stocks
+
+> GET [/stocks{?limit}{?offset}{?fields}]
+
+Search the stocks table
+
++ Response 200
+    + [Headers](#response-headers)
+    + [Body](#response-bodies)
 
 ### swimming
 
@@ -609,7 +701,6 @@ Search the swimming table
     + [Headers](#response-headers)
     + [Body](#response-bodies)
 
-
 ### synonyms
 
 > GET [/synonyms{?limit}{?offset}{?fields}]
@@ -619,8 +710,6 @@ Search the synonyms table
 + Response 200
     + [Headers](#response-headers)
     + [Body](#response-bodies)
-
-
 
 ### taxa
 

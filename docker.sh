@@ -14,8 +14,8 @@ docker pull nginx:latest
 ## Start some services: redis, elasticsearch, logstash, freegeoip
 docker run --name slbredis -d redis:latest
 docker run --name fbredis -d redis:latest
-docker run --name fbes -d -v "$HOME/log/fishbase":/usr/share/elasticsearch/data elasticsearch:latest
-docker run --name fblogstash --link fbes:es -d -v "$PWD/logstashconf":/config-dir -v $HOME/log:/var/log logstash:latest logstash -f /config-dir/logstash.conf
+docker run --name fbes -d -v "/home/cboettig/log/fishbase":/usr/share/elasticsearch/data elasticsearch:latest
+docker run --name fblogstash --link fbes:es -d -v "$PWD/logstashconf":/config-dir -v /home/cboettig/log:/var/log logstash:latest logstash -f /config-dir/logstash.conf
 docker run --name fbgeoip -d allingeek/docker-freegeoip
 
 
@@ -23,7 +23,7 @@ docker run --name fbgeoip -d allingeek/docker-freegeoip
 
 docker run --name fbmysql \
   --restart=always -d \
-  -v $HOME/data/fishbase:/var/lib/mysql \
+  -v /home/cboettig/data/fishbase:/var/lib/mysql \
   -e MYSQL_ROOT_PASSWORD=root \
   mysql:latest
 
@@ -31,7 +31,7 @@ docker run --name fbmysql \
 
 docker run --name slbmysql \
   --restart=always -d \
-  -v $HOME/data/sealifebase:/var/lib/mysql \
+  -v /home/cboettig/data/sealifebase:/var/lib/mysql \
   -e MYSQL_ROOT_PASSWORD=root \
   mysql:latest
 

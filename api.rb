@@ -437,12 +437,17 @@ class FBApp < Sinatra::Application
 
   # helpers
   def read_table(x)
-    dat = File.read('docs/docs-sources/' + x + '.csv')
-    csv = CSV.new(dat, :headers => true, :header_converters => :symbol, :converters => :all)
-    hash = csv.to_a.map {|row| row.to_hash }
-    err = get_error(hash)
-    data = { "count" => hash.length, "returned" => hash.length, "error" => err, "data" => hash }
-    return JSON.pretty_generate(data)
+    filename = 'docs/docs-sources/' + x + '.csv'
+    if File.exists?(filename)
+      dat = File.read(filename)
+      csv = CSV.new(dat, :headers => true, :header_converters => :symbol, :converters => :all)
+      hash = csv.to_a.map {|row| row.to_hash }
+      err = get_error(hash)
+      data = { "count" => hash.length, "returned" => hash.length, "error" => err, "data" => hash }
+      return JSON.pretty_generate(data)
+    else
+      halt not_found
+    end
   end
 
   def list_fields
@@ -587,7 +592,11 @@ class FBApp < Sinatra::Application
 
   def give_data(obj)
     data = { "count" => obj['count'], "returned" => obj['data'].length, "error" => obj['error'], "data" => obj['data'] }
-    return JSON.pretty_generate(data)
+    if obj['error'].nil?
+      return JSON.pretty_generate(data)
+    else
+      halt 400, {'Content-Type' => 'application/json'}, JSON.pretty_generate(data)
+    end
   end
 
   def get_cached(key)
@@ -601,7 +610,6 @@ class FBApp < Sinatra::Application
 
   def get_new_ids(key, table, matchfield, params)
     id = params[:id]
-
     limit = params[:limit] || '10'
     offset = params[:offset] || '0'
     check_class(limit, 'limit')
@@ -609,22 +617,32 @@ class FBApp < Sinatra::Application
     limit = check_hang_equal(limit, '10')
     offset = check_hang_equal(offset, '0')
     check_max(limit, 5000)
-
     fields = params[:fields] || '*'
     params.delete("limit")
     params.delete("fields")
-
     fields = check_fields(table, fields)
     args = get_args(check_params(table, params))
 
     if id.nil?
       query = sprintf("SELECT %s FROM %s %s limit %d offset %d", fields, table, args, limit, offset)
       count = get_count(table, args)
+      return do_query(query, key, count)
     else
-      query = sprintf("SELECT %s FROM %s WHERE %s = '%d' limit %d offset %d", fields, table, matchfield, id.to_s, limit, offset)
-      count = get_count(table, sprintf("WHERE %s = '%d'", matchfield, id.to_s))
+      begin
+        id = Integer(id)
+      rescue => e
+        id = e
+      end
+
+      if id.is_a? ArgumentError
+        error_mssg = "id must be an integer"
+        return do_query(nil, nil, nil, error_mssg)
+      else
+        query = sprintf("SELECT %s FROM %s WHERE %s = '%d' limit %d offset %d", fields, table, matchfield, id.to_s, limit, offset)
+        count = get_count(table, sprintf("WHERE %s = '%d'", matchfield, id.to_s))
+        return do_query(query, key, count)
+      end
     end
-    return do_query(query, key, count)
   end
 
   def get_new_noids(key, table, params)
@@ -646,13 +664,17 @@ class FBApp < Sinatra::Application
     return do_query(query, key, count)
   end
 
-  def do_query(query, key, count)
-    res = $client.query(query, :as => :json)
-    out = res.collect{ |row| row }
-    err = get_error(out)
-    store = {"count" => count, "error" => err, "data" => out}
-    redis_set(key, JSON.generate(store))
-    return store
+  def do_query(query, key, count, errmssg = nil)
+    if !errmssg.nil?
+      return {"count" => 0, "error" => errmssg, "data" => []}
+    else
+      res = $client.query(query, :as => :json)
+      out = res.collect{ |row| row }
+      err = get_error(out)
+      store = {"count" => count, "error" => err, "data" => out}
+      redis_set(key, JSON.generate(store))
+      return store
+    end
   end
 
   def check_max(x, max)

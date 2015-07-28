@@ -379,7 +379,13 @@ class SLBApp < Sinatra::Application
 
     if !result
       limit = params[:limit] || 10
+      offset = params[:offset] || '0'
       params.delete("limit")
+      params.delete("offset")
+      check_class(limit, 'limit')
+      check_class(offset, 'offset')
+      limit = check_hang_equal(limit, '10')
+      offset = check_hang_equal(offset, '0')
       params.keep_if { |key, value| key.to_s.match(/[Gg]enus|[Ss]pecies/) }
       args = get_args(params, prefix=true)
 
@@ -388,7 +394,7 @@ class SLBApp < Sinatra::Application
           FROM species s
           INNER JOIN families f on s.FamCode = f.FamCode
           INNER JOIN genera g on s.Genus = g.GEN_NAME
-          %s limit %d", args, limit)
+          %s limit %d offset %d", args, limit, offset)
       count = get_count('species', get_args(params, prefix=false))
 
       res = $slbclient.query(query, :as => :json)

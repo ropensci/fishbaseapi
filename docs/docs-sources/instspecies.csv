@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 instspecies,ID
 instspecies,Genus
 instspecies,Species

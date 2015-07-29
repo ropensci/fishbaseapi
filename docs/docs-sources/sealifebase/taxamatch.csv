@@ -1,0 +1,13 @@
+table_name,column_name
+taxamatch,SpecCode
+taxamatch,SynCode
+taxamatch,SynGenus
+taxamatch,SynSpecies
+taxamatch,Status
+taxamatch,LastEpithet
+taxamatch,NormalizeGenus
+taxamatch,NormalizeSpecies
+taxamatch,NormalizeLastEpithet
+taxamatch,SoundexGenus
+taxamatch,SoundexSpecies
+taxamatch,SoundexLastEpithet

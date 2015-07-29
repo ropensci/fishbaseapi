@@ -1,0 +1,8 @@
+table_name,column_name
+aquamaps,genus
+aquamaps,species
+aquamaps,speciesid
+aquamaps,speccode
+aquamaps,FAOAreaIn
+aquamaps,database_id
+aquamaps,expert_id

@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 countref,PAESE
 countref,Note
 countref,C_Code

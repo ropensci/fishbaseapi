@@ -1,4 +1,4 @@
-Table,Description,Links
+table,description,links
 heartbeat,API endpoint to confirm that the API is up. Lists all available endpoints,
 mysqlping,API endpoint to test the status of the database,
 comnames,Table of common names,

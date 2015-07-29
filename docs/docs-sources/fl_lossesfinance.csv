@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 fl_lossesfinance,LossCode
 fl_lossesfinance,currency
 fl_lossesfinance,BestPrice

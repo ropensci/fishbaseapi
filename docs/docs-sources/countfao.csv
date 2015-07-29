@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 countfao,autoctr
 countfao,SpecCode
 countfao,StockCode

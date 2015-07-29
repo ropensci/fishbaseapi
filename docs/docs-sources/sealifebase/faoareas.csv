@@ -1,0 +1,15 @@
+table_name,column_name
+faoareas,autoctr
+faoareas,AreaCode
+faoareas,SpecCode
+faoareas,StockCode
+faoareas,Status
+faoareas,Entered
+faoareas,DateEntered
+faoareas,Modified
+faoareas,DateModified
+faoareas,Expert
+faoareas,DateChecked
+faoareas,E_Append
+faoareas,E_DateAppend
+faoareas,TS

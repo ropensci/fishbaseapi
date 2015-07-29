@@ -1,0 +1,12 @@
+table_name,column_name
+journals,J_ID
+journals,J_Abbreviation
+journals,J_Name
+journals,J_URL
+journals,Entered
+journals,DateEntered
+journals,Modified
+journals,DateModified
+journals,Expert
+journals,DateChecked
+journals,TS

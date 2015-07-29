@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 biblio2,autoctr
 biblio2,RefNo
 biblio2,SynCodePrimary

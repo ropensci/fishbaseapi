@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 fl_storagedetails,LossCode
 fl_storagedetails,DistributionStage
 fl_storagedetails,OtherDistributionStage

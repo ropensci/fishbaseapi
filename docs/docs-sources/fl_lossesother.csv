@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 fl_lossesother,LossCode
 fl_lossesother,OPreviousProcess
 fl_lossesother,OPreviousTreatment

@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 keys,KeyCode
 keys,Description
 keys,RefNo

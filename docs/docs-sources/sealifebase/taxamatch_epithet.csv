@@ -1,0 +1,5 @@
+table_name,column_name
+taxamatch_epithet,SpecCode
+taxamatch_epithet,SynCode
+taxamatch_epithet,EpithetPos
+taxamatch_epithet,Epithet

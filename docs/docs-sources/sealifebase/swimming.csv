@@ -1,0 +1,15 @@
+table_name,column_name
+swimming,SpecCode
+swimming,SwimRefMain
+swimming,AdultType
+swimming,AdultMode
+swimming,AdultRef
+swimming,Comment
+swimming,Entered
+swimming,DateEntered
+swimming,Modified
+swimming,DateModified
+swimming,Expert
+swimming,DateChecked
+swimming,AspectRatio
+swimming,AspectRef

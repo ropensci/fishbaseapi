@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 refrens,autoctr
 refrens,RefNo
 refrens,RMSNo

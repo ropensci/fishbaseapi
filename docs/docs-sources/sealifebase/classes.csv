@@ -1,0 +1,10 @@
+table_name,column_name
+classes,ClassNum
+classes,SortNo
+classes,Class
+classes,CommonName
+classes,Phylum
+classes,PhylumNum
+classes,Remarks
+classes,WaterSalinity
+classes,TS

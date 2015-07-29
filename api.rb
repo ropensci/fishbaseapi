@@ -6,6 +6,7 @@ require 'redis'
 require 'csv'
 require 'geolocater'
 require "sinatra/multi_route"
+require File.join File.dirname(__FILE__), "utils_fxns"
 
 class FBApp < Sinatra::Application
   register Sinatra::MultiRoute
@@ -282,7 +283,7 @@ class FBApp < Sinatra::Application
   get '/listfields/?' do
     fields = params[:fields] || nil
     exact = params[:exact] || false
-    data = list_fields()
+    data = list_fields('fbapp')
     if !fields.nil?
       if exact
         fields = fields.split(',').collect{ |x| sprintf("^%s$", x) }.join(',')
@@ -442,29 +443,6 @@ class FBApp < Sinatra::Application
   end
 
   # helpers
-  def read_table(x)
-    filename = 'docs/docs-sources/' + x + '.csv'
-    if File.exists?(filename)
-      dat = File.read(filename)
-      csv = CSV.new(dat, :headers => true, :header_converters => :symbol, :converters => :all)
-      hash = csv.to_a.map {|row| row.to_hash }
-      err = get_error(hash)
-      data = { "count" => hash.length, "returned" => hash.length, "error" => err, "data" => hash }
-      return JSON.pretty_generate(data)
-    else
-      halt not_found
-    end
-  end
-
-  def list_fields
-    query = "SELECT TABLE_NAME,COLUMN_NAME FROM information_schema.`columns` C WHERE TABLE_SCHEMA = 'fbapp'"
-    res = $client.query(query, :as => :json)
-    out = res.collect{ |row| row }
-    err = get_error(out)
-    data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }
-    return data
-  end
-
   def route(table, var)
     $ip = request.ip
     key = rediskey(table, params)

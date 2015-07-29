@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 zweb_factsheetmaint_aquaculture,autoctr
 zweb_factsheetmaint_aquaculture,SpecCode
 zweb_factsheetmaint_aquaculture,SiteURL

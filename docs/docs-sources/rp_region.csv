@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 rp_region,AutoCtr
 rp_region,rank
 rp_region,Region

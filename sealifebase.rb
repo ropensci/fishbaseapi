@@ -5,6 +5,7 @@ require 'mysql2'
 require 'redis'
 require 'geolocater'
 require "sinatra/multi_route"
+require File.join File.dirname(__FILE__), "utils_fxns"
 
 class SLBApp < Sinatra::Application
   private
@@ -164,15 +165,20 @@ class SLBApp < Sinatra::Application
     redirect '/heartbeat'
   end
 
-  get '/docs' do
-    redirect 'http://docs.fishbaseapi.apiary.io'
+  get '/docs/?:table?/?' do
+    table = params[:table]
+    if table.nil?
+      return read_table("sealifebase/tables")
+    else
+      read_table("sealifebase/" + table)
+    end
   end
 
   get "/heartbeat/?" do
     $ip = request.ip
     return JSON.pretty_generate({
       "routes" => [
-        "/docs",
+        "/docs/:table?",
         "/heartbeat",
         "/mysqlping",
         "/comnames?<params>",
@@ -187,6 +193,7 @@ class SLBApp < Sinatra::Application
         "/fooditems?<params>",
         "/genera/:id?<params>",
         "/intrcase?<params>",
+        "/listfields?<params>",
         "/maturity?<params>",
         "/morphdat?<params>",
         "/morphmet?<params>",
@@ -271,6 +278,24 @@ class SLBApp < Sinatra::Application
 
   get '/intrcase/?' do
     route_noid('intrcase')
+  end
+
+  get '/listfields/?' do
+    fields = params[:fields] || nil
+    exact = params[:exact] || false
+    data = list_fields('slbapp')
+    if !fields.nil?
+      if exact
+        fields = fields.split(',').collect{ |x| sprintf("^%s$", x) }.join(',')
+      end
+      fields = fields.gsub(',', '|')
+      p fields
+      data['data'].keep_if{ |a, b| !!a['COLUMN_NAME'].match(fields) }
+
+      data['count'] = data['data'].length
+      data['returned'] = data['data'].length
+    end
+    return JSON.pretty_generate(data)
   end
 
   get '/maturity/?' do

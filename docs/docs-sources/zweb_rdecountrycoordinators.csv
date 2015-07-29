@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 zweb_rdecountrycoordinators,Coordinator
 zweb_rdecountrycoordinators,C_Code
 zweb_rdecountrycoordinators,addcountry

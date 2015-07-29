@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 rp_province,AutoCtr
 rp_province,Region
 rp_province,RegionName

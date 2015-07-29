@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 zweb_foridentification,FamCode
 zweb_foridentification,Family
 zweb_foridentification,CommonName

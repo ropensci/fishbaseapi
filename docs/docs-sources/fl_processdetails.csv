@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 fl_processdetails,LossCode
 fl_processdetails,Process
 fl_processdetails,OtherProcess

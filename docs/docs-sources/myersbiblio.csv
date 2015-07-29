@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 myersbiblio,SpecCode
 myersbiblio,ID
 myersbiblio,RefNo

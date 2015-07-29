@@ -1,4 +1,4 @@
-TABLE_NAME,COLUMN_NAME
+table_name,column_name
 fl_transportdetails,Losscode
 fl_transportdetails,TransportMethod
 fl_transportdetails,OtherTransportMethod

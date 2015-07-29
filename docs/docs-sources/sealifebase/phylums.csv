@@ -1,0 +1,11 @@
+table_name,column_name
+phylums,PhylumId
+phylums,Kingdom
+phylums,Phylum
+phylums,CommonName
+phylums,Valid
+phylums,ValidPhylumId
+phylums,ParentPhylumId
+phylums,ParentKingdomId
+phylums,ParentKingdomInfId
+phylums,PhylumRefNo

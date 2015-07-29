@@ -283,7 +283,7 @@ class FBApp < Sinatra::Application
   get '/listfields/?' do
     fields = params[:fields] || nil
     exact = params[:exact] || false
-    data = list_fields('fbapp')
+    data = list_fields($client, 'fbapp')
     if !fields.nil?
       if exact
         fields = fields.split(',').collect{ |x| sprintf("^%s$", x) }.join(',')

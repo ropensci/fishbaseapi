@@ -1,7 +1,7 @@
 # Helper functions for APIs
-def list_fields(app)
+def list_fields(client, app)
   query = sprintf("SELECT TABLE_NAME,COLUMN_NAME FROM information_schema.`columns` C WHERE TABLE_SCHEMA = '%s'", app)
-  res = $client.query(query, :as => :json)
+  res = client.query(query, :as => :json)
   out = res.collect{ |row| row }
   err = get_error(out)
   data = { "count" => out.length, "returned" => out.length, "error" => err, "data" => out }

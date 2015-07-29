@@ -378,7 +378,7 @@ class SLBApp < Sinatra::Application
     end
 
     if !result
-      limit = params[:limit] || 10
+      limit = params[:limit] || '10'
       offset = params[:offset] || '0'
       params.delete("limit")
       params.delete("offset")

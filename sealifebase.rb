@@ -289,7 +289,6 @@ class SLBApp < Sinatra::Application
         fields = fields.split(',').collect{ |x| sprintf("^%s$", x) }.join(',')
       end
       fields = fields.gsub(',', '|')
-      p fields
       data['data'].keep_if{ |a, b| !!a['COLUMN_NAME'].match(fields) }
 
       data['count'] = data['data'].length

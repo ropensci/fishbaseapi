@@ -1,12 +1,18 @@
-source "http://rubygems.org/"
+source 'http://rubygems.org/'
 
-gem 'geolocater'
-gem 'json'
+# gem 'geolocater' # TODO logging
+# gem 'redis' # TODO caching
 gem 'mysql2'
-gem 'redis'
-gem 'sinatra'
-gem 'sinatra-contrib'
-gem 'unicorn'
-gem 'rake'
-gem 'httparty'
-gem 'minitest'
+gem 'activerecord', '~> 4.2.3', require: 'active_record'
+
+group :manual do
+  gem 'sinatra', '~> 1.4.6'
+  gem 'rake'
+  gem 'unicorn'
+  gem 'shotgun'
+end
+
+group :test do
+  gem 'httparty'
+  gem 'minitest'
+end

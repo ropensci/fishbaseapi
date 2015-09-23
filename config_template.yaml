@@ -1,0 +1,13 @@
+---
+app:
+  cache: true
+  log: true
+  log_dir: ./log
+db:
+  adapter: mysql2
+  encoding: utf8
+  host: localhost
+  username: admin
+  password: guest
+  port: 3306
+  database: fbapp

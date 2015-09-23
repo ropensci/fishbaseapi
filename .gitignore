@@ -1,3 +1,5 @@
 *.sql
 *.swp
 *.key
+config.yaml
+log/

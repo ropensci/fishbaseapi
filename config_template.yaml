@@ -1,8 +1,8 @@
 ---
-app:
-  cache: true
-  log: true
-  log_dir: ./log
+caching:
+  expires: 3600
+logging:
+  log_dir: './log'
 db:
   adapter: mysql2
   encoding: utf8

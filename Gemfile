@@ -1,8 +1,8 @@
 source 'http://rubygems.org/'
 
 # gem 'geolocater' # TODO logging
-# gem 'redis' # TODO caching
-gem 'mysql2'
+gem 'redis', '~> 3.2.1'
+gem 'mysql2', '~> 0.4.1'
 gem 'activerecord', '~> 4.2.3', require: 'active_record'
 
 group :manual do

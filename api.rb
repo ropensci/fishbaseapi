@@ -2,19 +2,42 @@ require 'bundler/setup'
 require 'yaml'
 require 'json'
 require 'csv'
+require 'digest'
 Bundler.require(:default)
 require 'sinatra'
 require_relative 'models/models'
 
 $config = YAML::load_file(File.join(__dir__, 'config.yaml'))
+
+$redis = Redis.new
 ActiveRecord::Base.establish_connection($config['db'])
 
 class FBApp < Sinatra::Application
   before do
+    # set headers
     headers 'Content-Type' => 'application/json; charset=utf8'
     headers 'Access-Control-Allow-Methods' => 'HEAD, GET'
     headers 'Access-Control-Allow-Origin' => '*'
     cache_control :public, :must_revalidate, max_age: 60
+
+    # use redis caching
+    if $config['caching']
+      @cache_key = Digest::MD5.hexdigest(request.url)
+      if $redis.exists(@cache_key)
+        headers 'Cache-Hit' => 'true'
+        halt 200, $redis.get(@cache_key)
+      end
+    end
+  end
+
+  after do
+    # cache response in redis
+    if $config['caching'] && !response.headers['Cache-Hit']
+      $redis.set(@cache_key, response.body[0], $config['caching']['expires'])
+    end
+
+    # log requests
+    # do some logging if $config['logging'] #TODO
   end
 
   # handle missed route

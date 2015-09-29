@@ -35,9 +35,6 @@ class FBApp < Sinatra::Application
     if $config['caching'] && !response.headers['Cache-Hit']
       $redis.set(@cache_key, response.body[0], $config['caching']['expires'])
     end
-
-    # log requests
-    # do some logging if $config['logging'] #TODO
   end
 
   # handle missed route

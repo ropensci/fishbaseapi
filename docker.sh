@@ -1,65 +1,26 @@
 #!/bin/bash
 
 # Remove any versions of running containers first
-docker rm -f -v fbredis slbredis fbes fblogstash fbgeoip fbmysql slbmysql fbapi fbnginx
+docker rm -fv fbredis fbapi
 
-# Make sure services are up-to-date
+# Grab latest and start redis
 docker pull redis:latest
-docker pull logstash:latest
-docker pull elasticsearch:latest
-docker pull allingeek/docker-freegeoip
-docker pull mysql:latest
-docker pull nginx:latest
+docker run --name fbredis -dP redis:latest
 
-## Start some services: redis, elasticsearch, logstash, freegeoip
-docker run --name slbredis -d redis:latest
-docker run --name fbredis -d redis:latest
-docker run --name fbes -d -v "/home/cboettig/log/fishbase":/usr/share/elasticsearch/data elasticsearch:latest
-docker run --name fblogstash --link fbes:es -d -v "$PWD/logstashconf":/config-dir -v /home/cboettig/log:/var/log logstash:latest logstash -f /config-dir/logstash.conf
-docker run --name fbgeoip -d allingeek/docker-freegeoip
-
-
-######### FishBase DataBase ##################
-
-docker run --name fbmysql \
-  --restart=always -d \
-  -v /home/cboettig/data/fishbase:/var/lib/mysql \
-  -e MYSQL_ROOT_PASSWORD=root \
-  mysql:latest
-
-###### SeaLifeBase DataBase & API ############
-
-docker run --name slbmysql \
-  --restart=always -d \
-  -v /home/cboettig/data/sealifebase:/var/lib/mysql \
-  -e MYSQL_ROOT_PASSWORD=root \
-  mysql:latest
-
-
-
+# Build and run the API image and link redis
 docker build -t ropensci/fishbaseapi:latest .
-#docker pull ropensci/fishbaseapi:latest
-docker run --name fbapi -d \
-  --link slbmysql:sealifebase \
-  --link fbmysql:mysql \
-  --link slbredis:slbredis \
-  --link fbredis:redis \
-  --link fbgeoip:geoip \
-  --volumes-from fblogstash \
-  ropensci/fishbaseapi:latest
+docker run --name fbapi -dP --link fbredis:redis ropensci/fishbaseapi:latest
 
+# Get the API host:port, then
+host=$(command -v docker-machine > /dev/null && echo `docker-machine ip default` || echo "localhost")
+port=`docker port fbapi 8888`
+url="http://$host:${port:8}"
 
-# Must generate a .htpassword file first:
-# assuming apache2-utils is installed: sudo htpasswd -cb .htpasswd $USER $PASSWORD
-
-docker run --name fbnginx -d \
-  -p 80:80 -p 9200:9200 \
-  --link fbes:es \
-  --link fblogstash:logstash \
-  --link fbapi:api \
-  -v ${PWD}/nginx.conf:/etc/nginx/nginx.conf \
-  -v ${PWD}/.htpasswd:/etc/nginx/.htpasswd \
-  -v ${PWD}/bundle.crt:/etc/ssl/certs/es.crt \
-  -v ${PWD}/ssl.key:/etc/ssl/private/es.key \
-  nginx:latest
-
+# Open the heartbeat page if able
+if command -v open > /dev/null; then
+  open "$url/heartbeat"
+elif command -v xdg-open > /dev/null; then
+  xdg-open "$url/heartbeat"
+else
+  echo "Open $url in your browser of choice"
+fi

@@ -33,7 +33,7 @@ class FBApp < Sinatra::Application
   after do
     # cache response in redis
     if $config['caching'] && !response.headers['Cache-Hit']
-      $redis.set(@cache_key, response.body[0], $config['caching']['expires'])
+      $redis.set(@cache_key, response.body[0], ex: $config['caching']['expires'])
     end
   end
 

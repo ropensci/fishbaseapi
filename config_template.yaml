@@ -2,10 +2,19 @@
 caching:
   expires: 3600
 db:
-  adapter: mysql2
-  encoding: utf8
-  host: localhost
-  username: admin
-  password: guest
-  port: 3306
-  database: fbapp
+  fb:
+    adapter: mysql2
+    encoding: utf8
+    host: HOST_HERE
+    username: USERNAME_HERE
+    password: PASSWORD_HERE
+    port: 3306
+    database: fbapp
+  slb:
+    adapter: mysql2
+    encoding: utf8
+    host: HOST_HERE
+    username: USERNAME_HERE
+    password: PASSWORD_HERE
+    port: 3306
+    database: slbapp

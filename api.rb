@@ -1,8 +1,5 @@
 require 'bundler/setup'
-require 'yaml'
-require 'json'
-require 'csv'
-require 'digest'
+%w(yaml json csv digest).each { |req| require req }
 Bundler.require(:default)
 require 'sinatra'
 require_relative 'models/models'
@@ -12,9 +9,9 @@ $config = YAML::load_file(File.join(__dir__, 'config.yaml'))
 $redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
                    port: ENV.fetch('REDIS_PORT_6379_TCP_PORT', 6379)
 
-ActiveRecord::Base.establish_connection($config['db'])
+ActiveRecord::Base.establish_connection($config['db']['fb'])
 
-class FBApp < Sinatra::Application
+class API < Sinatra::Application
   before do
     # set headers
     headers 'Content-Type' => 'application/json; charset=utf8'
@@ -30,11 +27,14 @@ class FBApp < Sinatra::Application
         halt 200, $redis.get(@cache_key)
       end
     end
+
+    # set correct db connection
+    ActiveRecord::Base.establish_connection($config['db'][request.script_name == '/sealifebase' ? 'slb' : 'fb'])
   end
 
   after do
     # cache response in redis
-    if $config['caching'] && !response.headers['Cache-Hit']
+    if $config['caching'] && !response.headers['Cache-Hit'] && response.status == 200
       $redis.set(@cache_key, response.body[0], ex: $config['caching']['expires'])
     end
   end

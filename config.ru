@@ -1,2 +1,9 @@
 require_relative 'api'
-run FBApp
+
+map '/' do
+  run API
+end
+
+map '/sealifebase' do
+  run API
+end

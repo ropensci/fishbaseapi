@@ -6,12 +6,10 @@ gem 'activerecord', '~> 4.2.3', require: 'active_record'
 
 group :manual do
   gem 'sinatra', '~> 1.4.6'
-  gem 'rake'
-  gem 'unicorn'
-  gem 'shotgun'
+  gem 'unicorn', '~> 4.8.3'
 end
 
 group :test do
-  gem 'httparty'
-  gem 'minitest'
+  gem 'rack-test', '~> 0.6.3', require: 'rack/test'
+  gem 'rspec', '~> 3.3.0'
 end

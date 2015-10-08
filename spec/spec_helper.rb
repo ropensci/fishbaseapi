@@ -13,3 +13,11 @@ end
 RSpec.configure do |config|
   config.include TestHelperMixin
 end
+
+$routes = API.routes['GET'].map do |route|
+  route[0].to_s
+      .sub('(?-mix:\A\/', '/')
+      .sub('\/?', '/')
+      .sub('\z)', '')
+      .sub('([^\/?#]+)?\/?', '')
+end

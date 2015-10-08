@@ -7,6 +7,7 @@ gem 'activerecord', '~> 4.2.3', require: 'active_record'
 group :manual do
   gem 'sinatra', '~> 1.4.6'
   gem 'unicorn', '~> 4.8.3'
+  gem 'rake', '~> 10.4.2'
 end
 
 group :test do

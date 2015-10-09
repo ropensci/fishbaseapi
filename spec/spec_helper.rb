@@ -20,4 +20,4 @@ $routes = API.routes['GET'].map do |route|
       .sub('\/?', '/')
       .sub('\z)', '')
       .sub('([^\/?#]+)?\/?', '')
-end
+end.drop(1)

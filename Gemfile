@@ -13,4 +13,5 @@ end
 group :test do
   gem 'rack-test', '~> 0.6.3', require: 'rack/test'
   gem 'rspec', '~> 3.3.0'
+  gem 'activerecord-nulldb-adapter', '~> 0.3.1'
 end

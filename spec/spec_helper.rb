@@ -1,7 +1,9 @@
+ENV['RACK_ENV'] = 'test'
 require_relative '../api'
 Bundler.require(:test)
+require 'nulldb_rspec'
 
-ENV['RACK_ENV'] = 'test'
+include NullDB::RSpec::NullifiedDatabase
 
 module TestHelperMixin
   include Rack::Test::Methods
@@ -13,11 +15,3 @@ end
 RSpec.configure do |config|
   config.include TestHelperMixin
 end
-
-$routes = API.routes['GET'].map do |route|
-  route[0].to_s
-      .sub('(?-mix:\A\/', '/')
-      .sub('\/?', '/')
-      .sub('\z)', '')
-      .sub('([^\/?#]+)?\/?', '')
-end.drop(1)

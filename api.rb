@@ -4,7 +4,7 @@ Bundler.require(:default)
 require 'sinatra'
 require_relative 'models/models'
 
-$config = YAML::load_file(File.join(__dir__, 'config.yaml'))
+$config = YAML::load_file(File.join(__dir__, ENV['RACK_ENV'] == 'test' ? 'test_config.yaml' : 'config.yaml'))
 
 $redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
                    port: ENV.fetch('REDIS_PORT_6379_TCP_PORT', 6379)
@@ -57,45 +57,8 @@ class API < Sinatra::Application
 
   # route listing route
   get '/heartbeat/?' do
-    { routes: %w(
-            /docs/:table?
-            /heartbeat
-            /mysqlping
-            /comnames?<params>
-            /countref?<params>
-            /country?<params>
-            /diet?<params>
-            /ecology?<params>
-            /ecosystem?<params>
-            /faoareas/:id?<params>
-            /faoarref/:id?<params>
-            /fecundity?<params>
-            /fooditems?<params>
-            /genera/:id?<params>
-            /intrcase?<params>
-            /maturity?<params>
-            /morphdat?<params>
-            /morphmet?<params>
-            /occurrence?<params>
-            /oxygen?<params>
-            /popchar?<params>
-            /popgrowth?<params>
-            /poplf?<params>
-            /popll?<params>
-            /popqb?<params>
-            /poplw?<params>
-            /predats?<params>
-            /ration?<params>
-            /refrens?<params>
-            /reproduc?<params>
-            /species/:id?<params>
-            /spawning?<params>
-            /speed?<params>
-            /stocks?<params>
-            /swimming?<params>
-            /synonyms?<params>
-            /taxa?<params>
-    )}.to_json
+    db_routes = Models.models.map { |m| "/#{m}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>" }
+    { routes: %w( /docs/:table? /heartbeat /mysqlping /listfields ) + db_routes }.to_json
   end
 
   # docs route

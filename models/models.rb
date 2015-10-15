@@ -6,6 +6,7 @@ module Models
   end
 
   def self.list_fields(db)
+    #TODO we should pass regexp to DB instead of returning all columns every time
     query = "SELECT table_name, column_name FROM information_schema.`columns` WHERE table_schema = '#{db}';"
     ActiveRecord::Base.connection.execute(query).map { |row| { table_name: row.first, column_name: row.last } }
   end

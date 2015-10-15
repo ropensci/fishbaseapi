@@ -109,13 +109,16 @@ class API < Sinatra::Application
 
   # db status route
   get '/mysqlping/?' do
-    { mysql_server_up: true, mysql_host: $config['db']['host'] }.to_json
+    {
+        mysql_server_up: true,
+        mysql_host: $config['db'][request.script_name == '/sealifebase' ? 'slb' : 'fb']['host']
+    }.to_json
   end
 
   # list fields route
   get '/listfields/?' do
     fields, exact = params[:fields], params[:exact]
-    data = Models.list_fields($config['db']['database'])
+    data = Models.list_fields($config['db'][request.script_name == '/sealifebase' ? 'slb' : 'fb']['database'])
     unless fields.nil?
       fields = fields.gsub(',', '|')
       fields = fields.split('|').map { |field| "^#{field}$" }.join('|') if exact

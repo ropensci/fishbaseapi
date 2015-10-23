@@ -10,5 +10,6 @@ class Base < ActiveRecord::Base
     where(params.select { |param| fields.include?(param) })
         .limit(params[:limit])
         .offset(params[:offset])
+        .select(params[:fields])
   end
 end

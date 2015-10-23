@@ -20,6 +20,11 @@ class API < Sinatra::Application
     headers 'Access-Control-Allow-Origin' => '*'
     cache_control :public, :must_revalidate, max_age: 60
 
+    # prevent certain verbs
+    if request.request_method != 'GET'
+      halt 405
+    end
+
     # use redis caching
     if $config['caching']
       @cache_key = Digest::MD5.hexdigest(request.url)

@@ -104,7 +104,7 @@ class API < Sinatra::Application
     get "/#{model_name.to_s.downcase}/?#{model.primary_key ? ':id?/?' : '' }" do
       begin
         data = model.endpoint(params)
-        raise Exception.new('FBApp::Error: No results found') if data.length.zero?
+        raise Exception.new('no results found') if data.length.zero?
         { count: data.length, returned: data.length, data: data, error: nil }.to_json
       rescue Exception => e
         { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json

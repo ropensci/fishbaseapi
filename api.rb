@@ -57,7 +57,7 @@ class API < Sinatra::Application
 
   # route listing route
   get '/heartbeat/?' do
-    db_routes = Models.models.map { |m| "/#{m}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>" }
+    db_routes = Models.models.map { |m| "/#{m.downcase}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>" }
     { routes: %w( /docs/:table? /heartbeat /mysqlping /listfields ) + db_routes }.to_json
   end
 

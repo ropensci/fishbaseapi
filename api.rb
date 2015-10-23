@@ -35,7 +35,8 @@ class API < Sinatra::Application
     end
 
     # set correct db connection
-    ActiveRecord::Base.establish_connection($config['db'][request.script_name == '/sealifebase' ? 'slb' : 'fb'])
+    @slb_or_fb = request.script_name == '/sealifebase' ? 'slb' : 'fb'
+    ActiveRecord::Base.establish_connection($config['db'][@slb_or_fb])
   end
 
   after do
@@ -62,7 +63,9 @@ class API < Sinatra::Application
 
   # route listing route
   get '/heartbeat/?' do
-    db_routes = Models.models.map { |m| "/#{m.downcase}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>" }
+    db_routes = Models.models.map do |m|
+      "/#{m.downcase}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>"
+    end
     { routes: %w( /docs/:table? /heartbeat /mysqlping /listfields ) + db_routes }.to_json
   end
 
@@ -79,14 +82,14 @@ class API < Sinatra::Application
   get '/mysqlping/?' do
     {
         mysql_server_up: true,
-        mysql_host: $config['db'][request.script_name == '/sealifebase' ? 'slb' : 'fb']['host']
+        mysql_host: $config['db'][@slb_or_fb]['host']
     }.to_json
   end
 
   # list fields route
   get '/listfields/?' do
     fields, exact = params[:fields], params[:exact]
-    data = Models.list_fields($config['db'][request.script_name == '/sealifebase' ? 'slb' : 'fb']['database'])
+    data = Models.list_fields($config['db'][@slb_or_fb]['database'])
     unless fields.nil?
       fields = fields.gsub(',', '|')
       fields = fields.split('|').map { |field| "^#{field}$" }.join('|') if exact

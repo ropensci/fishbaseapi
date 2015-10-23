@@ -48,12 +48,12 @@ class API < Sinatra::Application
 
   # handle missed route
   not_found do
-    '404 not found'
+    halt 404, { error: 'route not found' }.to_json
   end
 
   # handle other errors
   error do
-    'Server error'
+    halt 500, { error: 'server error' }.to_json
   end
 
   # default to heartbeat

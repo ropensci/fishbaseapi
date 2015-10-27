@@ -1,17 +1,9 @@
-require "rubygems"
-require "sinatra"
-require 'json'
-require 'mysql2'
-require 'redis'
-require 'geolocater'
-
+require_relative 'api'
 
 map '/' do
-	require File.join( File.dirname(__FILE__), 'api.rb')
-	run FBApp
+  run API
 end
 
 map '/sealifebase' do
-	require File.join( File.dirname(__FILE__), 'sealifebase.rb')
-	run SLBApp
+  run API
 end

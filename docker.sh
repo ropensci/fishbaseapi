@@ -12,8 +12,8 @@ docker pull nginx:latest
 docker run --name nginx nginx:latest
 
 # start app
-docker build -t ropensci/fishbaseapi:latest .
-docker run --name fbapi -dP --link fbredis:redis ropensci/fishbaseapi:latest
+docker build -t fishbaseapi .
+docker run --name fbapi -dP --link fbredis:redis fishbaseapi
 
 # Get the API host:port, then
 host=$(command -v docker-machine > /dev/null && echo `docker-machine ip default` || echo "localhost")

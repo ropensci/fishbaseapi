@@ -1,17 +1,13 @@
 #!/bin/bash
 
 # Remove any versions of running containers first
-docker rm -fv fbredis fbapi fbnginx
+docker rm -fv fbredis fbapi
 
-# Make sure services are up-to-date
+# Grab latest and start redis
 docker pull redis:latest
 docker run --name fbredis -dP redis:latest
 
-## Start nginx
-docker pull nginx:latest
-docker run --name nginx nginx:latest
-
-# start app
+# Build and run the API image and link redis
 docker build -t ropensci/fishbaseapi:latest .
 docker run --name fbapi -dP --link fbredis:redis ropensci/fishbaseapi:latest
 

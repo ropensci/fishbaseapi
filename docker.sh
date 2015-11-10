@@ -16,7 +16,7 @@ docker run --name fbredis -d redis:latest
 
 docker run --name fbmysql \
   --restart=always -d \
-  -v /home/data/fishbase:/var/lib/mysql \
+  -v $HOME/data/fishbase:/var/lib/mysql \
   -e MYSQL_ROOT_PASSWORD=root \
   mysql:latest
 
@@ -24,7 +24,7 @@ docker run --name fbmysql \
 
 docker run --name slbmysql \
   --restart=always -d \
-  -v /home/data/sealifebase:/var/lib/mysql \
+  -v $HOME/data/sealifebase:/var/lib/mysql \
   -e MYSQL_ROOT_PASSWORD=root \
   mysql:latest
 

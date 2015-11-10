@@ -1,0 +1,20 @@
+---
+caching:
+  expires: 3600
+db:
+  fb:
+    adapter: mysql2
+    encoding: utf8
+    host: mysql
+    username: root
+    password: root
+    port: 3306
+    database: fbapp
+  slb:
+    adapter: mysql2
+    encoding: utf8
+    host: slbmysql
+    username: root
+    password: root
+    port: 3306
+    database: slbapp

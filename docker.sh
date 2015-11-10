@@ -1,26 +1,48 @@
 #!/bin/bash
 
 # Remove any versions of running containers first
-docker rm -fv fbredis fbapi
+docker rm -f -v fbredis fbmysql slbmysql fbapi fbnginx
 
-# Grab latest and start redis
+# Make sure services are up-to-date
 docker pull redis:latest
-docker run --name fbredis -dP redis:latest
+docker pull mysql:latest
+docker pull nginx:latest
 
-# Build and run the API image and link redis
+## Start some services: redis, elasticsearch, logstash, freegeoip
+docker run --name fbredis -d redis:latest
+
+
+######### FishBase DataBase ##################
+
+docker run --name fbmysql \
+  --restart=always -d \
+  -v $HOME/data/fishbase:/var/lib/mysql \
+  -e MYSQL_ROOT_PASSWORD=root \
+  mysql:latest
+
+###### SeaLifeBase DataBase & API ############
+
+docker run --name slbmysql \
+  --restart=always -d \
+  -v $HOME/data/sealifebase:/var/lib/mysql \
+  -e MYSQL_ROOT_PASSWORD=root \
+  mysql:latest
+
+
+
 docker build -t ropensci/fishbaseapi:latest .
-docker run --name fbapi -dP --link fbredis:redis ropensci/fishbaseapi:latest
+docker run --name fbapi -d \
+  --link slbmysql:sealifebase \
+  --link fbmysql:mysql \
+  --link fbredis:redis \
+  ropensci/fishbaseapi:latest
 
-# Get the API host:port, then
-host=$(command -v docker-machine > /dev/null && echo `docker-machine ip default` || echo "localhost")
-port=`docker port fbapi 8888`
-url="http://$host:${port:8}"
 
-# Open the heartbeat page if able
-if command -v open > /dev/null; then
-  open "$url/heartbeat"
-elif command -v xdg-open > /dev/null; then
-  xdg-open "$url/heartbeat"
-else
-  echo "Open $url in your browser of choice"
-fi
+# Must generate a .htpassword file first:
+# assuming apache2-utils is installed: sudo htpasswd -cb .htpasswd $USER $PASSWORD
+
+docker run --name fbnginx -d \
+  -p 80:80 \
+  --link fbapi:api \
+  -v ${PWD}/nginx.conf:/etc/nginx/nginx.conf \
+  nginx:latest

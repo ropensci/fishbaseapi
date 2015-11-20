@@ -1,3 +1,5 @@
+require 'CGI'
+
 class Base < ActiveRecord::Base
   attr_accessor :with_id
 
@@ -5,6 +7,8 @@ class Base < ActiveRecord::Base
   self.pluralize_table_names = false
 
   def self.endpoint(params)
+    params.delete_if { |k, v| v.nil? }
+
     %i(limit offset).each do |p|
       unless params[p].nil?
         begin
@@ -20,6 +24,6 @@ class Base < ActiveRecord::Base
     where(params.select { |param| fields.include?(param) })
         .limit(params[:limit])
         .offset(params[:offset])
-        .select(params[:fields])
+        .select(CGI::unescape(params[:fields]).split(',').map {|f| "`#{f}`" })
   end
 end

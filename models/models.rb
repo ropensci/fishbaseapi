@@ -62,6 +62,8 @@ module Models
     self.table_name = 'species'
 
     def self.endpoint(params)
+      params.delete_if { |k, v| v.nil? || v.empty? }
+
       fields = %w(species.SpecCode species.Genus species.Species species.SpeciesRefNo species.Author
                   species.FBname species.SubFamily species.FamCode species.GenCode species.SubGenCode
                   species.Remark families.Family families.Order families.Class)

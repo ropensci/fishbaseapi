@@ -1,5 +1,3 @@
-require 'CGI'
-
 class Base < ActiveRecord::Base
   attr_accessor :with_id
 
@@ -7,7 +5,7 @@ class Base < ActiveRecord::Base
   self.pluralize_table_names = false
 
   def self.endpoint(params)
-    params.delete_if { |k, v| v.nil? }
+    params.delete_if { |k, v| v.nil? || v.empty? }
 
     %i(limit offset).each do |p|
       unless params[p].nil?
@@ -21,9 +19,12 @@ class Base < ActiveRecord::Base
     raise Exception.new('limit too large (max 5000)') unless (params[:limit] || 0) <= 5000
     return where(primary_key => params[:id]) if params[:id]
     fields = columns.map(&:name)
+    if !params[:fields].nil?
+      params[:fields] = params[:fields].split(',').map {|f| "`#{f}`" }
+    end
     where(params.select { |param| fields.include?(param) })
-        .limit(params[:limit])
+        .limit(params[:limit] || 10)
         .offset(params[:offset])
-        .select(CGI::unescape(params[:fields]).split(',').map {|f| "`#{f}`" })
+        .select(params[:fields])
   end
 end

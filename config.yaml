@@ -13,7 +13,7 @@ db:
   slb:
     adapter: mysql2
     encoding: utf8
-    host: slbmysql
+    host: sealifebase
     username: root
     password: root
     port: 3306

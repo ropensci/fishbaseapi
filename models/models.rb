@@ -64,12 +64,22 @@ module Models
     def self.endpoint(params)
       params.delete_if { |k, v| v.nil? || v.empty? }
 
+      if !$route.match('sealifebase').nil?
+        str = 'species.Genus = genera.GEN_NAME'
+      else
+        str = 'species.GenCode = genera.GenCode'
+      end
+
       fields = %w(species.SpecCode species.Genus species.Species species.SpeciesRefNo species.Author
-                  species.FBname species.SubFamily species.FamCode species.GenCode species.SubGenCode
+                  species.FBname species.SubFamily species.FamCode
                   species.Remark families.Family families.Order families.Class)
+      if $route.match('sealifebase').nil?
+        fields << 'species.GenCode'
+        fields << 'species.SubGenCode'
+      end
       select(fields.join(', '))
           .joins('INNER JOIN families on species.FamCode = families.FamCode')
-          .joins('INNER JOIN genera on species.GenCode = genera.GenCode')
+          .joins('INNER JOIN genera on ' + str)
           .where(params.select { |param| %w(Genus Species).include?(param) })
           .limit(params[:limit] || 10)
           .offset(params[:offset])

@@ -14,6 +14,8 @@ ActiveRecord::Base.establish_connection($config['db']['fb'])
 
 class API < Sinatra::Application
   before do
+    $route = request.path
+
     # set headers
     headers 'Content-Type' => 'application/json; charset=utf8'
     headers 'Access-Control-Allow-Methods' => 'HEAD, GET'

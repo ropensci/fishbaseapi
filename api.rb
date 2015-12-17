@@ -109,7 +109,7 @@ class API < Sinatra::Application
         raise Exception.new('no results found') if data.length.zero?
         { count: data.length, returned: data.length, data: data, error: nil }.to_json
       rescue Exception => e
-        { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+        halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
       end
     end
   end

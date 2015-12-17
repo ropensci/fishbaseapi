@@ -20,7 +20,7 @@ class Base < ActiveRecord::Base
     return where(primary_key => params[:id]) if params[:id]
     fields = columns.map(&:name)
     if !params[:fields].nil?
-      params[:fields] = params[:fields].split(',').map {|f| "`#{f}`" }
+      params[:fields] = params[:fields].split(',').select { |p| fields.include?(p) }.map {|f| "`#{f}`" }
     end
     where(params.select { |param| fields.include?(param) })
         .limit(params[:limit] || 10)

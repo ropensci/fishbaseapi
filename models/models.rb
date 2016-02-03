@@ -16,7 +16,7 @@ module Models
   class Countref < Base; end
   class Diet < Base; end
   class Ecology < Base; end
-  class Ecosystem < Base; end
+  #class Ecosystem < Base; end
   class Fecundity < Base; end
   class Fooditems < Base; end
   class Intrcase < Base; end
@@ -80,6 +80,32 @@ module Models
       select(fields.join(', '))
           .joins('INNER JOIN families on species.FamCode = families.FamCode')
           .joins('INNER JOIN genera on ' + str)
+          .where(params.select { |param| %w(Genus Species).include?(param) })
+          .limit(params[:limit] || 10)
+          .offset(params[:offset])
+    end
+  end
+
+  class Ecosystem < Base
+    self.table_name = 'ecosystem'
+
+    def self.endpoint(params)
+      params.delete_if { |k, v| v.nil? || v.empty? }
+      fields = %w(ecosystem.autoctr ecosystem.E_CODE ecosystem.EcosystemRefno ecosystem.Speccode
+        ecosystem.Stockcode ecosystem.Status ecosystem.Abundance ecosystem.LifeStage
+        ecosystem.Remarks ecosystem.Entered ecosystem.Dateentered ecosystem.Modified
+        ecosystem.Datemodified ecosystem.Expert ecosystem.Datechecked ecosystem.WebURL
+        ecosystem.TS ecosystemref.E_CODE ecosystemref.EcosystemName ecosystemref.EcosystemType
+        ecosystemref.Location ecosystemref.Salinity ecosystemref.RiverLength ecosystemref.Area
+        ecosystemref.SizeRef ecosystemref.DrainageArea ecosystemref.NorthernLat ecosystemref.NrangeNS
+        ecosystemref.SouthernLat ecosystemref.SrangeNS ecosystemref.WesternLat ecosystemref.WrangeEW
+        ecosystemref.EasternLat ecosystemref.ErangeEW ecosystemref.Climate ecosystemref.AverageDepth
+        ecosystemref.MaxDepth ecosystemref.DepthRef ecosystemref.TempSurface ecosystemref.TempSurfaceMap
+        ecosystemref.TempDepth ecosystemref.Description ecosystemref.EcosystemURL1
+        ecosystemref.EcosystemURL2 ecosystemref.EcosystemURL3 ecosystemref.Entered ecosystemref.DateEntered
+        ecosystemref.Modified ecosystemref.DateModified ecosystemref.Expert ecosystemref.DateChecked)
+      select(fields.join(', '))
+          .joins('INNER JOIN ecosystemref on ecosystem.E_CODE = ecosystemref.E_CODE')
           .where(params.select { |param| %w(Genus Species).include?(param) })
           .limit(params[:limit] || 10)
           .offset(params[:offset])

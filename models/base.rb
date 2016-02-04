@@ -22,7 +22,7 @@ class Base < ActiveRecord::Base
     if !params[:fields].nil?
       params[:fields] = params[:fields].split(',').select { |p| fields.include?(p) }.map {|f| "`#{f}`" }
     end
-    where(params.select { |param| fields.include?(param) })
+    where(params.select { |param| fields.any? { |s| s.to_s.casecmp(param.to_s)==0 } })
         .limit(params[:limit] || 10)
         .offset(params[:offset])
         .select(params[:fields])

@@ -114,7 +114,7 @@ module Models
       end
       raise Exception.new('limit too large (max 5000)') unless (params[:limit] || 0) <= 5000
 
-      fields = %w(ecosystem.autoctr ecosystem.E_CODE ecosystem.EcosystemRefno ecosystem.Speccode
+      fieldstoget = %w(ecosystem.autoctr ecosystem.E_CODE ecosystem.EcosystemRefno ecosystem.Speccode
         ecosystem.Stockcode ecosystem.Status ecosystem.Abundance ecosystem.LifeStage
         ecosystem.Remarks ecosystem.Entered ecosystem.Dateentered ecosystem.Modified
         ecosystem.Datemodified ecosystem.Expert ecosystem.Datechecked ecosystem.WebURL
@@ -127,9 +127,12 @@ module Models
         ecosystemref.TempDepth ecosystemref.Description ecosystemref.EcosystemURL1
         ecosystemref.EcosystemURL2 ecosystemref.EcosystemURL3 ecosystemref.Entered ecosystemref.DateEntered
         ecosystemref.Modified ecosystemref.DateModified ecosystemref.Expert ecosystemref.DateChecked)
-      select(fields.join(', '))
+
+      fields = columns.map(&:name)
+
+      select(fieldstoget.join(', '))
           .joins('INNER JOIN ecosystemref on ecosystem.E_CODE = ecosystemref.E_CODE')
-          .where(params.select { |param| %w(Genus Species).include?(param) })
+          .where(params.select { |param| fields.any? { |s| s.to_s.casecmp(param.to_s)==0 } })
           .limit(params[:limit] || 10)
           .offset(params[:offset])
     end

@@ -16,7 +16,7 @@ module Models
   class Countref < Base; end
   class Diet < Base; end
   class Ecology < Base; end
-  #class Ecosystem < Base; end
+  class Estimate < Base; end
   class Fecundity < Base; end
   class Fooditems < Base; end
   class Intrcase < Base; end

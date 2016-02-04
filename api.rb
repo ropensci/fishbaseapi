@@ -107,7 +107,7 @@ class API < Sinatra::Application
       begin
         data = model.endpoint(params)
         raise Exception.new('no results found') if data.length.zero?
-        { count: data.length, returned: data.length, data: data, error: nil }.to_json
+        { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
       rescue Exception => e
         halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
       end

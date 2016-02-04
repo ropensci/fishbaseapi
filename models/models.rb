@@ -70,6 +70,17 @@ module Models
         str = 'species.GenCode = genera.GenCode'
       end
 
+      %i(limit offset).each do |p|
+        unless params[p].nil?
+          begin
+            params[p] = Integer(params[p])
+          rescue ArgumentError
+            raise Exception.new("#{p.to_s} is not an integer")
+          end
+        end
+      end
+      raise Exception.new('limit too large (max 5000)') unless (params[:limit] || 0) <= 5000
+
       fields = %w(species.SpecCode species.Genus species.Species species.SpeciesRefNo species.Author
                   species.FBname species.SubFamily species.FamCode
                   species.Remark families.Family families.Order families.Class)
@@ -91,6 +102,18 @@ module Models
 
     def self.endpoint(params)
       params.delete_if { |k, v| v.nil? || v.empty? }
+
+      %i(limit offset).each do |p|
+        unless params[p].nil?
+          begin
+            params[p] = Integer(params[p])
+          rescue ArgumentError
+            raise Exception.new("#{p.to_s} is not an integer")
+          end
+        end
+      end
+      raise Exception.new('limit too large (max 5000)') unless (params[:limit] || 0) <= 5000
+
       fields = %w(ecosystem.autoctr ecosystem.E_CODE ecosystem.EcosystemRefno ecosystem.Speccode
         ecosystem.Stockcode ecosystem.Status ecosystem.Abundance ecosystem.LifeStage
         ecosystem.Remarks ecosystem.Entered ecosystem.Dateentered ecosystem.Modified

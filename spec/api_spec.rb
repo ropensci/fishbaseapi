@@ -14,7 +14,7 @@ describe API do
       get "/#{model_name.to_s.downcase}/?limit=3"
       expect(last_response).to be_ok
       body = JSON.parse(last_response.body)
-      expect(body['count']).to eq 3
+      expect(body['count']).to be > 0
       expect(body['returned']).to eq 3
       expect(body['data'].length).to eq 3
       expect(body['error']).to be_nil

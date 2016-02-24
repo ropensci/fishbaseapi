@@ -1,4 +1,5 @@
 require_relative 'base'
+require_relative 'utils'
 
 module Models
   def self.models
@@ -14,7 +15,6 @@ module Models
   class Comnames < Base; end
   class Country < Base; end
   class Countref < Base; end
-  class Diet < Base; end
   class Ecology < Base; end
   class Estimate < Base; end
   class Fecundity < Base; end
@@ -70,16 +70,8 @@ module Models
         str = 'species.GenCode = genera.GenCode'
       end
 
-      %i(limit offset).each do |p|
-        unless params[p].nil?
-          begin
-            params[p] = Integer(params[p])
-          rescue ArgumentError
-            raise Exception.new("#{p.to_s} is not an integer")
-          end
-        end
-      end
-      raise Exception.new('limit too large (max 5000)') unless (params[:limit] || 0) <= 5000
+      check_limit_offset(params)
+      max_limit(params)
 
       fields = %w(species.SpecCode species.Genus species.Species species.SpeciesRefNo species.Author
                   species.FBname species.SubFamily species.FamCode
@@ -102,17 +94,8 @@ module Models
 
     def self.endpoint(params)
       params.delete_if { |k, v| v.nil? || v.empty? }
-
-      %i(limit offset).each do |p|
-        unless params[p].nil?
-          begin
-            params[p] = Integer(params[p])
-          rescue ArgumentError
-            raise Exception.new("#{p.to_s} is not an integer")
-          end
-        end
-      end
-      raise Exception.new('limit too large (max 5000)') unless (params[:limit] || 0) <= 5000
+      check_limit_offset(params)
+      max_limit(params)
 
       fieldstoget = %w(ecosystem.autoctr ecosystem.E_CODE ecosystem.EcosystemRefno ecosystem.Speccode
         ecosystem.Stockcode ecosystem.Status ecosystem.Abundance ecosystem.LifeStage
@@ -132,6 +115,38 @@ module Models
 
       select(fieldstoget.join(', '))
           .joins('INNER JOIN ecosystemref on ecosystem.E_CODE = ecosystemref.E_CODE')
+          .where(params.select { |param| fields.any? { |s| s.to_s.casecmp(param.to_s)==0 } })
+          .limit(params[:limit] || 10)
+          .offset(params[:offset])
+    end
+  end
+
+  class Diet < Base
+    self.table_name = 'diet'
+
+    def self.endpoint(params)
+      params.delete_if { |k, v| v.nil? || v.empty? }
+      check_limit_offset(params)
+      max_limit(params)
+
+      fieldstoget = %w(diet_items.DietCode diet_items.FoodI diet_items.FoodII diet_items.FoodIII diet_items.Stage
+        diet_items.DietPercent diet_items.ItemName diet_items.Comment diet_items.DietSpeccode
+        diet_items.DietSpeccodeSLB diet_items.AlphaCode diet_items.PreyTroph
+        diet_items.PreySeTroph diet_items.PreyRemark
+        diet.DietCode diet.StockCode diet.Speccode
+        diet.DietRefNo diet.SampleStage diet.SampleSize diet.YearStart diet.YearEnd
+        diet.January diet.February diet.March diet.April diet.May
+        diet.June diet.July diet.August diet.September diet.October
+        diet.November diet.December diet.C_Code diet.Locality diet.E_Code
+        diet.Method diet.MethodType diet.Remark diet.OtherItems diet.PercentEmpty
+        diet.Troph diet.seTroph diet.SizeMin diet.SizeMax diet.SizeType
+        diet.FishLength diet.Entered diet.DateEntered diet.Modified
+        diet.DateModified diet.Expert diet.DateChecked )
+
+      fields = columns.map(&:name)
+
+      select(fieldstoget.join(', '))
+          .joins('INNER JOIN diet_items on diet.DietCode = diet_items.DietCode')
           .where(params.select { |param| fields.any? { |s| s.to_s.casecmp(param.to_s)==0 } })
           .limit(params[:limit] || 10)
           .offset(params[:offset])

@@ -1,5 +1,4 @@
 require_relative 'base'
-require_relative 'utils'
 
 module Models
   def self.models
@@ -70,8 +69,16 @@ module Models
         str = 'species.GenCode = genera.GenCode'
       end
 
-      check_limit_offset(params)
-      max_limit(params)
+      %i(limit offset).each do |p|
+        unless params[p].nil?
+          begin
+            params[p] = Integer(params[p])
+          rescue ArgumentError
+            raise Exception.new("#{p.to_s} is not an integer")
+          end
+        end
+      end
+      raise Exception.new('limit too large (max 5000)') unless (params[:limit] || 0) <= 5000
 
       fields = %w(species.SpecCode species.Genus species.Species species.SpeciesRefNo species.Author
                   species.FBname species.SubFamily species.FamCode
@@ -94,8 +101,17 @@ module Models
 
     def self.endpoint(params)
       params.delete_if { |k, v| v.nil? || v.empty? }
-      check_limit_offset(params)
-      max_limit(params)
+
+      %i(limit offset).each do |p|
+        unless params[p].nil?
+          begin
+            params[p] = Integer(params[p])
+          rescue ArgumentError
+            raise Exception.new("#{p.to_s} is not an integer")
+          end
+        end
+      end
+      raise Exception.new('limit too large (max 5000)') unless (params[:limit] || 0) <= 5000
 
       fieldstoget = %w(ecosystem.autoctr ecosystem.E_CODE ecosystem.EcosystemRefno ecosystem.Speccode
         ecosystem.Stockcode ecosystem.Status ecosystem.Abundance ecosystem.LifeStage
@@ -126,8 +142,17 @@ module Models
 
     def self.endpoint(params)
       params.delete_if { |k, v| v.nil? || v.empty? }
-      check_limit_offset(params)
-      max_limit(params)
+
+      %i(limit offset).each do |p|
+        unless params[p].nil?
+          begin
+            params[p] = Integer(params[p])
+          rescue ArgumentError
+            raise Exception.new("#{p.to_s} is not an integer")
+          end
+        end
+      end
+      raise Exception.new('limit too large (max 5000)') unless (params[:limit] || 0) <= 5000
 
       fieldstoget = %w(diet_items.DietCode diet_items.FoodI diet_items.FoodII diet_items.FoodIII diet_items.Stage
         diet_items.DietPercent diet_items.ItemName diet_items.Comment diet_items.DietSpeccode

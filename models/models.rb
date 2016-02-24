@@ -156,7 +156,7 @@ module Models
 
       fieldstoget = %w(diet_items.DietCode diet_items.FoodI diet_items.FoodII diet_items.FoodIII diet_items.Stage
         diet_items.DietPercent diet_items.ItemName diet_items.Comment diet_items.DietSpeccode
-        diet_items.DietSpeccodeSLB diet_items.AlphaCode diet_items.PreyTroph
+        diet_items.AlphaCode diet_items.PreyTroph
         diet_items.PreySeTroph diet_items.PreyRemark
         diet.DietCode diet.StockCode diet.Speccode
         diet.DietRefNo diet.SampleStage diet.SampleSize diet.YearStart diet.YearEnd

@@ -8,10 +8,10 @@ This is a volunteer effort from rOpenSci to provide a modern [RESTful API](http:
 User quick start
 ----------------
 
-At this time, this API is deployed for development purposes only.  The testing server may be available only intermittently and all endpoints are subject to change. Please check back here for updates when the API is officially released by FishBase.org. 
+At this time, this API is deployed for development purposes only.  The testing server may be available only intermittently and all endpoints are subject to change. Please check back here for updates when the API is officially released by FishBase.org.
 
-- The test API is being served from [fishbase.ropensci.org](http://fishbase.ropensci.org)
-- Draft documentation of the API is available at [docs.fishbaseapi.apiary.io](http://docs.fishbaseapi.apiary.io/#)
+- The test API is being served from [https://fishbase.ropensci.org](https://fishbase.ropensci.org)
+- Draft documentation of the API is available at [ropensci.github.io/fishbaseapidocs](http://ropensci.github.io/fishbaseapidocs)
 - The [rfishbase2.0](https://github.com/ropensci/rfishbase/tree/rfishbase2.0) R package provides a convenient and powerful way to interact with the API.
 
 
@@ -29,13 +29,13 @@ Technical specifications
 
 ### Technical overview
 
-- The API is written in Ruby using the Sinatra Framework. Currently all API methods are defined in the `api.rb` file. The Dockerfile included here defines the runtime environment required, which is downloaded automatically from Docker Hub as the [ropensci/fishbaseapi](https://registry.hub.docker.com/u/ropensci/fishbaseapi/) container. 
-- The API is served through a ruby unicorn server running behind a NGINX reverse proxy server (using the official Docker NGINX image). 
+- The API is written in Ruby using the Sinatra Framework. Currently all API methods are defined in the `api.rb` file. The Dockerfile included here defines the runtime environment required, which is downloaded automatically from Docker Hub as the [ropensci/fishbaseapi](https://registry.hub.docker.com/u/ropensci/fishbaseapi/) container.
+- The API is served through a ruby unicorn server running behind a NGINX reverse proxy server (using the official Docker NGINX image).
 - The API sends queries to a separate, linked MySQL container (using the official Docker MySQL image).
 - API queries are cached in a REDIS database provided by a linked REDIS container (again using an official Docker image)
 - Logfiles can be collected, queried, and visualized using Logstash, ElasticSearch and Kibana respectively (still in development).
 
-See the `docker.sh` script which orchestrates the linking and running of these separate containers. 
+See the `docker.sh` script which orchestrates the linking and running of these separate containers.
 
 Design principles
 -----------------
@@ -45,31 +45,31 @@ Design principles
 The API implementation follows RESTful design.  Data is queried by means of `GET` requests to specific URL endpoints, e.g.
 
 ```
-GET http://fishbaseapi.info/species/2
+GET https://fishbaseapi.info/species/2
 ```
 
 Or optionally, using particular queries
 
 ```
-GET http://fishbaseapi.info/species?Genus=Labroides
+GET https://fishbaseapi.info/species?Genus=Labroides
 ```
 
 ```
-GET http://fishbaseapi.info/species?Genus=Labroides&fields=Species
+GET https://fishbaseapi.info/species?Genus=Labroides&fields=Species
 ```
 
-Queries return data in the JSON format. By default a limit of 10 entries matching the query are returned, though this can be configured by appending the `&limit=` option to the query URL. Simply visit any of these URLs in a browser for an example return object. 
+Queries return data in the JSON format. By default a limit of 10 entries matching the query are returned, though this can be configured by appending the `&limit=` option to the query URL. Simply visit any of these URLs in a browser for an example return object.
 
 
 ### API Endpoints
 
-The API design is to some extent constrained by the existing schema of the FishBase.org database.  At this time, endpoints correspond 1:1 with the tables of the database, and are named accordingly.  Future endpoints may provide more higher-level synthesis.  At this time, endpoints are implemented manually as time allows and existing use cases suggest; see [issue #2](https://github.com/ropensci/fishbaseapi/issues/2#issuecomment-73113433) for an overview. 
+The API design is to some extent constrained by the existing schema of the FishBase.org database.  At this time, endpoints correspond 1:1 with the tables of the database, and are named accordingly.  Future endpoints may provide more higher-level synthesis.  At this time, endpoints are implemented manually as time allows and existing use cases suggest; see [issue #2](https://github.com/ropensci/fishbaseapi/issues/2#issuecomment-73113433) for an overview.
 
 Richer processing of (some of) the endpoint returns can be done client-side, as illustrated in the (in-development) [rfishbase2.0](https://github.com/ropensci/rfishbase/tree/rfishbase2.0) R client for the API.
 
-### Why Docker? 
+### Why Docker?
 
-Docker provides a fast and robust way to deploy all the necessary software required for the API on almost any platform. By using separate containers for the different services associated with the API, it becomes easier to scale the API across a cluster, isolate and diagnose points of failure. Individual containers providing services such as the MySQL database or REDIS cache can be restarted without disrupting other services of the API. 
+Docker provides a fast and robust way to deploy all the necessary software required for the API on almost any platform. By using separate containers for the different services associated with the API, it becomes easier to scale the API across a cluster, isolate and diagnose points of failure. Individual containers providing services such as the MySQL database or REDIS cache can be restarted without disrupting other services of the API.
 
 
 

@@ -11,7 +11,7 @@
 "popqb","K","Single","4.000000","Von Bertalanffy growth parameter;  growth coefficient;  in years"
 "popqb","Salinity","Text","10.000000","Mean salinity regime to which stock is exposed throughout the year"
 "popqb","t0","Single","4.000000","Von Bertalanffy growth parameter;  age at length zero;  in years"
-"popqb","Temperature","Single","4.000000","Annual mean water temperature for stock in question;  in °C"
+"popqb","Temperature","Single","4.000000","Annual mean water temperature for stock in question;  in C"
 "popqb","Mortality","Single","4.000000","Mortality of juveniles and adults (/y) used for simulating age-structured population"
 "popqb","Locality","Text","30.000000","Locality where the sample on which the data are based were collected"
 "popqb","b","Single","4.000000","Length-weight relationship constant;  slope of the curve"

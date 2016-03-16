@@ -65,7 +65,7 @@
 "popgrowth","YearRemark","Text",50,"Whether year pertains to sampling year or publication year."
 "popgrowth","C_Code","Text",4,"3-digit UN numerical country or area code"
 "popgrowth","GrowthEnviron","Text",50,"Distinguishes growth in nature from growth in captivity."
-"popgrowth","Temperature","Single",4,"Mean annual water temperature for the indicated locality in °C"
+"popgrowth","Temperature","Single",4,"Mean annual water temperature for the indicated locality in C"
 "popgrowth","DeltaT","Single",4,"Difference between summer and winter temperature for the locality."
 "popgrowth","TempRef","Long Integer",4,"Reference providing temperature data for the locality."
 "popgrowth","Rm","Single",4,"Intrinsic rate of population increase"

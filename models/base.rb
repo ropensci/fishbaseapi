@@ -17,7 +17,7 @@ class Base < ActiveRecord::Base
       end
     end
     raise Exception.new('limit too large (max 5000)') unless (params[:limit] || 0) <= 5000
-    return where(primary_key => params[:id]) if params[:id]
+    return where(primary_key => params[:id]).select(params[:fields]) if params[:id]
     fields = columns.map(&:name)
     if !params[:fields].nil?
       params[:fields] = params[:fields].split(',').select { |p| fields.include?(p) }.map {|f| "`#{f}`" }

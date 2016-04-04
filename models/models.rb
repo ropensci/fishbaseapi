@@ -23,7 +23,6 @@ module Models
   class Maturity < Base; end
   class Morphdat < Base; end
   class Morphmet < Base; end
-  class Occurrence < Base; end
   class Oxygen < Base; end
   class Popchar < Base; end
   class Popgrowth < Base; end

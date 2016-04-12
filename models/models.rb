@@ -13,6 +13,8 @@ module Models
 
   class Comnames < Base; end
   class Country < Base; end
+  class Countrysub < Base; end
+  class Countrysubref < Base; end
   class Countref < Base; end
   class Ecology < Base; end
   class Estimate < Base; end

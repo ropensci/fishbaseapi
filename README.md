@@ -14,6 +14,9 @@ At this time, this API is deployed for development purposes only.  The testing s
 - Draft documentation of the API is available at [ropensci.github.io/fishbaseapidocs](http://ropensci.github.io/fishbaseapidocs)
 - The [rfishbase2.0](https://github.com/ropensci/rfishbase/tree/rfishbase2.0) R package provides a convenient and powerful way to interact with the API.
 
+Letsencrypt and Java
+-----------
+We use [Letsencrypt](https://letsencrypt.org/) for https, but older Java versions don't trust Letsencrypt certs. However, recent Java versions fix this problem. See <https://github.com/ropensci/fishbaseapi/issues/99> for more.
 
 Technical specifications
 ------------------------

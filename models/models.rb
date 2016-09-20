@@ -21,6 +21,7 @@ module Models
   class Fecundity < Base; end
   class Fooditems < Base; end
   class Intrcase < Base; end
+  class Larvae < Base; end
   class Listfields < Base; end
   class Maturity < Base; end
   class Morphdat < Base; end

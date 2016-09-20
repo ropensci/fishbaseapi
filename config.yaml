@@ -5,16 +5,16 @@ db:
   fb:
     adapter: mysql2
     encoding: utf8
-    host: localhost
+    host: mysql
     username: root
-    password:
+    password: root
     port: 3306
     database: fbapp_mirror
   slb:
     adapter: mysql2
     encoding: utf8
-    host: localhost
+    host: sealifebase
     username: root
-    password:
+    password: root
     port: 3306
     database: slbapp

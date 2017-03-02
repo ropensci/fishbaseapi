@@ -1,5 +1,8 @@
 redis:
   image: redis
+  volumes: 
+    - $HOME/data/redis:/data
+  command:  redis-server --appendonly yes
 
 mysql:
   image: mysql

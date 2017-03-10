@@ -2,7 +2,7 @@ source 'https://rubygems.org/'
 
 gem 'redis', '~> 3.3.3'
 gem 'mysql2', '~> 0.4.5'
-gem 'activerecord', '~> 5.0.2', require: 'active_record'
+gem 'activerecord', '~> 4.2.3', require: 'active_record'
 
 group :manual do
   gem 'sinatra', '~> 1.4.8'
@@ -13,5 +13,5 @@ end
 group :test do
   gem 'rack-test', '~> 0.6.3', require: 'rack/test'
   gem 'rspec', '~> 3.5.0'
-  gem 'activerecord-nulldb-adapter', '~> 0.3.6'
+  gem 'activerecord-nulldb-adapter', '~> 0.3.1'
 end

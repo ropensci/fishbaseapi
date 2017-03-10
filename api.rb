@@ -14,6 +14,8 @@ ActiveRecord::Base.establish_connection($config['db']['fb'])
 
 class API < Sinatra::Application
   before do
+    # puts request.path_info
+
     $route = request.path
 
     # set headers
@@ -29,10 +31,12 @@ class API < Sinatra::Application
 
     # use redis caching
     if $config['caching']
-      @cache_key = Digest::MD5.hexdigest(request.url)
-      if $redis.exists(@cache_key)
-        headers 'Cache-Hit' => 'true'
-        halt 200, $redis.get(@cache_key)
+      if request.path_info != "/"
+        @cache_key = Digest::MD5.hexdigest(request.url)
+        if $redis.exists(@cache_key)
+          headers 'Cache-Hit' => 'true'
+          halt 200, $redis.get(@cache_key)
+        end
       end
     end
 
@@ -43,9 +47,13 @@ class API < Sinatra::Application
 
   after do
     # cache response in redis
-    if $config['caching'] && !response.headers['Cache-Hit'] && response.status == 200
+    if $config['caching'] && !response.headers['Cache-Hit'] && response.status == 200 && request.path_info != "/"
       $redis.set(@cache_key, response.body[0], ex: $config['caching']['expires'])
     end
+  end
+
+  configure do
+    mime_type :apidocs, 'text/html'
   end
 
   # handle missed route
@@ -59,8 +67,10 @@ class API < Sinatra::Application
   end
 
   # default to heartbeat
-  get '/' do
-    redirect '/heartbeat'
+  get '/?' do
+    content_type :apidocs
+    send_file File.join(settings.public_folder, 'index.html')
+    # redirect '/heartbeat'
   end
 
   # route listing route

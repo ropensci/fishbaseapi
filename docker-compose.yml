@@ -1,6 +1,7 @@
 redis:
   image: redis
-  volumes: 
+  restart: always
+  volumes:
     - $HOME/data/redis:/data
   command:  redis-server --appendonly yes
 

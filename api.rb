@@ -14,8 +14,6 @@ ActiveRecord::Base.establish_connection($config['db']['fb'])
 
 class API < Sinatra::Application
   before do
-    # puts request.path_info
-
     $route = request.path
 
     # set headers
@@ -47,7 +45,12 @@ class API < Sinatra::Application
 
   after do
     # cache response in redis
-    if $config['caching'] && !response.headers['Cache-Hit'] && response.status == 200 && request.path_info != "/"
+    if $config['caching'] &&
+      !response.headers['Cache-Hit'] &&
+      response.status == 200 &&
+      request.path_info != "/" &&
+      request.path_info != ""
+
       $redis.set(@cache_key, response.body[0], ex: $config['caching']['expires'])
     end
   end
@@ -66,11 +69,22 @@ class API < Sinatra::Application
     halt 500, { error: 'server error' }.to_json
   end
 
-  # default to heartbeat
+  # handler - redirects any /foo -> /foo/
+  #  - if has any query params, passes to handler as before
+  get %r{(/.*[^\/])$} do
+    if request.query_string == "" or request.query_string.nil?
+      redirect request.script_name + "#{params[:captures].first}/"
+    else
+      pass
+    end
+  end
+
+  # default to landing page
+  ## used to go to /heartbeat
   get '/?' do
+    @slb_or_fb = request.script_name == '/sealifebase' ? '/index_sb.html' : '/index.html'
     content_type :apidocs
-    send_file File.join(settings.public_folder, 'index.html')
-    # redirect '/heartbeat'
+    send_file File.join(settings.public_folder, @slb_or_fb)
   end
 
   # route listing route

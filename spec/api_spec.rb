@@ -22,29 +22,28 @@ describe API do
   end
 
   it 'lists endpoints' do
-    get '/heartbeat'
+    get '/heartbeat/'
     expect(last_response).to be_ok
     expect(JSON.parse(last_response.body)['routes'].length).to eq Models.models.length + 4
   end
 
-  it 'redirects root to heartbeat' do
+  it 'shows home page' do
     get '/'
-    expect(last_response).to be_redirect
-    expect(last_response.location).to eq 'http://example.org/heartbeat'
+    expect(last_response).to be_ok
   end
 
   context 'shows docs' do
-    subject { get '/docs'; last_response }
+    subject { get '/docs/'; last_response }
     it { is_expected.to be_ok }
   end
 
   context 'pings the db' do
-    subject { get '/mysqlping'; last_response }
+    subject { get '/mysqlping/'; last_response }
     it { is_expected.to be_ok }
   end
 
   context 'lists fields' do
-    subject { get '/listfields'; last_response }
+    subject { get '/listfields/'; last_response }
     it { is_expected.to be_ok }
   end
 end

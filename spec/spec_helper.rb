@@ -12,6 +12,8 @@ module TestHelperMixin
   end
 end
 
+ActiveRecord::Base.configurations.merge!('test' =>  { adapter: 'nulldb' })
+
 RSpec.configure do |config|
   config.include TestHelperMixin
 end

@@ -11,21 +11,27 @@ module Models
     ActiveRecord::Base.connection.execute(query).map { |row| { table_name: row.first, column_name: row.last } }
   end
 
+  class Classes < Base; end
   class Comnames < Base; end
   class Country < Base; end
   class Countrysub < Base; end
   class Countrysubref < Base; end
   class Countref < Base; end
   class Ecology < Base; end
-  class Estimate < Base; end
+  class Ecosystemref < Base; end
   class Fecundity < Base; end
   class Fooditems < Base; end
   class Intrcase < Base; end
   class Larvae < Base; end
   class Listfields < Base; end
+  class Matrix < Base; end
   class Maturity < Base; end
   class Morphdat < Base; end
   class Morphmet < Base; end
+  class Myersdata < Base; end
+  class Myersrecruitmentdatabase < Base; end
+  class Maturity < Base; end
+  class Orders < Base; end
   class Oxygen < Base; end
   class Popchar < Base; end
   class Popgrowth < Base; end
@@ -57,6 +63,22 @@ module Models
 
   class Species < Base
     self.primary_key = 'SpecCode'
+  end
+
+  class Eggs < Base
+    self.primary_key = 'Speccode'
+  end
+
+  class Eggdev < Base
+    self.primary_key = 'SpecCode'
+  end
+
+  class Estimate < Base
+    self.primary_key = 'SpecCode'
+  end
+
+  class Families < Base
+    self.primary_key = 'FamCode'
   end
 
   class Taxa < Base

@@ -9,7 +9,7 @@ db:
     username: root
     password:
     port: 3306
-    database: fbapp
+    database: fbapp_mirror
   slb:
     adapter: mysql2
     encoding: utf8

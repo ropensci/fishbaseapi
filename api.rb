@@ -5,7 +5,7 @@ require 'sinatra'
 require_relative 'models/models'
 
 # feature flag: toggle redis
-$use_redis = false
+$use_redis = true
 
 $config = YAML::load_file(File.join(__dir__, ENV['RACK_ENV'] == 'test' ? 'test_config.yaml' : 'config.yaml'))
 

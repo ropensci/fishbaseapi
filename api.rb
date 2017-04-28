@@ -4,6 +4,9 @@ Bundler.require(:default)
 require 'sinatra'
 require_relative 'models/models'
 
+# feature flag: toggle redis
+$use_redis = false
+
 $config = YAML::load_file(File.join(__dir__, ENV['RACK_ENV'] == 'test' ? 'test_config.yaml' : 'config.yaml'))
 
 $redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
@@ -28,7 +31,7 @@ class API < Sinatra::Application
     end
 
     # use redis caching
-    if $config['caching']
+    if $config['caching'] && $use_redis
       if request.path_info != "/"
         @cache_key = Digest::MD5.hexdigest(request.url)
         if $redis.exists(@cache_key)
@@ -46,6 +49,7 @@ class API < Sinatra::Application
   after do
     # cache response in redis
     if $config['caching'] &&
+      $use_redis &&
       !response.headers['Cache-Hit'] &&
       response.status == 200 &&
       request.path_info != "/" &&

@@ -30,3 +30,11 @@ docker rm -f some-mysql
 docker run --name some-mysql -d -v $HOME/data/fishbase:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root mysql:latest
 docker run -it --link some-mysql:mysql --rm -v ${PWD}/fbapp.sql:/fbapp.sql mysql sh -c 'exec mysql -h"$MYSQL_PORT_3306_TCP_ADDR" -P"$MYSQL_PORT_3306_TCP_PORT" -uroot -p"$MYSQL_ENV_MYSQL_ROOT_PASSWORD" --execute="DROP DATABASE fbapp;"'
 docker run -it --link some-mysql:mysql --rm -v ${PWD}/fbapp.sql:/fbapp.sql mysql sh -c 'exec mysql -h"$MYSQL_PORT_3306_TCP_ADDR" -P"$MYSQL_PORT_3306_TCP_PORT" -uroot -p"$MYSQL_ENV_MYSQL_ROOT_PASSWORD" --execute="SET GLOBAL max_allowed_packet=2000000000; CREATE DATABASE fbapp; USE fbapp; SOURCE fbapp.sql;"'
+
+# for new fishbase database fishbase_201702
+docker run --name some-mysql -d -v $HOME/data/fishbase_201702:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root mysql:latest
+docker run -it --link some-mysql:mysql --rm -v ${PWD}/fbapp.sql:/fbapp.sql mysql sh -c 'exec mysql -h"$MYSQL_PORT_3306_TCP_ADDR" -P"$MYSQL_PORT_3306_TCP_PORT" -uroot -p"$MYSQL_ENV_MYSQL_ROOT_PASSWORD" --execute="SET GLOBAL max_allowed_packet=2000000000; CREATE DATABASE fbapp_201702; USE fbapp_201702; SOURCE fbapp.sql;"'
+
+# for previous fishbase database fishbase_201601
+docker run --name some-mysql -d -v $HOME/data/fishbase_mirror:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root mysql:latest
+docker run -it --link some-mysql:mysql --rm -v ${PWD}/fbapp_mirror_2016Jan_clean.sql:/fbapp_mirror_2016Jan_clean.sql mysql  sh -c 'exec mysql -h"$MYSQL_PORT_3306_TCP_ADDR" -P"$MYSQL_PORT_3306_TCP_PORT" -uroot -p"$MYSQL_ENV_MYSQL_ROOT_PASSWORD" --default-character-set=latin1 --execute="SET GLOBAL max_allowed_packet=10000000000; CREATE DATABASE fbapp_mirror; USE fbapp_mirror; SOURCE fbapp_mirror_2016Jan_clean.sql;"'

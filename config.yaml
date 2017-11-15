@@ -2,7 +2,15 @@
 caching:
   expires: 3600
 db:
-  fb:
+  fb_201505:
+    adapter: mysql2
+    encoding: utf8
+    host: mysql
+    username: root
+    password: root
+    port: 3306
+    database: fbapp
+  fb_201604:
     adapter: mysql2
     encoding: utf8
     host: mysql
@@ -10,6 +18,14 @@ db:
     password: root
     port: 3306
     database: fbapp_mirror
+  fb_201703:
+    adapter: mysql2
+    encoding: utf8
+    host: mysql
+    username: root
+    password: root
+    port: 3306
+    database: fb_201703
   slb:
     adapter: mysql2
     encoding: utf8

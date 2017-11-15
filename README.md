@@ -70,6 +70,24 @@ The API design is to some extent constrained by the existing schema of the FishB
 
 Richer processing of (some of) the endpoint returns can be done client-side, as illustrated in the (in-development) [rfishbase2.0](https://github.com/ropensci/rfishbase/tree/rfishbase2.0) R client for the API.
 
+### Database version
+
+The Fishbase API supports multiple different versions.
+
+You can request a different database version with a header like the following:
+
+```
+Accept: application/vnd.ropensci.v3+json
+```
+
+Where `201604` follows the format `YYYYMM` (four digits for year, then two digits for month, with no spaces/characters between them).
+
+By default, we return the latest date version.
+
+See the `/versions` route for description of the different versions and their names.
+
+In the R client `rfishbase` the database version will likely be controlled by a parameter or option/env var, so users won't have to pass headers themselves.
+
 ### Why Docker?
 
 Docker provides a fast and robust way to deploy all the necessary software required for the API on almost any platform. By using separate containers for the different services associated with the API, it becomes easier to scale the API across a cluster, isolate and diagnose points of failure. Individual containers providing services such as the MySQL database or REDIS cache can be restarted without disrupting other services of the API.

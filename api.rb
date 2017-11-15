@@ -17,12 +17,12 @@ ActiveRecord::Base.establish_connection($config['db']['fb_201703'])
 
 class API < Sinatra::Application
   before do
-    puts '[env]'
-    p env
-    puts '[Params]'
-    p params
-    puts '[request.url]'
-    p request.url
+    # puts '[env]'
+    # p env
+    # puts '[Params]'
+    # p params
+    # puts '[request.url]'
+    # p request.url
 
     $route = request.path
 

@@ -1,4 +1,4 @@
-FROM ruby:2.1.7
+FROM ruby:2.2.2
 
 COPY . /opt/sinatra
 RUN cd /opt/sinatra \

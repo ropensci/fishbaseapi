@@ -2,6 +2,7 @@ require_relative 'spec_helper'
 
 describe API do
   before(:each) do
+    header 'Accept', 'application/vnd.ropensci.v3+json'
     allow(Models).to receive(:list_fields).and_return %w(foo bar baz)
     Models.models.each do |model_name|
       model = Models.const_get(model_name)

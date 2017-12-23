@@ -13,7 +13,7 @@ $redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
                    port: ENV.fetch('REDIS_PORT_6379_TCP_PORT', 6379)
 
 ActiveSupport::Deprecation.silenced = true
-ActiveRecord::Base.establish_connection($config['db']['fb_201703'])
+ActiveRecord::Base.establish_connection($config['db']['fb_201712'])
 
 class API < Sinatra::Application
   before do
@@ -38,7 +38,7 @@ class API < Sinatra::Application
     if @slb_or_fb == "fb"
       ver_h = request.env['HTTP_ACCEPT']
       ver_h = ver_h.split(',').keep_if { |x| x.match(/application\/vnd\.ropensci/) }[0]
-      ver_h = ver_h || "application/vnd.ropensci.v3+json"
+      ver_h = ver_h || "application/vnd.ropensci.v4+json"
       ver_h = ver_h[/v[0-9]/]
 
       case ver_h
@@ -56,7 +56,8 @@ class API < Sinatra::Application
 
     # use redis caching
     if $config['caching'] && $use_redis
-      if request.path_info != "/"
+      # if request.path_info != "/"
+      if !["/", "heartbeat", "versions", "docs", "mysqlping"].include? request.path_info
         @cache_key = Digest::MD5.hexdigest(request.url + '_ver_' + @slb_or_fb)
         if $redis.exists(@cache_key)
           headers 'Cache-Hit' => 'true'
@@ -86,7 +87,8 @@ class API < Sinatra::Application
       $use_redis &&
       !response.headers['Cache-Hit'] &&
       response.status == 200 &&
-      request.path_info != "/" &&
+      # request.path_info != "/" &&
+      if !["/", "heartbeat", "versions", "docs", "mysqlping"].include? request.path_info &&
       request.path_info != ""
 
       $redis.set(@cache_key, response.body[0], ex: $config['caching']['expires'])

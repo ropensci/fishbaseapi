@@ -46,8 +46,10 @@ class API < Sinatra::Application
         ver_c = "201505"
       when "v2"
         ver_c = "201604"
+      when "v3"
+        ver_c = "201703"
       else
-        ver_c = "201703" # use newest by default
+        ver_c = "201712" # use newest by default
       end
       @slb_or_fb = "fb_" + ver_c
     end
@@ -178,6 +180,10 @@ class API < Sinatra::Application
           "v3": {
             name: "201703",
             date_released: "2017-03-31"
+          },
+          "v4": {
+            name: "201712",
+            date_released: "2017-12-13"
           }
         ],
         error: nil

@@ -169,19 +169,23 @@ class API < Sinatra::Application
     else
       {
         data: [
-          "v1": {
+          {
+            version: "v1",
             name: "201505",
             date_released: "2015-05-20"
           },
-          "v2": {
+          {
+            version: "v2",
             name: "201604",
             date_released: "2016-04-28"
           },
-          "v3": {
+          {
+            version: "v3",
             name: "201703",
             date_released: "2017-03-31"
           },
-          "v4": {
+          {
+            version: "v4",
             name: "201712",
             date_released: "2017-12-13"
           }

@@ -87,8 +87,11 @@ class API < Sinatra::Application
       $use_redis &&
       !response.headers['Cache-Hit'] &&
       response.status == 200 &&
-      # request.path_info != "/" &&
-      if !["/", "heartbeat", "versions", "docs", "mysqlping"].include? request.path_info &&
+      request.path_info != "/" &&
+      request.path_info != "/heartbeat" &&
+      request.path_info != "/versions" &&
+      request.path_info != "/docs" &&
+      request.path_info != "/mysqlping" &&
       request.path_info != ""
 
       $redis.set(@cache_key, response.body[0], ex: $config['caching']['expires'])

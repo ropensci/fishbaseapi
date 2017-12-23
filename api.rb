@@ -57,7 +57,7 @@ class API < Sinatra::Application
     # use redis caching
     if $config['caching'] && $use_redis
       # if request.path_info != "/"
-      if !["/", "heartbeat", "versions", "docs", "mysqlping"].include? request.path_info
+      if !["/", "/heartbeat", "/versions", "/docs", "/mysqlping"].include? request.path_info
         @cache_key = Digest::MD5.hexdigest(request.url + '_ver_' + @slb_or_fb)
         if $redis.exists(@cache_key)
           headers 'Cache-Hit' => 'true'

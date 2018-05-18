@@ -100,6 +100,7 @@ class API < Sinatra::Application
 
   configure do
     mime_type :apidocs, 'text/html'
+    set :protection, :except => [:json_csrf]
   end
 
   # handle missed route

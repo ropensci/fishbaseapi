@@ -58,3 +58,11 @@ db:
     password: root
     port: 3306
     database: slbapp_201712
+  slb_201809:
+    adapter: mysql2
+    encoding: utf8
+    host: sealifebase
+    username: root
+    password: root
+    port: 3306
+    database: slbapp_201809

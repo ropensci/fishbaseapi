@@ -38,7 +38,7 @@ class API < Sinatra::Application
     if @slb_or_fb == "fb"
       ver_h = request.env['HTTP_ACCEPT']
       ver_h = ver_h.split(',').keep_if { |x| x.match(/application\/vnd\.ropensci/) }[0]
-      ver_h = ver_h || "application/vnd.ropensci.v4+json"
+      ver_h = ver_h || "application/vnd.ropensci.v5+json"
       ver_h = ver_h[/v[0-9]/]
 
       case ver_h
@@ -48,8 +48,10 @@ class API < Sinatra::Application
         ver_c = "201604"
       when "v3"
         ver_c = "201703"
+      when "v4"
+        ver_c = "201712"
       else
-        ver_c = "201712" # use newest by default
+        ver_c = "201809" # use newest by default
       end
       @slb_or_fb = "fb_" + ver_c
     end
@@ -194,6 +196,11 @@ class API < Sinatra::Application
             version: "v4",
             name: "201712",
             date_released: "2017-12-13"
+          },
+          {
+            version: "v5",
+            name: "201809",
+            date_released: "2018-09-25"
           }
         ],
         error: nil

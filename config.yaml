@@ -34,6 +34,14 @@ db:
     password: root
     port: 3306
     database: fbapp_201712
+  fb_201809:
+    adapter: mysql2
+    encoding: utf8
+    host: mysql
+    username: root
+    password: root
+    port: 3306
+    database: fbapp_201809
   slb:
     adapter: mysql2
     encoding: utf8

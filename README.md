@@ -77,10 +77,10 @@ The Fishbase API supports multiple different versions.
 You can request a different database version with a header like the following:
 
 ```
-Accept: application/vnd.ropensci.v3+json
+Accept: application/vnd.ropensci.v5+json
 ```
 
-Where `201604` follows the format `YYYYMM` (four digits for year, then two digits for month, with no spaces/characters between them).
+Where `201809` follows the format `YYYYMM` (four digits for year, then two digits for month, with no spaces/characters between them).
 
 By default, we return the latest date version.
 

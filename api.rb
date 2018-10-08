@@ -34,6 +34,7 @@ class API < Sinatra::Application
     # sort out database version as needed for caching
     ## sealifebase or fishbase
     @slb_or_fb = request.script_name == '/sealifebase' ? 'slb' : 'fb'
+    
     ## database version if fishbase
     if @slb_or_fb == "fb"
       ver_h = request.env['HTTP_ACCEPT']
@@ -54,6 +55,24 @@ class API < Sinatra::Application
         ver_c = "201809" # use newest by default
       end
       @slb_or_fb = "fb_" + ver_c
+    end
+
+    ## database version if sealifebase
+    if @slb_or_fb == "slb"
+      ver_h = request.env['HTTP_ACCEPT']
+      ver_h = ver_h.split(',').keep_if { |x| x.match(/application\/vnd\.ropensci/) }[0]
+      ver_h = ver_h || "application/vnd.ropensci.v3+json"
+      ver_h = ver_h[/v[0-9]/]
+
+      case ver_h
+      when "v1"
+        ver_c = "" # either 2015 or 2016, not sure though
+      when "v2"
+        ver_c = "_201712"
+      else
+        ver_c = "_201809" # use newest by default
+      end
+      @slb_or_fb = "slb" + ver_c
     end
 
     # use redis caching
@@ -172,8 +191,30 @@ class API < Sinatra::Application
 
   # database versions
   get '/versions/?' do
+    # if @slb_or_fb == "slb"
+    #   halt 400, { data: nil, error: { message: "versions route not available for sealifebase" }}.to_json
+    # else
     if @slb_or_fb == "slb"
-      halt 400, { data: nil, error: { message: "versions route not available for sealifebase" }}.to_json
+      {
+        data: [
+          {
+            version: "v1",
+            name: "2015_2016",
+            date_released: "2015_or_2016"
+          },
+          {
+            version: "v2",
+            name: "201712",
+            date_released: "2017-12-13"
+          },
+          {
+            version: "v3",
+            name: "201809",
+            date_released: "2018-09-25"
+          }
+        ],
+        error: nil
+      }.to_json
     else
       {
         data: [

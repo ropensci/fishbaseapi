@@ -58,7 +58,7 @@ class API < Sinatra::Application
     end
 
     ## database version if sealifebase
-    if @slb_or_fb == "slb"
+    if !@slb_or_fb.match("slb").nil?
       ver_h = request.env['HTTP_ACCEPT']
       ver_h = ver_h.split(',').keep_if { |x| x.match(/application\/vnd\.ropensci/) }[0]
       ver_h = ver_h || "application/vnd.ropensci.v3+json"
@@ -195,7 +195,7 @@ class API < Sinatra::Application
     # if @slb_or_fb == "slb"
     #   halt 400, { data: nil, error: { message: "versions route not available for sealifebase" }}.to_json
     # else
-    if @slb_or_fb == "slb"
+    if !@slb_or_fb.match("slb").nil?
       {
         data: [
           {

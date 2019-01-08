@@ -6,7 +6,7 @@ redis:
   command:  redis-server --appendonly yes
 
 mysql:
-  image: mysql
+  image: mysql:5.7
   volumes:
     - $HOME/data/fishbase:/var/lib/mysql
   environment:
@@ -14,7 +14,7 @@ mysql:
   restart: always
 
 sealifebase:
-  image: mysql
+  image: mysql:5.7
   volumes:
     - $HOME/data/sealifebase:/var/lib/mysql
   environment:

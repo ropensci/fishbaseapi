@@ -23,16 +23,18 @@ sealifebase:
 
 api:
   build: .
+  ports:
+    - "8888:8888"
   links:
     - sealifebase
     - mysql
     - redis
 
-nginx:
-  ports:
-    - 80:80
-  links:
-    - api
-  volumes:
-    - ./nginx.conf:/etc/nginx/nginx.conf
-  image: nginx
+# nginx:
+#   ports:
+#     - 80:80
+#   links:
+#     - api
+#   volumes:
+#     - ./nginx.conf:/etc/nginx/nginx.conf
+#   image: nginx

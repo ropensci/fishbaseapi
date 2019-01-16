@@ -13,7 +13,7 @@ $redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
                    port: ENV.fetch('REDIS_PORT_6379_TCP_PORT', 6379)
 
 ActiveSupport::Deprecation.silenced = true
-ActiveRecord::Base.establish_connection($config['db']['fb_201809'])
+ActiveRecord::Base.establish_connection($config['db']['fb_201901'])
 
 class API < Sinatra::Application
   before do
@@ -51,8 +51,10 @@ class API < Sinatra::Application
         ver_c = "201703"
       when "v4"
         ver_c = "201712"
+      when "v5"
+        ver_c = "201809"
       else
-        ver_c = "201809" # use newest by default
+        ver_c = "201901" # use newest by default
       end
       @slb_or_fb = "fb_" + ver_c
     end
@@ -69,8 +71,10 @@ class API < Sinatra::Application
         ver_c = "" # either 2015 or 2016, not sure though
       when "v2"
         ver_c = "_201712"
+      when "v3"
+        ver_c = "_201809"
       else
-        ver_c = "_201809" # use newest by default
+        ver_c = "_201901" # use newest by default
       end
       @slb_or_fb = "slb" + ver_c
     end
@@ -212,6 +216,11 @@ class API < Sinatra::Application
             version: "v3",
             name: "201809",
             date_released: "2018-09-25"
+          },
+          {
+            version: "v4",
+            name: "201901",
+            date_released: "2019-01-15"
           }
         ],
         error: nil
@@ -243,6 +252,11 @@ class API < Sinatra::Application
             version: "v5",
             name: "201809",
             date_released: "2018-09-25"
+          },
+          {
+            version: "v6",
+            name: "201901",
+            date_released: "2019-01-15"
           }
         ],
         error: nil

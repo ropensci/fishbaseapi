@@ -204,23 +204,23 @@ class API < Sinatra::Application
         data: [
           {
             version: "v1",
-            name: "2015_2016",
+            # name: "2015_2016",
             date_released: "2015_or_2016"
           },
           {
             version: "v2",
-            name: "201712",
-            date_released: "2017-12-13"
+            # name: "201712",
+            date_released: "2017-10-01"
           },
           {
             version: "v3",
-            name: "201809",
-            date_released: "2018-09-25"
+            # name: "201809",
+            date_released: "2018-06-01"
           },
           {
             version: "v4",
-            name: "201901",
-            date_released: "2019-01-15"
+            # name: "201901",
+            date_released: "2018-10-01"
           }
         ],
         error: nil
@@ -230,33 +230,33 @@ class API < Sinatra::Application
         data: [
           {
             version: "v1",
-            name: "201505",
-            date_released: "2015-05-20"
+            # name: "201505",
+            date_released: "2015-04-01"
           },
           {
             version: "v2",
-            name: "201604",
-            date_released: "2016-04-28"
+            # name: "201604",
+            date_released: "2016-01-01"
           },
           {
             version: "v3",
-            name: "201703",
-            date_released: "2017-03-31"
+            # name: "201703",
+            date_released: "2017-02-01"
           },
           {
             version: "v4",
-            name: "201712",
-            date_released: "2017-12-13"
+            # name: "201712",
+            date_released: "2017-10-01"
           },
           {
             version: "v5",
-            name: "201809",
-            date_released: "2018-09-25"
+            # name: "201809",
+            date_released: "2018-06-01"
           },
           {
             version: "v6",
-            name: "201901",
-            date_released: "2019-01-15"
+            # name: "201901",
+            date_released: "2018-10-01"
           }
         ],
         error: nil

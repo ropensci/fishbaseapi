@@ -83,6 +83,7 @@ module Models
 
   class Taxa < Base
     self.table_name = 'species'
+    self.primary_key = 'SpecCode'
 
     def self.endpoint(params)
       params.delete_if { |k, v| v.nil? || v.empty? }
@@ -111,12 +112,21 @@ module Models
         fields << 'species.GenCode'
         fields << 'species.SubGenCode'
       end
-      select(fields.join(', '))
-          .joins('INNER JOIN families on species.FamCode = families.FamCode')
-          .joins('INNER JOIN genera on ' + str)
-          .where(params.select { |param| %w(Genus Species).include?(param) })
-          .limit(params[:limit] || 10)
-          .offset(params[:offset])
+      if params[:id]
+        select(fields.join(', '))
+            .joins('INNER JOIN families on species.FamCode = families.FamCode')
+            .joins('INNER JOIN genera on ' + str)
+            .where(primary_key => params[:id])
+            .limit(params[:limit] || 10)
+            .offset(params[:offset])
+      else
+        select(fields.join(', '))
+            .joins('INNER JOIN families on species.FamCode = families.FamCode')
+            .joins('INNER JOIN genera on ' + str)
+            .where(params.select { |param| %w(Genus Species).include?(param) })
+            .limit(params[:limit] || 10)
+            .offset(params[:offset])
+      end
     end
   end
 

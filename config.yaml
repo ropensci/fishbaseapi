@@ -50,6 +50,14 @@ db:
     password: root
     port: 3306
     database: fbapp_201901
+  fb_201902:
+    adapter: mysql2
+    encoding: utf8
+    host: mysql
+    username: root
+    password: root
+    port: 3306
+    database: fbapp_201902
   slb:
     adapter: mysql2
     encoding: utf8
@@ -82,3 +90,11 @@ db:
     password: root
     port: 3306
     database: slbapp_201901
+  slb_201902:
+    adapter: mysql2
+    encoding: utf8
+    host: sealifebase
+    username: root
+    password: root
+    port: 3306
+    database: slbapp_201902

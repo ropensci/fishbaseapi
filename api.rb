@@ -65,7 +65,7 @@ class API < Sinatra::Application
     if !@slb_or_fb.match("slb").nil?
       ver_h = request.env['HTTP_ACCEPT']
       ver_h = ver_h.split(',').keep_if { |x| x.match(/application\/vnd\.ropensci/) }[0]
-      ver_h = ver_h || "application/vnd.ropensci.v4+json"
+      ver_h = ver_h || "application/vnd.ropensci.v5+json"
       ver_h = ver_h[/v[0-9]/]
 
       case ver_h

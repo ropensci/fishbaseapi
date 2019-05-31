@@ -715,7 +715,9 @@ Search the synonyms table
 
 > GET [/taxa{?limit}{?offset}{?fields}]
 
-Search the taxa table
+The taxa route is a combined search using the species, genera, and families tables. 
+
+The taxa route supports fuzzy seaerch for the two parameters: genus and species. Those two parameters are searched on the species table.
 
 + Parameters
     + genus (string, optional) Genus name

@@ -120,10 +120,14 @@ module Models
             .limit(params[:limit] || 10)
             .offset(params[:offset])
       else
+        params2 = params.dup
+        params.delete(:Species)
+        params.delete(:Genus)
         select(fields.join(', '))
             .joins('INNER JOIN families on species.FamCode = families.FamCode')
             .joins('INNER JOIN genera on ' + str)
-            .where(params.select { |param| %w(Genus Species).include?(param) })
+            .where("species.Species LIKE :sp", sp: "%#{params2[:Species]}%")
+            .where("species.Genus LIKE :ge", ge: "%#{params2[:Genus]}%")
             .limit(params[:limit] || 10)
             .offset(params[:offset])
       end

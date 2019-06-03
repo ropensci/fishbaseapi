@@ -305,4 +305,25 @@ class API < Sinatra::Application
       end
     end
   end
+
+  # species
+  SpModels.models.each do |model_name|
+    model = SpModels.const_get(model_name)
+    get "/#{model_name.to_s.downcase}/?#{model.primary_key ? ':id?/?' : '' }" do
+      begin
+        data = model.endpoint(params)
+        raise Exception.new('no results found') if data.length.zero?
+        hsh = data.as_json
+        base_img = !@slb_or_fb.match("fb").nil? ? "https://www.fishbase.de/" : "https://www.sealifebase.ca/"
+        hsh.each do |e|
+          z = e["PicPreferredName"]
+          e["image"] = z.nil? ? nil : base_img + "images/species/" + z
+        end
+        { count: data.limit(nil).count(1), returned: data.length, data: hsh, error: nil }.to_json
+      rescue Exception => e
+        halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+      end
+    end
+  end
+
 end

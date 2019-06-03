@@ -1,5 +1,16 @@
 require_relative 'base'
 
+module SpModels
+  def self.models
+    constants.select { |c| const_get(c).is_a?(Class) }
+  end
+
+  class Species < Base
+    self.primary_key = 'SpecCode'
+  end
+end
+
+
 module Models
   def self.models
     constants.select { |c| const_get(c).is_a?(Class) }
@@ -61,9 +72,9 @@ module Models
     self.primary_key = 'GenCode'
   end
 
-  class Species < Base
-    self.primary_key = 'SpecCode'
-  end
+  # class Species < Base
+  #   self.primary_key = 'SpecCode'
+  # end
 
   class Eggs < Base
     self.primary_key = 'Speccode'
@@ -133,6 +144,10 @@ module Models
       end
     end
   end
+
+  # class Images < Base
+  #   self.table_name = 'species'
+  # end
 
   class Ecosystem < Base
     self.table_name = 'ecosystem'

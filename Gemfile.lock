@@ -23,7 +23,7 @@ GEM
     minitest (5.10.3)
     mustermann (1.0.1)
     mysql2 (0.4.10)
-    rack (2.0.3)
+    rack (2.0.7)
     rack-protection (2.0.0)
       rack
     rack-test (0.7.0)

@@ -41,7 +41,7 @@ class API < Sinatra::Application
       if !ver_h.nil?
         ver_h = ver_h.split(',').keep_if { |x| x.match(/application\/vnd\.ropensci/) }[0]
       end
-      ver_h = ver_h || "application/vnd.ropensci.v8+json"
+      ver_h = ver_h || "application/vnd.ropensci.v9+json"
       ver_h = ver_h[/v[0-9]/]
 
       case ver_h
@@ -59,8 +59,10 @@ class API < Sinatra::Application
         ver_c = "201901"
       when "v7"
         ver_c = "201902"
+      when "v8"
+        ver_c = "201904"
       else
-        ver_c = "201904" # use newest by default
+        ver_c = "201908" # use newest by default
       end
       @slb_or_fb = "fb_" + ver_c
     end
@@ -71,7 +73,7 @@ class API < Sinatra::Application
       if !ver_h.nil?
         ver_h = ver_h.split(',').keep_if { |x| x.match(/application\/vnd\.ropensci/) }[0]
       end
-      ver_h = ver_h || "application/vnd.ropensci.v6+json"
+      ver_h = ver_h || "application/vnd.ropensci.v7+json"
       ver_h = ver_h[/v[0-9]/]
 
       case ver_h
@@ -85,8 +87,10 @@ class API < Sinatra::Application
         ver_c = "_201901"
       when "v5"
         ver_c = "_201902"
+      when "v6"
+        ver_c = "_201904"
       else
-        ver_c = "_201904" # use newest by default
+        ver_c = "_201908" # use newest by default
       end
       @slb_or_fb = "slb" + ver_c
     end
@@ -245,6 +249,11 @@ class API < Sinatra::Application
             version: "v6",
             # name: "201904",
             date_released: "2019-04-01"
+          },
+          {
+            version: "v7",
+            # name: "201908",
+            date_released: "2019-08-01"
           }
         ],
         error: nil
@@ -291,6 +300,11 @@ class API < Sinatra::Application
             version: "v8",
             # name: "201904",
             date_released: "2019-04-01"
+          },
+          {
+            version: "v9",
+            # name: "201908",
+            date_released: "2019-08-01"
           }
         ],
         error: nil

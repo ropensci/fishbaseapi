@@ -5,7 +5,7 @@ db:
   fb_201505:
     adapter: mysql2
     encoding: utf8
-    host: mysql
+    host: fishbase
     username: root
     password: root
     port: 3306
@@ -13,7 +13,7 @@ db:
   fb_201604:
     adapter: mysql2
     encoding: utf8
-    host: mysql
+    host: fishbase
     username: root
     password: root
     port: 3306
@@ -21,7 +21,7 @@ db:
   fb_201703:
     adapter: mysql2
     encoding: utf8
-    host: mysql
+    host: fishbase
     username: root
     password: root
     port: 3306
@@ -29,7 +29,7 @@ db:
   fb_201712:
     adapter: mysql2
     encoding: utf8
-    host: mysql
+    host: fishbase
     username: root
     password: root
     port: 3306
@@ -37,7 +37,7 @@ db:
   fb_201809:
     adapter: mysql2
     encoding: utf8
-    host: mysql
+    host: fishbase
     username: root
     password: root
     port: 3306
@@ -45,7 +45,7 @@ db:
   fb_201901:
     adapter: mysql2
     encoding: utf8
-    host: mysql
+    host: fishbase
     username: root
     password: root
     port: 3306
@@ -53,7 +53,7 @@ db:
   fb_201902:
     adapter: mysql2
     encoding: utf8
-    host: mysql
+    host: fishbase
     username: root
     password: root
     port: 3306
@@ -61,7 +61,7 @@ db:
   fb_201904:
     adapter: mysql2
     encoding: utf8
-    host: mysql
+    host: fishbase
     username: root
     password: root
     port: 3306
@@ -69,7 +69,7 @@ db:
   fb_201908:
     adapter: mysql2
     encoding: utf8
-    host: mysql
+    host: fishbase
     username: root
     password: root
     port: 3306

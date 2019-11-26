@@ -13,7 +13,7 @@ $redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
                    port: ENV.fetch('REDIS_PORT_6379_TCP_PORT', 6379)
 
 ActiveSupport::Deprecation.silenced = true
-ActiveRecord::Base.establish_connection($config['db']['fb_201904'])
+ActiveRecord::Base.establish_connection($config['db']['fb_201908'])
 
 class API < Sinatra::Application
   before do

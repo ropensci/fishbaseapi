@@ -2,13 +2,13 @@ redis:
   image: redis
   restart: always
   volumes:
-    - $HOME/data/redis:/data
+    - $HOME/volume/data/redis:/data
   command:  redis-server --appendonly yes
 
 fishbase:
   image: mariadb:10.4
   volumes:
-    - $HOME/data/fishbase:/var/lib/mysql
+    - $HOME/volume/data/fishbase:/var/lib/mysql
   environment:
     - MYSQL_ROOT_PASSWORD=root
   restart: always
@@ -16,13 +16,14 @@ fishbase:
 sealifebase:
   image: mariadb:10.4
   volumes:
-    - $HOME/data/sealifebase:/var/lib/mysql
+    - $HOME/volume/data/sealifebase:/var/lib/mysql
   environment:
     - MYSQL_ROOT_PASSWORD=root
   restart: always
 
 api:
   build: .
+  image: sckott/fishbaseapi
   ports:
     - "8888:8888"
   links:

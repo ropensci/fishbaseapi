@@ -103,7 +103,8 @@ class API < Sinatra::Application
           halt 200, {
             'Content-Type' => 'application/json; charset=utf8',
             'Access-Control-Allow-Methods' => 'HEAD, GET',
-            'Access-Control-Allow-Origin' => '*'},
+            'Access-Control-Allow-Origin' => '*',
+            'X-Database-Version' => @slb_or_fb},
             $redis.get(@cache_key)
         end
       end

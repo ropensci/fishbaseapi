@@ -73,21 +73,19 @@ class API < Sinatra::Application
       if !ver_h.nil?
         ver_h = ver_h.split(',').keep_if { |x| x.match(/application\/vnd\.ropensci/) }[0]
       end
-      ver_h = ver_h || "application/vnd.ropensci.v7+json"
+      ver_h = ver_h || "application/vnd.ropensci.v6+json"
       ver_h = ver_h[/v[0-9]/]
 
       case ver_h
       when "v1"
-        ver_c = "" # either 2015 or 2016, not sure though
-      when "v2"
         ver_c = "_201712"
-      when "v3"
+      when "v2"
         ver_c = "_201809"
-      when "v4"
+      when "v3"
         ver_c = "_201901"
-      when "v5"
+      when "v4"
         ver_c = "_201902"
-      when "v6"
+      when "v5"
         ver_c = "_201904"
       else
         ver_c = "_201908" # use newest by default

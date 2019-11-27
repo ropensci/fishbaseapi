@@ -220,36 +220,31 @@ class API < Sinatra::Application
         data: [
           {
             version: "v1",
-            # name: "2015_2016",
-            date_released: "2015_or_2016"
-          },
-          {
-            version: "v2",
             # name: "201712",
             date_released: "2017-10-01"
           },
           {
-            version: "v3",
+            version: "v2",
             # name: "201809",
             date_released: "2018-06-01"
           },
           {
-            version: "v4",
+            version: "v3",
             # name: "201901",
             date_released: "2018-10-01"
           },
           {
-            version: "v5",
+            version: "v4",
             # name: "201901",
             date_released: "2019-02-01"
           },
           {
-            version: "v6",
+            version: "v5",
             # name: "201904",
             date_released: "2019-04-01"
           },
           {
-            version: "v7",
+            version: "v6",
             # name: "201908",
             date_released: "2019-08-01"
           }

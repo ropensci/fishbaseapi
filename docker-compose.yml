@@ -22,7 +22,6 @@ sealifebase:
   restart: always
 
 api:
-  build: .
   image: sckott/fishbaseapi
   ports:
     - "8888:8888"

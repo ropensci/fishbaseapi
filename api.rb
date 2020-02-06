@@ -42,7 +42,7 @@ class API < Sinatra::Application
         ver_h = ver_h.split(',').keep_if { |x| x.match(/application\/vnd\.ropensci/) }[0]
       end
       ver_h = ver_h || "application/vnd.ropensci.v10+json"
-      ver_h = ver_h[/v[0-9]{2}/]
+      ver_h = ver_h[/v[0-9]{1,2}/]
 
       case ver_h
       when "v1"
@@ -76,7 +76,7 @@ class API < Sinatra::Application
         ver_h = ver_h.split(',').keep_if { |x| x.match(/application\/vnd\.ropensci/) }[0]
       end
       ver_h = ver_h || "application/vnd.ropensci.v7+json"
-      ver_h = ver_h[/v[0-9]{2}/]
+      ver_h = ver_h[/v[0-9]{1,2}/]
 
       case ver_h
       when "v1"

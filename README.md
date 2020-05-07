@@ -1,22 +1,22 @@
 FishBase API
 ============
 
-[![Build Status](https://travis-ci.org/ropensci/fishbaseapi.svg)](https://travis-ci.org/ropensci/fishbaseapi)
+<!-- [![Build Status](https://travis-ci.org/ropensci/fishbaseapi.svg)](https://travis-ci.org/ropensci/fishbaseapi) -->
 
-This is a volunteer effort from rOpenSci to provide a modern [RESTful API](http://en.wikipedia.org/wiki/Representational_state_transfer) to the backend SQL database behind the popular web resource, [fishbase.org](http://fishbase.org). The FishBase team have provided a snapshot of the database for our development purposes only and have expressed interest in hosting the finished API as a resource for all their users.
+This is a volunteer effort from rOpenSci to provide a modern [RESTful API](http://en.wikipedia.org/wiki/Representational_state_transfer) to the backend SQL database behind the popular web resource <http://fishbase.org>. The FishBase team provides snapshots of the database 1 to a few times per year.
 
 User quick start
 ----------------
 
-At this time, this API is deployed for development purposes only.  The testing server may be available only intermittently and all endpoints are subject to change. Please check back here for updates when the API is officially released by FishBase.org.
+The server may sometimes be unavailable due to server outages.
 
-- The test API is being served from [https://fishbase.ropensci.org](https://fishbase.ropensci.org)
-- API documentation is available at <https://fishbaseapi.readme.io/>
+- API base url: <https://fishbase.ropensci.org>
+- API documentation: <https://fishbaseapi.readme.io/>
 - The [rfishbase2.0](https://github.com/ropensci/rfishbase/tree/rfishbase2.0) R package provides a convenient and powerful way to interact with the API.
 
-Letsencrypt and Java
+Letsencrypt
 -----------
-We use [Letsencrypt](https://letsencrypt.org/) for https, but older Java versions don't trust Letsencrypt certs. However, recent Java versions fix this problem. See <https://github.com/ropensci/fishbaseapi/issues/99> for more.
+We use [Letsencrypt](https://letsencrypt.org/) for https certs.
 
 Technical specifications
 ------------------------
@@ -33,10 +33,9 @@ Technical specifications
 ### Technical overview
 
 - The API is written in Ruby using the Sinatra Framework. Currently all API methods are defined in the `api.rb` file. The Dockerfile included here defines the runtime environment required, which is downloaded automatically from Docker Hub as the [ropensci/fishbaseapi](https://registry.hub.docker.com/u/ropensci/fishbaseapi/) container.
-- The API is served through a ruby unicorn server running behind a NGINX reverse proxy server (using the official Docker NGINX image).
-- The API sends queries to a separate, linked MySQL container (using the official Docker MySQL image).
+- The API is served through a ruby unicorn server running behind a Letsencrypt proxy
+- The API sends queries to a separate, linked MariaDB container (using the official Docker MariaDB image).
 - API queries are cached in a REDIS database provided by a linked REDIS container (again using an official Docker image)
-- Logfiles can be collected, queried, and visualized using Logstash, ElasticSearch and Kibana respectively (still in development).
 
 See the `docker.sh` script which orchestrates the linking and running of these separate containers.
 
@@ -91,9 +90,3 @@ In the R client `rfishbase` the database version will likely be controlled by a 
 ### Why Docker?
 
 Docker provides a fast and robust way to deploy all the necessary software required for the API on almost any platform. By using separate containers for the different services associated with the API, it becomes easier to scale the API across a cluster, isolate and diagnose points of failure. Individual containers providing services such as the MySQL database or REDIS cache can be restarted without disrupting other services of the API.
-
-
-
-
-
-

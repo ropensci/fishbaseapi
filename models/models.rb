@@ -60,6 +60,10 @@ module Models
   class Swimming < Base; end
   class Synonyms < Base; end
 
+  class Disref < Base
+    self.primary_key = 'DisCode'
+  end
+
   class Faoareas < Base
     self.primary_key = 'AreaCode'
   end

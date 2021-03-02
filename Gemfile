@@ -1,13 +1,13 @@
 source 'https://rubygems.org/'
 
-gem 'redis', '~> 4.2', '>= 4.2.1'
+gem 'redis', '~> 4.2', '>= 4.2.5'
 gem 'mysql2', '~> 0.5.3'
-gem 'activerecord', '~> 6.0', require: 'active_record'
+gem 'activerecord', '~> 6.1', require: 'active_record'
 
 group :manual do
-  gem 'sinatra', '~> 2.0', '>= 2.0.8.1'
-  gem 'unicorn', '~> 5.5', '>= 5.5.5'
-  gem 'rake', '~> 13.0', '>= 13.0.1'
+  gem 'sinatra', '~> 2.1'
+  gem 'unicorn', '~> 5.8'
+  gem 'rake', '~> 13.0', '>= 13.0.3'
 end
 
 group :test do

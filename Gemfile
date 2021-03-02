@@ -2,7 +2,7 @@ source 'https://rubygems.org/'
 
 gem 'redis', '~> 4.2', '>= 4.2.1'
 gem 'mysql2', '~> 0.5.3'
-gem 'activerecord', '~> 6.0', '>= 6.0.3.2', require: 'active_record'
+gem 'activerecord', '~> 6.0', require: 'active_record'
 
 group :manual do
   gem 'sinatra', '~> 2.0', '>= 2.0.8.1'

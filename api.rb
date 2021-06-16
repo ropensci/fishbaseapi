@@ -13,7 +13,7 @@ $redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
                    port: ENV.fetch('REDIS_PORT_6379_TCP_PORT', 6379)
 
 ActiveSupport::Deprecation.silenced = true
-ActiveRecord::Base.establish_connection($config['db']['fb_202012'])
+ActiveRecord::Base.establish_connection($config['db']['fb_202102'])
 
 class API < Sinatra::Application
   before do
@@ -41,7 +41,7 @@ class API < Sinatra::Application
       if !ver_h.nil?
         ver_h = ver_h.split(',').keep_if { |x| x.match(/application\/vnd\.ropensci/) }[0]
       end
-      ver_h = ver_h || "application/vnd.ropensci.v11+json"
+      ver_h = ver_h || "application/vnd.ropensci.v12+json"
       ver_h = ver_h[/v[0-9]{1,2}/]
 
       case ver_h
@@ -65,8 +65,10 @@ class API < Sinatra::Application
         ver_c = "201908"
       when "v10"
         ver_c = "201912"
+      when "v11"
+        ver_c = "202012"
       else
-        ver_c = "202012" # use newest by default
+        ver_c = "202102" # use newest by default
       end
       @slb_or_fb = "fb_" + ver_c
     end
@@ -77,7 +79,7 @@ class API < Sinatra::Application
       if !ver_h.nil?
         ver_h = ver_h.split(',').keep_if { |x| x.match(/application\/vnd\.ropensci/) }[0]
       end
-      ver_h = ver_h || "application/vnd.ropensci.v8+json"
+      ver_h = ver_h || "application/vnd.ropensci.v9+json"
       ver_h = ver_h[/v[0-9]{1,2}/]
 
       case ver_h
@@ -95,8 +97,10 @@ class API < Sinatra::Application
         ver_c = "_201908"
       when "v7"
         ver_c = "_201912"
+      when "v8"
+        ver_c = "_202012"
       else
-        ver_c = "_202012" # use newest by default
+        ver_c = "_202104" # use newest by default
       end
       @slb_or_fb = "slb" + ver_c
     end
@@ -266,6 +270,11 @@ class API < Sinatra::Application
             version: "v8",
             # name: "202012",
             date_released: "2020-12-01"
+          },
+          {
+            version: "v9",
+            # name: "202104",
+            date_released: "2021-04-01"
           }
         ],
         error: nil
@@ -327,6 +336,11 @@ class API < Sinatra::Application
             version: "v11",
             # name: "202012",
             date_released: "2020-12-01"
+          },
+          {
+            version: "v12",
+            # name: "202102",
+            date_released: "2021-02-01"
           }
         ],
         error: nil

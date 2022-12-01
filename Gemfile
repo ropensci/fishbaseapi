@@ -5,7 +5,7 @@ gem 'mysql2', '~> 0.5.3'
 gem 'activerecord', '~> 6.1', require: 'active_record'
 
 group :manual do
-  gem 'sinatra', '~> 2.1'
+  gem 'sinatra', '~> 2.2'
   gem 'unicorn', '~> 5.8'
   gem 'rake', '~> 13.0', '>= 13.0.3'
 end

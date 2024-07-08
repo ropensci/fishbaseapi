@@ -1,9 +1,0 @@
-table_name,column_name
-journal,JourID
-journal,JOUR
-journal,JOUR_NAME
-journal,FULL_NAME
-journal,CALLNUMBER
-journal,NOTES
-journal,REMARKS
-journal,TS

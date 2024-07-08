@@ -1,8 +1,0 @@
-table_name,column_name
-algalspecies,Genus
-algalspecies,Species
-algalspecies,ScientificName
-algalspecies,GenusID
-algalspecies,SpeciesID
-algalspecies,GenusDetailLink
-algalspecies,SpeciesDetailLink
